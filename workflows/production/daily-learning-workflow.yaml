@@ -39,7 +39,7 @@ nodes:
 
           Project name format: daily-learning-YYYY-MM-DD
 
-          Location: /Users/jonathonbyrdziak/sulla/projects/
+          Location: ~/sulla/projects/
 
           Inside the project, create these files:
           1. PROJECT.md - with frontmatter showing date, purpose (daily learning capture), and status (in-progress)
@@ -65,7 +65,7 @@ nodes:
         agentId: null
         agentName: Conversation File Loader
         additionalPrompt: |
-          Find ACTUAL human conversation files in /Users/jonathonbyrdziak/sulla/conversations/ modified in the last 24 hours.
+          Find ACTUAL human conversation files in ~/sulla/conversations/ modified in the last 24 hours.
 
           CRITICAL - USE THE CORRECT FILE PATTERN:
           Human conversation files follow the pattern: thread_*.jsonl
@@ -85,7 +85,7 @@ nodes:
 
           ALSO RUN THIS EXPLICIT SHELL COMMAND to ensure you find the files:
           ```bash
-          ls -lt /Users/jonathonbyrdziak/sulla/conversations/thread_*.jsonl 2>/dev/null | head -20 | awk '{print $NF}'
+          ls -lt ~/sulla/conversations/thread_*.jsonl 2>/dev/null | head -20 | awk '{print $NF}'
           ```
 
           This command will list the 20 most recent thread_*.jsonl files. Use its output to build your JSON array.

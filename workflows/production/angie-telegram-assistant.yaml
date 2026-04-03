@@ -7,7 +7,7 @@ trigger:
   config:
     platform: telegram
     botToken: "{{integrations.telegram.botToken}}"
-    allowedChatIds: ["123456789"]
+    allowedChatIds: ["{{env.TELEGRAM_ALLOWED_CHAT_ID}}"]
 nodes:
   - id: security-check
     name: Security Allowlist Check
@@ -18,7 +18,7 @@ nodes:
       rules:
         - field: chatId
           operator: in
-          value: ["123456789"]
+          value: ["{{env.TELEGRAM_ALLOWED_CHAT_ID}}"]
     edges:
       true: voice-text-router
       false: end
