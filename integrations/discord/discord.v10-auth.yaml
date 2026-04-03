@@ -1,0 +1,18 @@
+# discord.v10-auth.yaml
+# Authentication for Discord Bot API v10
+# Uses Bot Token as Bearer
+
+api:
+  name: discord-bot-v10
+  version: v10
+  provider: discord
+  base_url: https://discord.com/api/v10
+
+auth:
+  type: apiKey
+  header: Authorization
+  value: "Bot ${DISCORD_BOT_TOKEN}"
+  # Get token from: https://discord.com/developers/applications → Bot → Token
+
+  token_storage: local
+  refresh_automatically: false

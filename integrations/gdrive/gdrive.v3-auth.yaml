@@ -1,0 +1,39 @@
+# gdrive.v3-auth.yaml
+# Authentication configuration for Google Drive API v3
+# OAuth 2.0 with optional API key fallback
+
+api:
+  name: google-drive-v3
+  version: v3
+  provider: google
+  base_url: https://www.googleapis.com/drive/v3
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${GOOGLE_CLIENT_ID}"
+  client_secret: "${GOOGLE_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://accounts.google.com/o/oauth2/v2/auth
+  token_url: https://oauth2.googleapis.com/token
+
+  pkce: true
+  code_challenge_method: S256
+  access_type: offline
+  prompt: consent
+
+  scopes:
+    - https://www.googleapis.com/auth/drive.readonly           # read-only access
+    # - https://www.googleapis.com/auth/drive.file              # files created/opened by this app only
+    # - https://www.googleapis.com/auth/drive                   # full drive access
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300
+
+api_key_fallback:
+  enabled: true
+  param_name: key
+  value: "${GOOGLE_API_KEY}"

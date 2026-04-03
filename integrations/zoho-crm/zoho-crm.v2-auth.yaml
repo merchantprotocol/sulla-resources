@@ -1,0 +1,21 @@
+# zoho-crm.v2-auth.yaml
+# Authentication for Zoho CRM API v2
+# Uses OAuth2 with refresh token flow
+
+api:
+  name: zoho-crm-v2
+  version: v2
+  provider: zoho-crm
+  base_url: https://www.zohoapis.com/crm/v2
+
+auth:
+  type: oauth2
+  client_id: "${ZOHO_CLIENT_ID}"
+  client_secret: "${ZOHO_CLIENT_SECRET}"
+  refresh_token: "${ZOHO_REFRESH_TOKEN}"
+  token_url: https://accounts.zoho.com/oauth/v2/token
+  # Get from: Zoho API Console → Self Client or Server-based Application
+  # Scopes: ZohoCRM.modules.ALL, ZohoCRM.settings.ALL
+
+  token_storage: local
+  refresh_automatically: true

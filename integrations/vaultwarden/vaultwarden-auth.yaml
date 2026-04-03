@@ -1,0 +1,56 @@
+# vaultwarden-auth.yaml
+# Authentication configuration for Vaultwarden (Bitwarden-compatible) API
+# OAuth2 password grant to obtain Bearer token
+
+api:
+  name: vaultwarden-api
+  version: v1
+  provider: vaultwarden
+  base_url: http://localhost:30230/api
+
+auth:
+  type: oauth2
+  flow: password
+  token_url: http://localhost:30230/identity/connect/token
+
+  # OAuth2 password grant parameters
+  grant_type: password
+  username: "${VAULTWARDEN_EMAIL}"
+  password: "${VAULTWARDEN_MASTER_PASSWORD}"
+  client_id: "web"
+  scope: "api offline_access"
+  device_type: 10
+  device_identifier: "${VAULTWARDEN_DEVICE_ID}"
+  device_name: "sulla"
+
+  # Token usage
+  method: bearer_token
+  token_field: access_token
+  refresh_token_field: refresh_token
+
+  # Headers sent with every request
+  headers:
+    Content-Type: application/json
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300
+
+  notes: |
+    Vaultwarden implements the Bitwarden Client API.
+    1. POST /identity/connect/token with grant_type=password to get access_token.
+    2. Use access_token as Bearer token in Authorization header for all API calls.
+    3. The master password must be hashed (PBKDF2) before sending. Most clients
+       handle this internally. The raw master password is never sent directly.
+    4. device_type: 10 = SDK/CLI, 7 = web
+    5. Two-factor auth may be required; pass twoFactorToken + twoFactorProvider
+       in the token request if enabled.
+
+  docker:
+    container_name: vaultwarden
+    network: sulla_default
+    internal_url: http://vaultwarden:80/api
+    host_port: 30230
+    notes: |
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).

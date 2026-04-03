@@ -1,0 +1,176 @@
+id: youtube-outlier-research
+name: YouTube Outlier Research
+description: Execute the Hookpoint Method for YouTube video research — find, analyze, and extract patterns from outlier videos
+version: 1
+enabled: true
+createdAt: 2026-03-23T00:00:00.000Z
+updatedAt: 2026-03-23T00:00:00.000Z
+nodes:
+  - id: node-001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Research Request Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "User requests YouTube outlier research"
+
+  - id: node-002
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: agent
+      category: agent
+      label: Define Research Parameters Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "You are helping the user set up a YouTube outlier research session using the Hookpoint Method. Ask the user to clarify these 4 parameters: 1) Niche/Topic, 2) ICP (ideal customer/viewer), 3) Content Goals (brand awareness, lead generation, product education, or authority building), 4) Format Preferences (talking head, screen share, case studies, listicles, opinion/commentary). Once all 4 are defined, summarize them and ask for confirmation to proceed."
+        orchestratorInstructions: "Guide the user to define all 4 research parameters clearly. If they've done this before, check if parameters have changed. Once complete, summarize and get confirmation before proceeding to outlier search."
+        successCriteria: "All 4 research parameters are defined and confirmed"
+        completionContract: ""
+
+  - id: node-003
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: agent
+      category: agent
+      label: Outlier Search Guide Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Guide the user through finding 10-20 outlier videos using three methods: A) Topic-Based Search (search keywords, filter by This Year, sort by views, look for small channels with high views), B) Channel Deep-Dive (identify competitor channels, sort by Popular, find videos that outperform subscriber count), C) Videos That Shouldn't Work (search topic + beginner/how to/tutorial, look for simple thumbnails but 100k+ views). Outlier criteria: 10x+ views-to-subs ratio. Have them use the tracking sheet at ~/sulla/skills/youtube-outlier-research/templates/outlier-tracking-sheet.md"
+        orchestratorInstructions: "Guide the user to find at least 5-10 outlier videos and record them in the tracking sheet. Confirm completion before moving to analysis."
+        successCriteria: "User has identified at least 5-10 outlier videos"
+        completionContract: ""
+
+  - id: node-004
+    type: workflow
+    position:
+      x: 400
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Pattern Analysis Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Guide the user through deep analysis of each outlier video analyzing: 1) Title (structure, length, keywords, emotional triggers, numbers), 2) Thumbnail (main subject, text usage, colors, facial expression, composition), 3) Hook - first 30 seconds (opening line, hook type, visual style, curiosity techniques), 4) Video Structure (length, sections, pacing, B-roll frequency, CTA placement), 5) Engagement Signals (like-to-view ratio, comment themes). Have them complete the tracking sheet for at least 5 videos."
+        orchestratorInstructions: "Guide deep analysis of each video. Ensure all 5 dimensions are analyzed for each outlier. Move to synthesis once 5+ videos are fully analyzed."
+        successCriteria: "At least 5 videos have been fully analyzed with all pattern fields completed"
+        completionContract: ""
+
+  - id: node-005
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Pattern Synthesis Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Guide the user to synthesize patterns across all analyzed videos using the pattern synthesis template at ~/sulla/skills/youtube-outlier-research/templates/pattern-synthesis-template.md. Identify: 1) Title Patterns (common structures, recurring keywords, optimal length, emotional triggers), 2) Thumbnail Patterns (visual elements, text usage, color schemes, composition), 3) Hook Patterns (effective opening lines, hook types, curiosity techniques), 4) Structure Patterns (optimal length, segment structures, pacing, CTA strategies), 5) Topic Patterns (best performing topics, underserved niches, content gaps). Goal: 5-7 golden patterns."
+        orchestratorInstructions: "Help synthesize patterns across all analyzed videos. Use the pattern synthesis template. Aim for 5-7 golden patterns that appear across multiple outliers."
+        successCriteria: "5-7 golden patterns have been synthesized and documented"
+        completionContract: ""
+
+  - id: node-006
+    type: workflow
+    position:
+      x: 400
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Video Idea Generation Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Guide the user to generate 10-20 video ideas based on golden patterns, then score them using the scorecard at ~/sulla/skills/youtube-outlier-research/templates/video-idea-scorecard.md. Scoring criteria (1-10): Pattern Match, ICP Relevance, Differentiation, Production Feasibility, SEO Potential, Business Impact. Top scorers (45+) = immediate production, Medium (35-44) = refine, Low (<35) = discard. Goal: 3-5 high-scoring ideas ready for briefs."
+        orchestratorInstructions: "Guide idea generation from patterns, then scoring. Use the scorecard template. End with 3-5 top ideas prioritized for production."
+        successCriteria: "10-20 ideas generated, scored, and 3-5 top ideas identified"
+        completionContract: ""
+
+  - id: node-007
+    type: workflow
+    position:
+      x: 400
+      y: 1000
+    data:
+      subtype: agent
+      category: agent
+      label: Content Brief Creator Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Guide the user to create production-ready briefs for top 3-5 video ideas using the content brief template at ~/sulla/skills/youtube-outlier-research/templates/content-brief-template.md. Each brief includes: Working Title (3-5 variations), Core Concept, Target Viewer, Goal, Thumbnail Concept, Hook Script (first 30 seconds), Video Structure (timestamped), Key Points, B-Roll/Visuals, CTA Strategy, SEO Elements, Production Notes. Complete briefs for top 3 ideas minimum."
+        orchestratorInstructions: "Guide creation of production-ready briefs using the template. Ensure all 12 sections are completed for each brief. Minimum 3 briefs."
+        successCriteria: "At least 3 complete content briefs created"
+        completionContract: ""
+
+  - id: node-008
+    type: workflow
+    position:
+      x: 400
+      y: 1150
+    data:
+      subtype: agent
+      category: agent
+      label: Next Steps Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Wrap up the research session: 1) Review accomplishments (outliers analyzed, patterns identified, ideas generated, briefs created), 2) Schedule production (when to film first video, resources needed, blockers), 3) Set weekly research routine (2-3 hours/week, Mon/Wed/Fri schedule), 4) Mention integration points (marketing plan, Remotion, content source monitor), 5) Celebrate progress. End with: What's your next video production milestone?"
+        orchestratorInstructions: "Wrap up session, set next steps, establish weekly routine, and celebrate progress. End with a clear question about next milestone."
+        successCriteria: "Next steps defined, production scheduled, weekly routine established"
+        completionContract: ""
+
+edges:
+  - id: edge-001
+    source: node-001
+    target: node-002
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-002
+    source: node-002
+    target: node-003
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-003
+    source: node-003
+    target: node-004
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-004
+    source: node-004
+    target: node-005
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-005
+    source: node-005
+    target: node-006
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-006
+    source: node-006
+    target: node-007
+    sourceHandle: null
+    targetHandle: null
+  - id: edge-007
+    source: node-007
+    target: node-008
+    sourceHandle: null
+    targetHandle: null

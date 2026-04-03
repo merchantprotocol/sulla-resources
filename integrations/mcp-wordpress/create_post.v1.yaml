@@ -1,0 +1,38 @@
+endpoint:
+  name: create_post
+  description: Create a new WordPress post. Provide content directly or specify a
+    file_path to a markdown or HTML file on the server to import as the post
+    body.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  title:
+    type: string
+    required: true
+    description: Post title.
+  content:
+    type: string
+    required: false
+    description: Post content (HTML).
+  file_path:
+    type: string
+    required: false
+    description: Server filesystem path to a .md or .html file to import as post content.
+  status:
+    type: string
+    required: false
+    description: "Post status: publish, draft, pending, private. Default: draft."
+  excerpt:
+    type: string
+    required: false
+    description: Post excerpt.
+  categories:
+    type: array
+    required: false
+    description: Category names. Created if they do not exist.
+  tags:
+    type: array
+    required: false
+    description: Tag names. Created if they do not exist.

@@ -1,0 +1,42 @@
+# stirling-pdf-auth.yaml
+# Authentication configuration for Stirling-PDF API (local Docker install)
+# Stirling-PDF v0.36+ - self-hosted PDF manipulation tool
+# Basic auth is used when security is enabled in Stirling-PDF settings
+
+api:
+  name: stirling-pdf-api
+  version: v1
+  provider: stirling-pdf
+  base_url: http://localhost:30201/api/v1
+
+auth:
+  # Basic Authentication (when security is enabled)
+  type: basic_auth
+  username: "${STIRLING_PDF_USERNAME}"
+  password: "${STIRLING_PDF_PASSWORD}"
+  method: basic_auth  # base64(username:password) in Authorization header
+
+  # When security is disabled (default), no auth is required
+  # type: none
+
+  headers:
+    Accept: "*/*"
+
+  docker:
+    container_name: stirling-pdf
+    network: sulla_default
+    internal_url: http://stirling-pdf:8080/api/v1
+    host_port: 30201
+    notes: |
+      Stirling-PDF runs on port 8080 internally, mapped to 30201 on the host.
+      Security/auth can be enabled via DOCKER_ENABLE_SECURITY=true environment variable.
+      When security is disabled, all endpoints are accessible without authentication.
+      API docs available at http://localhost:30201/swagger-ui/index.html
+
+discovery:
+  endpoint: /api/v1
+  description: |
+    Stirling-PDF REST API v1.
+    All PDF operations accept multipart/form-data with file inputs
+    and return the processed PDF file as binary output.
+    Swagger/OpenAPI docs at /swagger-ui/index.html

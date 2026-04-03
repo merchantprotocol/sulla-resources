@@ -1,0 +1,19 @@
+# freshdesk.v2-auth.yaml
+# Authentication for Freshdesk API v2
+# Uses Basic auth with API key as username and "X" as password
+
+api:
+  name: freshdesk-v2
+  version: v2
+  provider: freshdesk
+  base_url: https://${FRESHDESK_DOMAIN}.freshdesk.com/api/v2
+
+auth:
+  type: basic
+  # Basic auth: API key as username, "X" as password
+  username: "${FRESHDESK_API_KEY}"
+  password: "X"
+  # Get from: Freshdesk → Profile Settings → Your API Key
+
+  token_storage: local
+  refresh_automatically: false

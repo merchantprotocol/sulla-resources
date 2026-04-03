@@ -1,0 +1,17 @@
+endpoint:
+  name: delete_post
+  description: Delete a WordPress post by ID. Moves to trash by default, or
+    permanently deletes if force is true.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  id:
+    type: integer
+    required: true
+    description: The post ID to delete.
+  force:
+    type: boolean
+    required: false
+    description: "If true, permanently delete instead of trashing. Default: false."

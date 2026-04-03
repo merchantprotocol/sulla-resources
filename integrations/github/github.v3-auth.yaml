@@ -1,0 +1,20 @@
+# github.v3-auth.yaml
+# Authentication configuration for GitHub REST API v3
+# (Bearer token - Personal Access Token)
+
+api:
+  name: github-rest-v3
+  version: v3
+  provider: github
+  base_url: https://api.github.com
+
+auth:
+  type: bearer
+  client_secret: "${GITHUB_TOKEN}"               # Personal Access Token - never commit this
+
+  # Required headers for GitHub API
+  headers:
+    Accept: "application/vnd.github+json"
+
+  # Token storage & refresh hints (implementation detail - your runtime decides)
+  token_storage: local

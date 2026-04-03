@@ -1,0 +1,895 @@
+id: workflow-1741000000000
+name: Blog Production Pipeline
+description: End-to-end automated blog production with 21 specialized agent stages. Transforms topic ideas into published, SEO-optimized WordPress articles with quality gates, amplification workflows, and human-quality writing.
+version: 1
+enabled: true
+createdAt: 2026-03-15T00:00:00.000Z
+updatedAt: 2026-04-02T06:59:25.542Z
+nodes:
+  - id: node-1741000000001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: When the user requests a blog post, article, or content production for a topic or keyword
+  - id: node-1741000000002
+    type: workflow
+    position:
+      x: 438.2126782094913
+      y: 258.6846995930662
+    data:
+      subtype: agent
+      category: agent
+      label: Keyword Research Agent
+      config:
+        agentId: seo-keyword-researcher
+        agentName: Keyword Research Agent
+        beforePrompt: Data-driven, honest, transparent about data limitations
+        additionalPrompt: |
+          Research the given topic to find the best target keyword.
+
+          Tasks:
+          1. Identify primary keyword with search volume
+          2. Find related secondary keywords
+          3. Analyze keyword difficulty honestly
+          4. Identify search intent (informational/transactional)
+          5. NEVER fabricate keyword data - admit when unavailable
+
+          Output: Keyword research document with volume, difficulty, intent
+        userMessage: ""
+        successCriteria: Keyword research document with volume, difficulty, and intent delivered
+        completionContract: ""
+  - id: node-1741000000003
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: agent
+      category: agent
+      label: Topic Researcher
+      config:
+        agentId: audience-intent-researcher
+        agentName: Topic Researcher
+        beforePrompt: Translates technical concepts for non-tech-savvy business owners
+        additionalPrompt: |
+          Deep-dive into the topic to understand the A→B transformation for readers.
+
+          Tasks:
+          1. Identify target audience and their pain points
+          2. Define the A (before) and B (after) states
+          3. Find the reader's exciting outcome/promise
+          4. Research common questions and objections
+          5. Ensure accessibility for non-expert readers
+
+          Output: Topic brief with audience, transformation, key points
+        userMessage: ""
+        successCriteria: Topic brief with audience, transformation, and key points delivered
+        completionContract: ""
+  - id: node-1741000000004
+    type: workflow
+    position:
+      x: 333.99628309269696
+      y: 537.8414205697073
+    data:
+      subtype: agent
+      category: agent
+      label: Format Decision Agent
+      config:
+        agentId: content-format-strategist
+        agentName: Format Decision Agent
+        beforePrompt: Strategic content architect
+        additionalPrompt: |
+          Determine the optimal content format for maximum engagement and SEO.
+
+          Options:
+          - Transformative narrative: A→B journey articles
+          - Listicle: Ranked lists ("Top 10", "Best 7")
+          - How-to guide: Step-by-step tutorials
+          - Comparison: Side-by-side analysis
+
+          Output: Recommended format with reasoning
+        userMessage: ""
+        successCriteria: Recommended format selected with reasoning
+        completionContract: ""
+  - id: node-1741000000005
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Content Brief Generator
+      config:
+        agentId: content-brief-generator
+        agentName: Content Brief Generator
+        beforePrompt: Organized content strategist
+        additionalPrompt: |
+          Create a detailed content brief BEFORE writing begins. This is critical for upstream quality control.
+
+          Output MUST include:
+          1. Headline options (3 variations with primary keyword)
+          2. H2 structure (4-7 subheadings with keywords)
+          3. Key points per section (3-5 bullet points each)
+          4. Required sources (minimum 5 diverse domains)
+          5. Word count target (800-2500 based on topic)
+          6. Unique angle (what makes this different)
+          7. CTA recommendation (what action reader should take)
+
+          This brief guides the writer - do not skip this stage.
+        userMessage: ""
+        successCriteria: Detailed content brief with all 7 required sections
+        completionContract: ""
+  - id: node-1741000000006
+    type: workflow
+    position:
+      x: 568.6227286645088
+      y: 847.483417202384
+    data:
+      subtype: agent
+      category: agent
+      label: Blog Post Writer
+      config:
+        agentId: blog-post-writer
+        agentName: Blog Post Writer
+        beforePrompt: Professional writer, accessible for non-tech readers, transformation-focused
+        additionalPrompt: |
+          Write a complete, publication-ready blog post following the content brief.
+
+          Follow these skills based on format:
+          - Transformative: Use transformative-narrative-sop
+          - Listicle: Use listicle-narrative-sop
+          - How-to: Use seo-single-post-sop
+
+          Requirements:
+          1. Match the content brief exactly
+          2. Include SEO elements (title, meta, H2s, internal links)
+          3. Apply formatting-readability-sop
+          4. Write in conversational, human tone
+          5. Include story opener, scannable structure, CTA
+
+          Output: Complete markdown article saved to drafts/
+        userMessage: ""
+        successCriteria: Complete publication-ready markdown article
+        completionContract: ""
+  - id: node-1741000000007
+    type: workflow
+    position:
+      x: 400
+      y: 1000
+    data:
+      subtype: agent
+      category: agent
+      label: Unique Angle Enforcer
+      config:
+        agentId: unique-angle-enforcer
+        agentName: Unique Angle Enforcer
+        beforePrompt: Critical content reviewer focused on differentiation
+        additionalPrompt: |
+          Verify that the article offers something different from top-ranking competitors.
+
+          Analysis required:
+          1. What do top 10 results all say? (common points)
+          2. What's THIS article adding that's unique?
+          3. What perspective/experience/angle is different?
+          4. What practical insight does nobody else cover?
+
+          Scoring (1-10):
+          - 10: Clear differentiation, fresh angle, unique value
+          - 7-9: Some unique points but not distinct enough
+          - Below 7: Just "another article" on the topic
+
+          Output: Differentiation score with specific suggestions
+        userMessage: ""
+        successCriteria: Differentiation score and suggestions provided
+        completionContract: ""
+  - id: node-1741000000008
+    type: workflow
+    position:
+      x: 365.8372062465919
+      y: 1152.5305773150674
+    data:
+      subtype: agent
+      category: agent
+      label: Fact-Checking Agent
+      config:
+        agentId: fact-checker
+        agentName: Fact-Checking Agent
+        beforePrompt: Thorough, verification-focused
+        additionalPrompt: |
+          Verify all statistics, claims, and citations in the article.
+
+          Tasks:
+          1. Flag any statistics without sources
+          2. Verify claimed facts against reliable sources
+          3. Check dates (is info still current?)
+          4. Ensure claims aren't exaggerated
+          5. Identify any potentially outdated information
+
+          Output: Fact-check report with verified/flagged items
+        userMessage: ""
+        successCriteria: Fact-check report with verified and flagged items
+        completionContract: ""
+  - id: node-1741000000009
+    type: workflow
+    position:
+      x: 400
+      y: 1300
+    data:
+      subtype: agent
+      category: agent
+      label: Competitor Gap Analysis
+      config:
+        agentId: competitor-gap-analyst
+        agentName: Competitor Gap Analysis
+        beforePrompt: Strategic SEO analyst
+        additionalPrompt: |
+          Identify what's missing in top-ranking pages that this article can provide.
+
+          Analysis:
+          1. What questions do top pages NOT answer?
+          2. What depth is missing?
+          3. What examples/case studies are lacking?
+          4. What visuals/data would help?
+          5. What updates are needed for current year?
+
+          Output: Gap analysis with specific content opportunities
+        userMessage: ""
+        successCriteria: Gap analysis with specific content opportunities
+        completionContract: ""
+  - id: node-1741000000010
+    type: workflow
+    position:
+      x: 338.00085578085196
+      y: 1452.5305773150674
+    data:
+      subtype: agent
+      category: agent
+      label: Structure Validator
+      config:
+        agentId: structure-validator
+        agentName: Structure Validator
+        beforePrompt: Detail-oriented editor
+        additionalPrompt: |
+          Enforce content structure standards for scannability.
+
+          Rules:
+          1. MUST have: Introduction → Body → Conclusion → CTA
+          2. No paragraph > 3 sentences
+          3. Every H2 must contain primary or secondary keyword
+          4. Minimum 3 H2s required
+          5. Must include at least one list (ul/ol)
+          6. Must include at least one bolded key term
+          7. Conclusion must end with clear CTA
+
+          Output: Structure compliance report with fixes needed
+        userMessage: ""
+        successCriteria: Structure compliance report delivered
+        completionContract: ""
+  - id: node-1741000000011
+    type: workflow
+    position:
+      x: 400
+      y: 1600
+    data:
+      subtype: agent
+      category: agent
+      label: SEO Review Agent
+      config:
+        agentId: seo-review-agent
+        agentName: SEO Review Agent
+        beforePrompt: Meticulous SEO auditor
+        additionalPrompt: |
+          Evaluate SEO optimization. Score 1-10 on each criterion.
+
+          10 Criteria (1-10 each):
+          1. Title tag optimization
+          2. Meta description quality
+          3. Keyword usage and density
+          4. Content structure (H1, H2, H3)
+          5. Internal linking opportunity
+          6. URL slug optimization
+          7. Image optimization (alt text)
+          8. Content depth and completeness
+          9. FAQ section presence
+          10. Schema markup readiness
+
+          Output: Detailed scores with fixes for each failed item.
+          Include a final overall score out of 100 (sum of all 10 criteria x10).
+          State clearly: PASS (score >= 70) or FAIL (score < 70).
+
+          PASS CRITERIA: Score 7+ average (70/100) to proceed to next stage
+        userMessage: ""
+        successCriteria: SEO score of 70+ out of 100
+        completionContract: ""
+  - id: node-1741000000012
+    type: workflow
+    position:
+      x: 336.6219716861074
+      y: 1687.9704403736368
+    data:
+      subtype: condition
+      category: routing
+      label: SEO Score >= 7?
+      config:
+        rules:
+          - field: score
+            operator: greaterThanOrEquals
+            value: "7"
+        combinator: and
+  - id: node-1741000000013
+    type: workflow
+    position:
+      x: 364.9398141242296
+      y: 1908.0908121251778
+    data:
+      subtype: agent
+      category: agent
+      label: Readability Review Agent
+      config:
+        agentId: readability-review-agent
+        agentName: Readability Review Agent
+        beforePrompt: Reader-focused editor
+        additionalPrompt: |
+          Ensure content is scannable, engaging, and easy to read.
+
+          Evaluation:
+          1. Flesch-Kincaid readability score
+          2. Paragraph length distribution
+          3. Use of formatting (bolds, lists, callouts)
+          4. Story opener presence
+          5. Transitional flow between sections
+          6. Sentence length variety
+          7. Use of concrete examples
+          8. Table of contents or TL;DR
+          9. Visual element placement
+          10. Overall engagement factor
+
+          Output: Readability score (1-10) with specific improvements.
+          State clearly: PASS (score >= 7) or FAIL (score < 7).
+
+          PASS CRITERIA: Score 7+ to proceed
+        userMessage: ""
+        successCriteria: Readability score of 7+ out of 10
+        completionContract: ""
+  - id: node-1741000000014
+    type: workflow
+    position:
+      x: 400
+      y: 2050
+    data:
+      subtype: condition
+      category: routing
+      label: Readability Score >= 7?
+      config:
+        rules:
+          - field: score
+            operator: greaterThanOrEquals
+            value: "7"
+        combinator: and
+  - id: node-1741000000015
+    type: workflow
+    position:
+      x: 400
+      y: 2200
+    data:
+      subtype: agent
+      category: agent
+      label: AI Detection Review Agent
+      config:
+        agentId: ai-detection-review-agent
+        agentName: AI Detection Review Agent
+        beforePrompt: Natural language enhancer
+        additionalPrompt: |
+          Remove AI-sounding patterns while preserving content quality.
+
+          Fix these AI indicators:
+          1. Repetitive word choices - add variety
+          2. Overuse of transitions ("Furthermore", "Additionally")
+          3. Artificial confidence - add nuance
+          4. Generic examples - add specific ones
+          5. Robotic sentence starts - vary structure
+          6. Lack of personality - add voice
+          7. Over-explaining obvious points
+          8. Missing contractions
+          9. Absent first/second-person perspective
+          10. Missing emotional triggers
+
+          LIGHT EDITS ONLY - preserve accuracy and structure
+
+          Output: AI humanization score (1-10).
+          State clearly: PASS (score >= 7) or FAIL (score < 7).
+
+          PASS CRITERIA: Score 7+ to proceed
+        userMessage: ""
+        successCriteria: AI humanization score of 7+ out of 10
+        completionContract: ""
+  - id: node-1741000000016
+    type: workflow
+    position:
+      x: 436.4757382908779
+      y: 2344.78918024416
+    data:
+      subtype: condition
+      category: routing
+      label: AI Detection Score >= 7?
+      config:
+        rules:
+          - field: score
+            operator: greaterThanOrEquals
+            value: "7"
+        combinator: and
+  - id: node-1741000000017
+    type: workflow
+    position:
+      x: 400
+      y: 2500
+    data:
+      subtype: agent
+      category: agent
+      label: Plagiarism Checker
+      config:
+        agentId: plagiarism-checker
+        agentName: Plagiarism Checker
+        beforePrompt: Originality advocate
+        additionalPrompt: |
+          Ensure content is original and not duplicative.
+
+          Checks:
+          1. Similarity to existing web content
+          2. Proper attribution for all quoted material
+          3. No content spinning or rephrasing from others
+          4. Unique phrasing and expression
+
+          Output: Originality report (PASS/FAIL with reason)
+        userMessage: ""
+        successCriteria: Originality report with PASS/FAIL determination
+        completionContract: ""
+  - id: node-1741000000018
+    type: workflow
+    position:
+      x: 344.4179226043764
+      y: 2653.473879837227
+    data:
+      subtype: agent
+      category: agent
+      label: Emotional Impact Review
+      config:
+        agentId: emotional-impact-reviewer
+        agentName: Emotional Impact Review
+        beforePrompt: Empathetic content analyst
+        additionalPrompt: |
+          Verify content evokes the desired emotional response.
+
+          Evaluate:
+          1. Does it create curiosity to read more?
+          2. Does it build trust in the author?
+          3. Does it create urgency or desire to act?
+          4. Does it connect emotionally to reader's problem?
+          5. Is the tone appropriate (not too dry/salesy)?
+
+          Target emotions based on article goal:
+          - Educational: Curiosity + Clarity
+          - Product: Urgency + Trust
+          - Personal: Empathy + Inspiration
+
+          Output: Emotional impact score with suggestions
+        userMessage: ""
+        successCriteria: Emotional impact score with actionable suggestions
+        completionContract: ""
+  - id: node-1741000000019
+    type: workflow
+    position:
+      x: 348.0126327635848
+      y: 2777.4980052260294
+    data:
+      subtype: agent
+      category: agent
+      label: WordPress Publisher
+      config:
+        agentId: wordpress-publisher-agent
+        agentName: WordPress Publisher
+        beforePrompt: Professional publisher
+        additionalPrompt: |
+          Use the WordPress MCP to publish the article directly to WordPress.
+
+          1. Use the create_post endpoint to create the post:
+             - title: The article title
+             - content: Full article HTML content
+             - status: publish (make it live immediately)
+             - excerpt: SEO-optimized excerpt
+             - categories: Relevant category IDs
+             - tags: Relevant tag IDs
+             - slug: SEO-optimized URL slug
+
+          2. Configure Yoast SEO using the wpseo meta fields if available, or use the REST API to update Yoast meta:
+             - yoast_title: Custom SEO title
+             - yoast_meta_desc: Meta description
+             - primary_category: Set primary category
+
+          3. Set featured image if provided
+
+          4. Verify the post was published successfully
+
+          Post the user as one of the available users in wordpress. It should not be posted anonymously.
+
+          Output: Published URL, post ID
+        successCriteria: Article published with URL and post ID
+        completionContract: ""
+  - id: node-1741000000020
+    type: workflow
+    position:
+      x: 367.0267714204094
+      y: 2935.1434715867567
+    data:
+      subtype: agent
+      category: agent
+      label: Internal Linking Agent
+      config:
+        agentId: internal-linking-agent
+        agentName: Internal Linking Agent
+        beforePrompt: Site architecture strategist
+        additionalPrompt: |
+          Automatically find relevant existing posts to link to.
+
+          Tasks:
+          1. Scan existing blog posts in the site
+          2. Identify contextually relevant connections
+          3. Find cornerstone articles to link to
+          4. Suggest links with anchor text
+          5. Update article with internal links
+
+          Focus on:
+          - Related articles in same category
+          - Cornerstone/pillar content
+          - Previous posts on similar topics
+
+          Output: List of suggested internal links with reasoning
+        userMessage: ""
+        successCriteria: Internal links added to article
+        completionContract: ""
+  - id: node-1741000000021
+    type: workflow
+    position:
+      x: 372.06648924610516
+      y: 3098.4481382914505
+    data:
+      subtype: agent
+      category: agent
+      label: Schema Markup Generator
+      config:
+        agentId: schema-markup-generator
+        agentName: Schema Markup Generator
+        beforePrompt: Technical SEO specialist
+        additionalPrompt: |
+          Generate and implement JSON-LD schema markup.
+
+          Schema types to generate:
+          1. Article schema (author, datePublished, headline)
+          2. FAQ schema (if article has Q&A section)
+          3. HowTo schema (if how-to format)
+          4. BreadcrumbList (category hierarchy)
+
+          Output: JSON-LD code to add to article head
+        userMessage: ""
+        successCriteria: JSON-LD schema markup generated
+        completionContract: ""
+  - id: node-1741000000023
+    type: workflow
+    position:
+      x: 330.166223115263
+      y: 3441.9002661308423
+    data:
+      subtype: agent
+      category: agent
+      label: Social Snippets Generator
+      config:
+        agentId: social-snippets-generator
+        agentName: Social Snippets Generator
+        beforePrompt: Social media strategist
+        additionalPrompt: |
+          Generate promotional content for multiple platforms.
+
+          Create:
+          1. Twitter/X Thread (3-5 tweets):
+             - Hook tweet with intrigue
+             - Key insight tweets
+             - CTA tweet with article link
+          2. LinkedIn Post (professional angle):
+             - Engaging opener
+             - Key takeaways
+             - Thought-provoking question
+             - Link in comments
+          3. Facebook/Instagram (casual):
+             - Short teaser
+             - Visual suggestion
+             - Link
+
+          Output: Platform-specific copy ready to post
+        userMessage: ""
+        successCriteria: Social media copy for all 3 platforms
+        completionContract: ""
+  - id: node-1741000000026
+    type: workflow
+    position:
+      x: 320.23557034569245
+      y: 3615.334343602887
+    data:
+      subtype: response
+      category: io
+      label: Pipeline Complete
+      config:
+        responseTemplate: ""
+  - id: node-1773648951506
+    type: workflow
+    position:
+      x: 544.2997788875174
+      y: 72.78174597049869
+    data:
+      subtype: sulla-desktop
+      category: trigger
+      label: Desktop Trigger
+      config:
+        triggerType: sulla-desktop
+        triggerDescription: ""
+  - id: node-1773648967742
+    type: workflow
+    position:
+      x: 670.5504929972715
+      y: 102.27474066007238
+    data:
+      subtype: workbench
+      category: trigger
+      label: Workbench Trigger
+      config:
+        triggerType: workbench
+        triggerDescription: ""
+  - id: node-1773648974008
+    type: workflow
+    position:
+      x: 521.015835711538
+      y: -5.348818908898354
+    data:
+      subtype: calendar
+      category: trigger
+      label: Calendar Trigger
+      config:
+        triggerType: calendar
+        triggerDescription: ""
+  - id: node-1774813749871
+    type: workflow
+    position:
+      x: 369.65964326457174
+      y: 3267.450597185952
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: |-
+          Use the wordpress mcp tool to generate the static website for the wordpress blog. 
+
+          Use the generate status tool in this wordpress mcp to wait until the static pages have been generated. 
+
+          Once generated, push the website to the "preview" branch on the cloudflare pages project called merchantprotocol.
+        orchestratorInstructions: ""
+        successCriteria: ""
+        completionContract: ""
+edges:
+  - id: vueflow__edge-node-1741000000001-node-1741000000002
+    source: node-1741000000001
+    target: node-1741000000002
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000002-node-1741000000003
+    source: node-1741000000002
+    target: node-1741000000003
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000003-node-1741000000004
+    source: node-1741000000003
+    target: node-1741000000004
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000004-node-1741000000005
+    source: node-1741000000004
+    target: node-1741000000005
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000005-node-1741000000006
+    source: node-1741000000005
+    target: node-1741000000006
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000006-node-1741000000007
+    source: node-1741000000006
+    target: node-1741000000007
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000007-node-1741000000008
+    source: node-1741000000007
+    target: node-1741000000008
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000008-node-1741000000009
+    source: node-1741000000008
+    target: node-1741000000009
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000009-node-1741000000010
+    source: node-1741000000009
+    target: node-1741000000010
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000010-node-1741000000011
+    source: node-1741000000010
+    target: node-1741000000011
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000011-node-1741000000012
+    source: node-1741000000011
+    target: node-1741000000012
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000012condition-true-node-1741000000013
+    source: node-1741000000012
+    target: node-1741000000013
+    sourceHandle: condition-true
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000012condition-false-node-1741000000006
+    source: node-1741000000012
+    target: node-1741000000006
+    sourceHandle: condition-false
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000013-node-1741000000014
+    source: node-1741000000013
+    target: node-1741000000014
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000014condition-true-node-1741000000015
+    source: node-1741000000014
+    target: node-1741000000015
+    sourceHandle: condition-true
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000014condition-false-node-1741000000006
+    source: node-1741000000014
+    target: node-1741000000006
+    sourceHandle: condition-false
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000015-node-1741000000016
+    source: node-1741000000015
+    target: node-1741000000016
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000016condition-true-node-1741000000017
+    source: node-1741000000016
+    target: node-1741000000017
+    sourceHandle: condition-true
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000016condition-false-node-1741000000006
+    source: node-1741000000016
+    target: node-1741000000006
+    sourceHandle: condition-false
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000017-node-1741000000018
+    source: node-1741000000017
+    target: node-1741000000018
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000020-node-1741000000021
+    source: node-1741000000020
+    target: node-1741000000021
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1773648951506-node-1741000000002
+    source: node-1773648951506
+    target: node-1741000000002
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1773648967742-node-1741000000002
+    source: node-1773648967742
+    target: node-1741000000002
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1773648974008-node-1741000000002
+    source: node-1773648974008
+    target: node-1741000000002
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000018-node-1741000000019
+    source: node-1741000000018
+    target: node-1741000000019
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000019-node-1741000000020
+    source: node-1741000000019
+    target: node-1741000000020
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000021-node-1774813749871
+    source: node-1741000000021
+    target: node-1774813749871
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1774813749871-node-1741000000023
+    source: node-1774813749871
+    target: node-1741000000023
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1741000000023-node-1741000000026
+    source: node-1741000000023
+    target: node-1741000000026
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+viewport:
+  x: 22.477128335451084
+  y: -469.4358322744597
+  zoom: 1.1143583227445997
+_status: production

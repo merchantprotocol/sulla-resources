@@ -1,0 +1,30 @@
+# tiktok.v2-auth.yaml
+# Authentication configuration for TikTok API v2
+# OAuth 2.0
+
+api:
+  name: tiktok-v2
+  version: v2
+  provider: bytedance
+  base_url: https://open.tiktokapis.com/v2
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${TIKTOK_CLIENT_KEY}"
+  client_secret: "${TIKTOK_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://www.tiktok.com/v2/auth/authorize/
+  token_url: https://open.tiktokapis.com/v2/oauth/token/
+
+  scopes:
+    - user.info.basic
+    - video.list
+    - video.publish
+    # - video.upload
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

@@ -1,0 +1,224 @@
+id: workflow-forecaster
+name: World View Forecaster
+description: World view forecasting workflow — receives topic lens from upstream, compresses world inputs, runs forecast-cycle at 2yr/13wk/daily horizons, derives weekly conditions, writes forecasting journal
+version: 1
+createdAt: 2026-03-18T18:00:00.000Z
+updatedAt: 2026-03-18T15:17:10.238Z
+nodes:
+  - id: node-6000000000001
+    type: workflow
+    position:
+      x: 500
+      y: 0
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives topic lens (already extracted upstream), world identity file path, world observation log path, and forecasting journal path from parent daily planning workflow
+  - id: node-6000000000002
+    type: workflow
+    position:
+      x: 500
+      y: 135
+    data:
+      subtype: tool-call
+      category: agent
+      label: Load Forecasting Skill
+      config:
+        toolName: load_skill
+        defaults:
+          skill_name: forecasting-journal
+  - id: node-6000000000020
+    type: workflow
+    position:
+      x: 500
+      y: 420
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Compress Inputs
+      config: {}
+  - id: node-6000000000022
+    type: workflow
+    position:
+      x: 378
+      y: 580
+    data:
+      subtype: agent
+      category: agent
+      label: Extract World Identity
+      config:
+        agentId: forecaster
+        agentName: World Identity Extractor
+        additionalPrompt: ""
+        orchestratorInstructions: "Read the world identity file. Extract: (1) recent changes from the change log, (2) current state snapshot of world conditions as they relate to the topic lens subjects, (3) any existing forecasts or assessments. Produce a compressed snapshot focused on the topic lens subjects, not a general world summary."
+        successCriteria: A compressed world identity snapshot under 600 words focused on topic lens subjects
+        completionContract: Exit when snapshot is complete
+  - id: node-6000000000023
+    type: workflow
+    position:
+      x: 620
+      y: 580
+    data:
+      subtype: agent
+      category: agent
+      label: Extract Journal State
+      config:
+        agentId: forecaster
+        agentName: Journal Extractor
+        additionalPrompt: ""
+        orchestratorInstructions: "Read the current Forecasting Journal file for the world domain. If no journal exists yet, report that. Otherwise extract: (1) current 2-year outlook summary, (2) 13-week forecast status and watch list, (3) current week's conditions, (4) last 3 daily briefings, (5) forecast scorecard highlights. Produce a compressed state report."
+        successCriteria: A compressed journal state under 800 words
+        completionContract: Exit when state report is complete
+  - id: node-6000000000030
+    type: workflow
+    position:
+      x: 500
+      y: 740
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Inputs
+      config:
+        strategy: wait-all
+  - id: node-6000000000040
+    type: workflow
+    position:
+      x: 500
+      y: 880
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Forecast 2-Year Outlook
+      config:
+        workflowId: workflow-forecast-cycle
+        awaitResponse: true
+        agentId: forecaster
+        orchestratorPrompt: "Run the forecast-cycle for the 2-YEAR OUTLOOK time horizon. Pass the topic lens, compressed world identity, and journal state. The question for each perspective lens: 'What are the current conditions and 2-year trajectory for [your domain] as it relates to our topic lens?' No constraints from higher horizons — this IS the highest horizon. Report reality."
+  - id: node-6000000000050
+    type: workflow
+    position:
+      x: 500
+      y: 1040
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Forecast 13-Week
+      config:
+        workflowId: workflow-forecast-cycle
+        awaitResponse: true
+        agentId: forecaster
+        orchestratorPrompt: "Run the forecast-cycle for the 13-WEEK FORECAST time horizon. Pass the topic lens, compressed inputs, AND the refined 2-year outlook from the previous step. The 2-year outlook is context — the 13-week forecast must be consistent with it. The question for each perspective lens: 'Given the 2-year trajectory, what are the near-term conditions and 13-week forecast for [your domain]?'"
+  - id: node-6000000000060
+    type: workflow
+    position:
+      x: 500
+      y: 1200
+    data:
+      subtype: agent
+      category: agent
+      label: Derive Weekly Conditions
+      config:
+        agentId: forecaster
+        agentName: Weekly Conditions
+        additionalPrompt: ""
+        orchestratorInstructions: "Using the refined 13-week forecast and the compressed journal state, derive this week's conditions report. For each topic lens subject, summarize: current condition, any changes from last week, and anything the planner should know. Flag any adjustment signals. Follow the Forecasting Journal format for the Weekly Conditions section. This is observational — just report what's happening."
+        successCriteria: A complete weekly conditions section following the journal format
+        completionContract: Exit when weekly conditions are written
+  - id: node-6000000000070
+    type: workflow
+    position:
+      x: 500
+      y: 1360
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Forecast Daily Briefing
+      config:
+        workflowId: workflow-forecast-cycle
+        awaitResponse: true
+        agentId: forecaster
+        orchestratorPrompt: "Run the forecast-cycle for the DAILY BRIEFING time horizon. Pass the topic lens, compressed inputs, the 2-year outlook, the 13-week forecast, AND the weekly conditions. All higher horizons are context. The question for each perspective lens: 'Given the weekly conditions and 13-week forecast, what does today look like from [your domain]?' The daily briefing is what the planner will use — it must be concise, actionable, and grounded in today's observations."
+  - id: node-6000000000080
+    type: workflow
+    position:
+      x: 500
+      y: 1520
+    data:
+      subtype: agent
+      category: agent
+      label: Write Forecasting Journal
+      config:
+        agentId: forecaster
+        agentName: Journal Writer
+        additionalPrompt: ""
+        orchestratorInstructions: "You have the refined forecasts from all 4 horizons: 2-year outlook, 13-week forecast, weekly conditions, and daily briefing. You also have the topic lens. Compile them into the Forecasting Journal format defined in the forecasting-journal skill. Write to the journal file path provided in the trigger message. If a journal already exists, update it — append the daily briefing, update the weekly section, and only modify higher horizons if they changed. Update the forecast scorecard for any forecasts whose windows have closed. Write the change log documenting what changed and what observation triggered it."
+        successCriteria: Complete Forecasting Journal file written in the correct format
+        completionContract: Exit when journal file is saved
+  - id: node-6000000000099
+    type: workflow
+    position:
+      x: 500
+      y: 1680
+    data:
+      subtype: response
+      category: io
+      label: Done
+      config:
+        responseTemplate: World view forecasting complete. Forecasting journal updated.
+edges:
+  - id: e-trigger-skill
+    source: node-6000000000001
+    target: node-6000000000002
+    animated: true
+  - id: e-skill-compress
+    source: node-6000000000002
+    target: node-6000000000020
+    animated: true
+  - id: e-compress-identity
+    source: node-6000000000020
+    target: node-6000000000022
+    animated: true
+  - id: e-compress-journal
+    source: node-6000000000020
+    target: node-6000000000023
+    animated: true
+  - id: e-identity-merge
+    source: node-6000000000022
+    target: node-6000000000030
+    animated: true
+  - id: e-journal-merge
+    source: node-6000000000023
+    target: node-6000000000030
+    animated: true
+  - id: e-merge-2yr
+    source: node-6000000000030
+    target: node-6000000000040
+    animated: true
+  - id: e-2yr-13wk
+    source: node-6000000000040
+    target: node-6000000000050
+    animated: true
+  - id: e-13wk-weekly
+    source: node-6000000000050
+    target: node-6000000000060
+    animated: true
+  - id: e-weekly-daily
+    source: node-6000000000060
+    target: node-6000000000070
+    animated: true
+  - id: e-daily-journal
+    source: node-6000000000070
+    target: node-6000000000080
+    animated: true
+  - id: e-journal-done
+    source: node-6000000000080
+    target: node-6000000000099
+    animated: true
+_status: production
+viewport:
+  x: -324.45426755752436
+  y: -751.5124339840702
+  zoom: 1.0763936240992988

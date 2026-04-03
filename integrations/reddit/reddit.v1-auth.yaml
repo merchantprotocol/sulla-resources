@@ -1,0 +1,34 @@
+# reddit.v1-auth.yaml
+# Authentication configuration for Reddit API
+# OAuth 2.0
+
+api:
+  name: reddit-v1
+  version: v1
+  provider: reddit
+  base_url: https://oauth.reddit.com
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${REDDIT_CLIENT_ID}"
+  client_secret: "${REDDIT_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://www.reddit.com/api/v1/authorize
+  token_url: https://www.reddit.com/api/v1/access_token
+
+  scopes:
+    - identity
+    - read
+    - submit
+    - edit
+    - history
+
+  headers:
+    User-Agent: "sulla:v1.0.0 (by /u/sulla_app)"
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

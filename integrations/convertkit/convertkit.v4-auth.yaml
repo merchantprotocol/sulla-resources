@@ -1,0 +1,17 @@
+# convertkit.v4-auth.yaml
+# Authentication for ConvertKit API v4
+# Uses Bearer token (API key)
+
+api:
+  name: convertkit-v4
+  version: v4
+  provider: convertkit
+  base_url: https://api.convertkit.com/v4
+
+auth:
+  type: bearer
+  client_secret: "${CONVERTKIT_API_KEY}"
+  # Get from: ConvertKit -> Settings -> Advanced -> API
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,206 @@
+id: example-parallel-workflow
+name: Example - Parallel Processing
+description: Demonstrates running multiple tasks simultaneously and combining results
+version: 1
+createdAt: 2026-03-14T00:00:00.000Z
+updatedAt: 2026-03-14T00:00:00.000Z
+tags:
+  - example
+  - parallel
+  - flow-control
+pattern: parallel
+nodes:
+  # Trigger: User requests multi-faceted analysis
+  - id: node-4001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "User requests comprehensive analysis"
+  
+  # Parallel: Split into concurrent tasks
+  - id: node-4002
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Parallel Analysis
+      config:
+        branchConfigs:
+          - label: "Market Research"
+            description: "Analyze market trends and competitors"
+          - label: "Technical Analysis"
+            description: "Evaluate technical feasibility"
+          - label: "Financial Analysis"
+            description: "Assess costs and ROI"
+  
+  # Market Research Agent
+  - id: node-4003
+    type: workflow
+    position:
+      x: 200
+      y: 400
+    data:
+      subtype: agent
+      category: agent
+      label: Market Research Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Analyze market trends, competitors, and opportunities for the user's request."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Market analysis complete"
+        completionContract: ""
+  
+  # Technical Analysis Agent
+  - id: node-4004
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: agent
+      category: agent
+      label: Technical Analysis Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Evaluate technical feasibility, requirements, and implementation approach."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Technical analysis complete"
+        completionContract: ""
+  
+  # Financial Analysis Agent
+  - id: node-4005
+    type: workflow
+    position:
+      x: 600
+      y: 400
+    data:
+      subtype: agent
+      category: agent
+      label: Financial Analysis Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Assess costs, budget requirements, and ROI projections."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Financial analysis complete"
+        completionContract: ""
+  
+  # Merge: Combine all analyses
+  - id: node-4006
+    type: workflow
+    position:
+      x: 400
+      y: 550
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Analyses
+      config:
+        mergeStrategy: "combine"
+  
+  # Synthesis Agent: Create unified recommendation
+  - id: node-4007
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Synthesis Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Combine all three analyses into a comprehensive recommendation. Consider market, technical, and financial perspectives together."
+        userMessage: "Market: {{branch-0.result}}\nTechnical: {{branch-1.result}}\nFinancial: {{branch-2.result}}"
+        beforePrompt: ""
+        successCriteria: "Unified recommendation created"
+        completionContract: ""
+  
+  # Response: Send comprehensive report
+  - id: node-4008
+    type: workflow
+    position:
+      x: 400
+      y: 850
+    data:
+      subtype: response
+      category: io
+      label: Send Report
+      config:
+        responseTemplate: "{{synthesis.recommendation}}"
+        includeContext: true
+edges:
+  # Trigger → Parallel
+  - id: edge-4001
+    source: node-4001
+    target: node-4002
+    sourceHandle: null
+    targetHandle: null
+  # Parallel → Market (branch-0)
+  - id: edge-4002
+    source: node-4002
+    target: node-4003
+    sourceHandle: branch-0
+    targetHandle: null
+  # Parallel → Technical (branch-1)
+  - id: edge-4003
+    source: node-4002
+    target: node-4004
+    sourceHandle: branch-1
+    targetHandle: null
+  # Parallel → Financial (branch-2)
+  - id: edge-4004
+    source: node-4002
+    target: node-4005
+    sourceHandle: branch-2
+    targetHandle: null
+  # Market → Merge
+  - id: edge-4005
+    source: node-4003
+    target: node-4006
+    sourceHandle: null
+    targetHandle: null
+  # Technical → Merge
+  - id: edge-4006
+    source: node-4004
+    target: node-4006
+    sourceHandle: null
+    targetHandle: null
+  # Financial → Merge
+  - id: edge-4007
+    source: node-4005
+    target: node-4006
+    sourceHandle: null
+    targetHandle: null
+  # Merge → Synthesis
+  - id: edge-4008
+    source: node-4006
+    target: node-4007
+    sourceHandle: null
+    targetHandle: null
+  # Synthesis → Response
+  - id: edge-4009
+    source: node-4007
+    target: node-4008
+    sourceHandle: null
+    targetHandle: null
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

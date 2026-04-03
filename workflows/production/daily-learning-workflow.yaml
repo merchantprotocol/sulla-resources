@@ -1,0 +1,404 @@
+id: workflow-1741000000001
+name: Daily Learning Workflow
+description: Nightly workflow that reviews conversation history, extracts learnings, identifies improvements, IMPLEMENTS fixes, and updates the learning repository
+version: 1
+enabled: true
+createdAt: 2026-03-16T01:00:00.000Z
+updatedAt: 2026-03-27T18:01:52.181Z
+nodes:
+  - id: node-1741000000001
+    type: workflow
+    position:
+      x: 364.56009086485517
+      y: 102.85805718831813
+    data:
+      subtype: schedule
+      category: trigger
+      label: Nightly Schedule Trigger
+      config:
+        triggerType: schedule
+        triggerDescription: Nightly learning extraction at 4am PT
+        frequency: daily
+        hour: 4
+        minute: 0
+        timezone: America/Los_Angeles
+  - id: node-1741000000002
+    type: workflow
+    position:
+      x: 437.7263548857993
+      y: 239.71099412205473
+    data:
+      subtype: agent
+      category: agent
+      label: Daily Project Creator
+      config:
+        agentId: null
+        agentName: Daily Project Creator
+        additionalPrompt: |
+          Create a new project for today's daily learning review.
+
+          Project name format: daily-learning-YYYY-MM-DD
+
+          Location: /Users/jonathonbyrdziak/sulla/projects/
+
+          Inside the project, create these files:
+          1. PROJECT.md - with frontmatter showing date, purpose (daily learning capture), and status (in-progress)
+          2. daily-learnings.md - empty file with header "## Daily Learnings" and today's date
+          3. prioritized-improvements.md - empty file with header "## Prioritized Improvements"
+          4. implementation-suggestions.md - empty file with header "## Implementation Suggestions"
+          5. implemented-changes.md - empty file with header "## Implemented Changes" and table format
+
+          Return the absolute path to the created project folder.
+        orchestratorInstructions: Create daily learning project structure with template files
+        successCriteria: Daily project folder created with all template files
+        completionContract: ""
+  - id: node-1741000000003
+    type: workflow
+    position:
+      x: 366.84653661550965
+      y: 396.5703313740182
+    data:
+      subtype: agent
+      category: agent
+      label: Conversation File Loader
+      config:
+        agentId: null
+        agentName: Conversation File Loader
+        additionalPrompt: |
+          Find ACTUAL human conversation files in /Users/jonathonbyrdziak/sulla/conversations/ modified in the last 24 hours.
+
+          CRITICAL - USE THE CORRECT FILE PATTERN:
+          Human conversation files follow the pattern: thread_*.jsonl
+
+          EXCLUDE these system-generated file patterns:
+          - Files starting with "heartbeat_wf_" (workflow heartbeat logs)
+          - Files starting with "workflow-playbook-" (workflow playbook nodes)
+          - Files starting with "workflow-subwf-" (workflow sub-workflow nodes)
+          - Files starting with "obs-curator-" (observer curator logs)
+          - Files starting with "spawn-agent-" (spawned agent logs)
+          - Files containing "-prompt-" in the name (workflow prompt nodes)
+
+          The ONLY file pattern to include: thread_*.jsonl
+
+          These thread_* files contain actual human conversations with Sulla.
+
+
+          ALSO RUN THIS EXPLICIT SHELL COMMAND to ensure you find the files:
+          ```bash
+          ls -lt /Users/jonathonbyrdziak/sulla/conversations/thread_*.jsonl 2>/dev/null | head -20 | awk '{print $NF}'
+          ```
+
+          This command will list the 20 most recent thread_*.jsonl files. Use its output to build your JSON array.
+          Return a JSON array of file paths for human conversations only.
+          If zero human conversations found, return empty array [].
+
+          Prioritize the most recent 10-15 conversation threads.
+        orchestratorInstructions: Find recent conversation files for analysis
+        successCriteria: JSON array of recent conversation file paths returned
+        completionContract: ""
+  - id: node-1741000000004
+    type: workflow
+    position:
+      x: 476.2609539233041
+      y: 388.4904763778568
+    data:
+      subtype: router
+      category: routing
+      label: Conversation Distributor
+      config:
+        classificationPrompt: Determine if there are more than 10 conversation files to process. If zero, route to no-conversations. If more than 10, route to chunking. If 10 or fewer, route to direct extraction.
+        routes:
+          - id: route-chunk
+            label: Chunk Conversations
+            description: More than 10 conversation files - split into chunks
+          - id: route-direct
+            label: Direct Extraction
+            description: 10 or fewer conversation files - process directly
+          - id: route-none
+            label: No Conversations
+            description: Zero conversation files - skip to completion
+  - id: node-1741000000005
+    type: workflow
+    position:
+      x: 200
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Conversation Chunker
+      config:
+        agentId: null
+        agentName: Conversation Chunker
+        additionalPrompt: |
+          You have a list of conversation files from the previous step.
+
+          Divide these into 3-4 roughly equal chunks (by file count, not size).
+
+          For each chunk, create a simple text list of file paths.
+
+          Return a JSON object with keys: chunk_1, chunk_2, chunk_3, chunk_4 (each containing array of file paths).
+        orchestratorInstructions: Partition conversation files into manageable chunks
+        successCriteria: JSON object with chunk arrays returned
+        completionContract: ""
+  - id: node-1741000000006
+    type: workflow
+    position:
+      x: 568.1418593580843
+      y: 770.4098231247589
+    data:
+      subtype: agent
+      category: agent
+      label: No Conversations Handler
+      config:
+        agentId: null
+        agentName: No Conversations Handler
+        additionalPrompt: |
+          No human conversations were found in the last 24 hours. This is fine - the human may be offline or away.
+
+          Create a simple completion summary:
+          1. Note the date/time of the check
+          2. Record "No human conversations found" status
+          3. Verify the daily project structure exists at ~/sulla/projects/daily-learning-YYYY-MM-DD/
+
+          Return a confirmation that the no-conversation state was handled gracefully.
+        orchestratorInstructions: Handle case where no human conversations exist
+        successCriteria: Completion message returned
+        completionContract: ""
+  - id: node-1741000000007
+    type: workflow
+    position:
+      x: 400
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Direct Extraction Agent
+      config:
+        agentId: null
+        agentName: Direct Extraction Agent
+        additionalPrompt: |
+          You have a list of conversation file paths to analyze.
+
+          For each conversation file:
+          1. Read the JSONL file (each line is a JSON message)
+          2. Extract: user requests, assistant responses, tool calls, errors, decisions
+          3. Identify patterns: what does the human want? What works? What fails?
+
+          Create a learnings document with:
+          - User goals and requests
+          - What worked well
+          - What failed or caused friction
+          - Suggested improvements
+
+          Save to ~/sulla/projects/daily-learning-YYYY-MM-DD/learnings.md
+
+          Return a summary of extracted learnings.
+        orchestratorInstructions: Extract learnings from conversation files
+        successCriteria: Learnings document created with insights
+        completionContract: ""
+  - id: node-1741000000008
+    type: workflow
+    position:
+      x: 236.16931992710187
+      y: 870.006400318227
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Chunk Processing
+      config: {}
+  - id: node-1741000000009
+    type: workflow
+    position:
+      x: 352.556250673919
+      y: 993.7122741857002
+    data:
+      subtype: agent
+      category: agent
+      label: Learnings Aggregator
+      config:
+        agentId: null
+        agentName: Learnings Aggregator
+        additionalPrompt: |
+          Aggregate learnings from all extraction agents.
+
+          Merge into a single document at ~/sulla/projects/daily-learning-YYYY-MM-DD/daily-learnings.md
+
+          Include:
+          - Consolidated insights
+          - Common patterns
+          - Priority improvements (ranked by impact)
+
+          Return confirmation of aggregation.
+        orchestratorInstructions: Merge learnings from all sources
+        successCriteria: Unified learnings document created
+        completionContract: ""
+  - id: node-1741000000010
+    type: workflow
+    position:
+      x: 274.81709515166585
+      y: 1158.5741715649544
+    data:
+      subtype: agent
+      category: agent
+      label: Improvement Prioritizer
+      config:
+        agentId: null
+        agentName: Improvement Prioritizer
+        additionalPrompt: |
+          Review the learnings and identify the most valuable improvements.
+
+          Prioritize by:
+          - Frequency of issue/pattern
+          - Impact on user experience
+          - Ease of implementation
+
+          Create prioritized list in ~/sulla/projects/daily-learning-YYYY-MM-DD/prioritized-improvements.md
+
+          Return top 3-5 priorities.
+        orchestratorInstructions: Rank improvements by value
+        successCriteria: Prioritized improvements list created
+        completionContract: ""
+  - id: node-1741000000011
+    type: workflow
+    position:
+      x: 400
+      y: 1300
+    data:
+      subtype: agent
+      category: agent
+      label: Implementation Planner
+      config:
+        agentId: null
+        agentName: Implementation Planner
+        additionalPrompt: |
+          For the top 2-3 prioritized improvements, create implementation suggestions.
+
+          For each:
+          - Specific change to make
+          - Where to make it (file, workflow, skill)
+          - Expected outcome
+
+          Save to ~/sulla/projects/daily-learning-YYYY-MM-DD/implementation-suggestions.md
+
+          Return the implementation plan.
+        orchestratorInstructions: Create actionable implementation steps
+        successCriteria: Implementation suggestions document created
+        completionContract: ""
+  - id: node-1741000000012
+    type: workflow
+    position:
+      x: 400
+      y: 1450
+    data:
+      subtype: agent
+      category: agent
+      label: Auto-Implementer
+      config:
+        agentId: null
+        agentName: Auto-Implementer
+        additionalPrompt: |
+          Execute the highest-priority improvement if it's safe to automate.
+
+          Safe to automate:
+          - Prompt tweaks
+          - File organization
+          - Documentation updates
+
+          NOT safe to automate (mark for human review):
+          - Core identity changes
+          - Workflow structural changes
+          - Anything requiring credentials
+
+          Log implemented changes to ~/sulla/projects/daily-learning-YYYY-MM-DD/implemented-changes.md
+
+          Return list of what was implemented vs what needs human review.
+        orchestratorInstructions: Execute safe improvements automatically
+        successCriteria: Changes implemented and logged
+        completionContract: ""
+  - id: node-1741000000013
+    type: workflow
+    position:
+      x: 400
+      y: 1600
+    data:
+      subtype: response
+      category: io
+      label: Daily Learning Complete
+      config:
+        responseTemplate: Daily learning run complete. Check ~/sulla/projects/daily-learning-YYYY-MM-DD/ for results.
+edges:
+  - id: edge-1
+    source: node-1741000000001
+    target: node-1741000000002
+    label: trigger
+    animated: true
+  - id: edge-2
+    source: node-1741000000002
+    target: node-1741000000003
+    label: create-project
+    animated: true
+  - id: edge-3
+    source: node-1741000000003
+    target: node-1741000000004
+    label: conversations-found
+    animated: true
+  - id: edge-4
+    source: node-1741000000004
+    target: node-1741000000005
+    label: route-chunk
+    animated: true
+  - id: edge-5
+    source: node-1741000000004
+    target: node-1741000000007
+    label: route-direct
+    animated: true
+  - id: edge-6
+    source: node-1741000000004
+    target: node-1741000000006
+    label: route-none
+    animated: true
+  - id: edge-7
+    source: node-1741000000005
+    target: node-1741000000008
+    label: chunk-created
+    animated: true
+  - id: edge-8
+    source: node-1741000000006
+    target: node-1741000000013
+    label: no-conversations
+    animated: true
+  - id: edge-9
+    source: node-1741000000007
+    target: node-1741000000009
+    label: direct-done
+    animated: true
+  - id: edge-10
+    source: node-1741000000008
+    target: node-1741000000009
+    label: chunks-done
+    animated: true
+  - id: edge-11
+    source: node-1741000000009
+    target: node-1741000000010
+    label: aggregated
+    animated: true
+  - id: edge-12
+    source: node-1741000000010
+    target: node-1741000000011
+    label: prioritized
+    animated: true
+  - id: edge-13
+    source: node-1741000000011
+    target: node-1741000000012
+    label: planned
+    animated: true
+  - id: edge-14
+    source: node-1741000000012
+    target: node-1741000000013
+    label: implemented
+    animated: true
+_status: production
+viewport:
+  x: -171.50236842596246
+  y: -1528.4014604510514
+  zoom: 1.4408404692184689

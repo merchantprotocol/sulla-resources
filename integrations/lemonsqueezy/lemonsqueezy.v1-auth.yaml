@@ -1,0 +1,22 @@
+# lemonsqueezy.v1-auth.yaml
+# Authentication configuration for Lemon Squeezy API v1
+# Uses Bearer token
+
+api:
+  name: lemonsqueezy
+  version: "1"
+  provider: lemonsqueezy
+  base_url: https://api.lemonsqueezy.com/v1
+
+auth:
+  type: bearer
+  token: "${LEMONSQUEEZY_API_KEY}"
+
+  # No OAuth flow - uses static API keys generated in dashboard
+  # https://app.lemonsqueezy.com/settings/api
+
+  scopes: []
+  # Lemon Squeezy API keys have full access to the store
+
+  token_storage: local
+  refresh_automatically: false

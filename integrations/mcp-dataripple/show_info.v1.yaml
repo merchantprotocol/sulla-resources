@@ -1,0 +1,28 @@
+endpoint:
+  name: show_info
+  description: Inject an informational card into a live call transcript. Renders
+    markdown content with a header, displayed with a blue accent. Use this to
+    surface contextual information at a specific point in the conversation
+    timeline.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  call_id:
+    type: integer
+    required: true
+    description: The ID of the active call.
+  header:
+    type: string
+    required: true
+    description: Short title displayed at the top of the info card.
+  markdown:
+    type: string
+    required: true
+    description: Markdown-formatted content to render inside the card.
+  spoken_at:
+    type: string
+    required: true
+    description: ISO 8601 timestamp indicating where in the transcript timeline this
+      card should appear.

@@ -1,0 +1,18 @@
+# close.v1-auth.yaml
+# Authentication for Close CRM API v1
+# Uses Basic auth (API key as username, empty password)
+
+api:
+  name: close-v1
+  version: v1
+  provider: close
+  base_url: https://api.close.com/api/v1
+
+auth:
+  type: basic
+  username: "${CLOSE_API_KEY}"
+  password: ""
+  # Get from: Close → Settings → API Keys → Generate API Key
+
+  token_storage: local
+  refresh_automatically: false

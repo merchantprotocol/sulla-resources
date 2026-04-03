@@ -1,0 +1,40 @@
+endpoint:
+  name: list_posts
+  description: List or search WordPress posts. Returns an array of post summaries.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  search:
+    type: string
+    required: false
+    description: Search keyword to filter posts.
+  status:
+    type: string
+    required: false
+    description: "Post status: publish, draft, pending, private. Default: publish."
+  per_page:
+    type: integer
+    required: false
+    description: "Number of posts per page (max 100). Default: 10."
+  page:
+    type: integer
+    required: false
+    description: "Page number. Default: 1."
+  category:
+    type: string
+    required: false
+    description: Category slug to filter by.
+  tag:
+    type: string
+    required: false
+    description: Tag slug to filter by.
+  orderby:
+    type: string
+    required: false
+    description: "Order by: date, title, modified, ID. Default: date."
+  order:
+    type: string
+    required: false
+    description: "Sort order: ASC or DESC. Default: DESC."

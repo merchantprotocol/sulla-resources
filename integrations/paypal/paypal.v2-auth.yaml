@@ -1,0 +1,24 @@
+# paypal.v2-auth.yaml
+# Authentication for PayPal REST API v2
+# Uses OAuth 2.0 client credentials flow
+
+api:
+  name: paypal-v2
+  version: v2
+  provider: paypal
+  base_url: https://api-m.paypal.com
+
+auth:
+  type: oauth2
+  flow: client_credentials
+  client_id: "${PAYPAL_CLIENT_ID}"
+  client_secret: "${PAYPAL_CLIENT_SECRET}"
+
+  # For sandbox use: https://api-m.sandbox.paypal.com
+  token_url: https://api-m.paypal.com/v1/oauth2/token
+
+  scopes: []  # PayPal uses permission-based client IDs, not scopes
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

@@ -1,0 +1,22 @@
+# plaid.v1-auth.yaml
+# Authentication for Plaid API
+# Uses client_id + secret in request body (not headers)
+
+api:
+  name: plaid-v1
+  version: v1
+  provider: plaid
+  base_url: https://production.plaid.com
+
+auth:
+  type: bearer
+  client_secret: "${PLAID_SECRET}"
+  # Plaid uses client_id + secret in POST body, not Authorization header
+  # Each request body must include:
+  #   client_id: "${PLAID_CLIENT_ID}"
+  #   secret: "${PLAID_SECRET}"
+  #   access_token: "${PLAID_ACCESS_TOKEN}" (per-item token from Link)
+  # Environments: sandbox=sandbox.plaid.com, development=development.plaid.com, production=production.plaid.com
+
+  token_storage: local
+  refresh_automatically: false

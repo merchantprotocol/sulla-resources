@@ -1,0 +1,17 @@
+# deepgram.v1-auth.yaml
+# Authentication for Deepgram API v1
+# Uses Bearer token (API key)
+
+api:
+  name: deepgram-v1
+  version: v1
+  provider: deepgram
+  base_url: https://api.deepgram.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${DEEPGRAM_API_KEY}"
+  # Get from: https://console.deepgram.com/
+
+  token_storage: local
+  refresh_automatically: false

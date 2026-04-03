@@ -1,0 +1,492 @@
+id: workflow-goal-cycle
+name: Goal Cycle
+description: Reusable goal-setting sub-workflow — runs 7 perspective lenses in parallel, synthesizes a harmonic goal, writes to goals file, then validates through timeline & relevance audit and financial reality audit
+version: 2
+createdAt: 2026-03-18T06:00:00.000Z
+updatedAt: 2026-03-19T23:40:00.000Z
+nodes:
+  - id: node-3000000000001
+    type: workflow
+    position:
+      x: 500
+      y: 0
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives time horizon, domain, compressed inputs, and constraints from parent planner workflow
+
+  - id: node-3000000000002
+    type: workflow
+    position:
+      x: 500
+      y: 120
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Load Skill
+      config:
+        prompt: |-
+          The trigger message tells you the time horizon and domain context.
+          Determine the domain (human, business, world, or agent) from the trigger.
+
+          Step 1: Call your file_search tool with query "goals-perspectives" to find the goals-perspectives skill file.
+          Step 2: Use exec to read the full contents of the SKILL.md file found in step 1.
+          Step 3: Return the complete skill content as your output. Do NOT summarize — return the full text.
+
+  - id: node-3000000000003
+    type: workflow
+    position:
+      x: 500
+      y: 250
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Perspectives
+      config: {}
+
+  # 7 Perspective Lens Agents
+  - id: node-3000000000010
+    type: workflow
+    position:
+      x: 100
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Financial Lens
+      config:
+        agentId: goal-setter
+        agentName: Financial Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Financial perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were financial security and growth, what would the plan look like for the requested time horizon? Follow Lens 1 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the financial angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000011
+    type: workflow
+    position:
+      x: 250
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Health Lens
+      config:
+        agentId: goal-setter
+        agentName: Health Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Health perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were physical and mental health, what would the plan look like for the requested time horizon? Follow Lens 2 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the health angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000012
+    type: workflow
+    position:
+      x: 400
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Family Lens
+      config:
+        agentId: goal-setter
+        agentName: Family Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Family perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were family relationships and household stability, what would the plan look like for the requested time horizon? Follow Lens 3 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the family angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000013
+    type: workflow
+    position:
+      x: 550
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Relationships Lens
+      config:
+        agentId: goal-setter
+        agentName: Relationships Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Relationships perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were broader social connections and community, what would the plan look like for the requested time horizon? Follow Lens 4 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the relationships angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000014
+    type: workflow
+    position:
+      x: 700
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Business Lens
+      config:
+        agentId: goal-setter
+        agentName: Business Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Business perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were business growth and professional advancement, what would the plan look like for the requested time horizon? Follow Lens 5 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the business angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000015
+    type: workflow
+    position:
+      x: 850
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Purpose Lens
+      config:
+        agentId: goal-setter
+        agentName: Purpose Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Purpose perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were meaning, legacy, and fulfillment, what would the plan look like for the requested time horizon? Follow Lens 6 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the purpose angle
+        completionContract: Exit when the perspective plan is written
+
+  - id: node-3000000000016
+    type: workflow
+    position:
+      x: 1000
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Growth Lens
+      config:
+        agentId: goal-setter
+        agentName: Growth Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Growth perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were personal development and capability building, what would the plan look like for the requested time horizon? Follow Lens 7 from the goals-perspectives skill. Produce a single-perspective plan."
+        successCriteria: A complete single-perspective plan from the growth angle
+        completionContract: Exit when the perspective plan is written
+
+  # Merge all perspectives
+  - id: node-3000000000020
+    type: workflow
+    position:
+      x: 500
+      y: 600
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Perspectives
+      config:
+        strategy: wait-all
+
+  # Synthesis agent
+  - id: node-3000000000021
+    type: workflow
+    position:
+      x: 500
+      y: 740
+    data:
+      subtype: agent
+      category: agent
+      label: Harmonic Synthesis
+      config:
+        agentId: goal-setter
+        agentName: Harmonic Synthesizer
+        additionalPrompt: ""
+        orchestratorInstructions: "You have received 7 perspective plans from the merge. Follow all three Synthesis prompts from the goals-perspectives skill in order: (1) Find Alignment, (2) Find Conflicts, (3) The Cohesive Goal. Produce a single unified plan for this time horizon built around the cohesive goal that serves the maximum number of perspectives."
+        successCriteria: A unified plan with cohesive goal, alignment map, and resolved conflicts
+        completionContract: Exit when the synthesized plan is complete
+
+  # Write goals to file BEFORE critic rounds
+  - id: node-3000000000025
+    type: workflow
+    position:
+      x: 500
+      y: 880
+    data:
+      subtype: agent
+      category: agent
+      label: Write Goals to File
+      config:
+        agentId: goal-setter
+        agentName: Goals Writer
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          You must write the synthesized plan to the goals file. Follow these steps exactly:
+
+          1. Determine the domain (human, business, world, or agent) from the conversation context.
+          2. The goals file path is: ~/sulla/identity/{domain}/goals.md
+          3. Read the current goals file using exec (it may be empty or have content from a previous horizon).
+          4. Take the synthesized plan from the Harmonic Synthesis output above and format it according to the Goals Journal format for the relevant time horizon section.
+          5. If the file already has content from a previous time horizon, APPEND this horizon's section — do NOT overwrite previous horizons.
+          6. Write the complete file using exec.
+          7. Confirm what you wrote and to which file path.
+        successCriteria: Goals file written with the synthesized plan for this time horizon
+        completionContract: Exit when the file is saved and confirmed
+
+  # Single critic — Timeline & Relevance Audit
+  - id: node-3000000000032
+    type: workflow
+    position:
+      x: 500
+      y: 1020
+    data:
+      subtype: agent
+      category: agent
+      label: Timeline & Relevance Critic
+      config:
+        agentId: goal-setter
+        agentName: Timeline Critic
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          You are the Timeline & Relevance critic. Your job is to make sure this plan is grounded in CURRENT reality and that every goal has a realistic, defensible timeline.
+
+          Determine the domain (human, business, world, or agent) from the conversation context.
+          The goals file is at: ~/sulla/identity/{domain}/goals.md
+
+          Use exec to read the goals file, then apply ALL of these checks:
+
+          1. INFORMATION FRESHNESS — Read the identity file for this domain. Check every fact, reference, and assumption in the goals file against the identity file. The identity file is the source of truth for what is CURRENT. Flag anything that references outdated information — past events treated as recent, circumstances that have changed, situations that no longer apply. Strip out or correct anything stale.
+
+          2. TIMELINE REALISM — For every milestone and target in the plan, ask: is this achievable in the stated timeframe given the CURRENT state documented in the identity file? Show the math. What needs to happen step by step to get there? Is the ramp realistic given current resources, capacity, and momentum? Are there dependencies that could delay it? Every target must have a defensible path from where things are NOW to where the goal says they will be.
+
+          3. SOURCE VETTING — Where did each goal come from? Is it derived from observed patterns and real data in the identity file, or is it aspirational without grounding? Every goal must trace back to something concrete — a current strength, a real opportunity, existing momentum. Goals without real grounding get cut or rewritten.
+
+          4. TIMELINE SEQUENCING — Are the goals ordered correctly? Do dependencies flow right? Check that later milestones don't depend on outcomes that haven't been achieved yet. Verify that the 13-week arc connects to the 2-year vision with a credible path, and that daily/weekly goals actually move the needle on the 13-week targets.
+
+          After applying all checks, rewrite the ENTIRE goals file with your corrections. Be brutal — cut anything that fails these tests. Every goal that survives must have a realistic timeline, current data backing it, and a clear source.
+
+          Use exec to save the updated file. Confirm what you changed and why.
+        successCriteria: Goals file rewritten with timeline-validated, source-vetted goals only
+        completionContract: Exit when the updated file is saved
+
+  # Second critic — Financial Reality Audit
+  - id: node-3000000000035
+    type: workflow
+    position:
+      x: 500
+      y: 1160
+    data:
+      subtype: agent
+      category: agent
+      label: Financial Reality Critic
+      config:
+        agentId: goal-setter
+        agentName: Financial Reality Critic
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          You are the Financial Reality critic. Your job is to ensure every financial goal and lifestyle aspiration in this plan is grounded in REAL COSTS — not vague ambition.
+
+          Determine the domain (human, business, world, or agent) from the conversation context.
+          The goals file is at: ~/sulla/identity/{domain}/goals.md
+          The identity file is at: ~/sulla/identity/{domain}/identity.md
+          The world identity file is at: ~/sulla/identity/world/identity.md
+
+          ## STEP 1: EXTRACT FINANCIAL PICTURE
+
+          Use exec to read the goals file AND the identity file for this domain. Extract:
+
+          A. STATED INCOME GOALS — What revenue/income targets does the plan declare? At what timeline?
+          B. LIFESTYLE SIGNALS — Scan both files for anything that implies spending: housing (own/rent, desired area), vehicles, children (number, schooling type), travel desires, retirement age targets, insurance needs, debt obligations, savings targets, family size, location preferences, entertainment, subscriptions, food preferences.
+          C. LOCATION — Extract the user's city/metro area from the identity file. This determines all cost lookups.
+          D. CURRENT FINANCIAL STATE — Current income, savings, debts, burn rate, funding source.
+
+          If the domain is "business" or "world" or "agent", and there are no personal lifestyle signals, skip to Step 5 and validate only the business financial projections against market data. The full lifestyle model applies only when lifestyle signals are present (typically the "human" domain).
+
+          ## STEP 2: RESEARCH REAL COSTS
+
+          For every lifestyle signal found in Step 1, research the ACTUAL cost in the user's metro area. Use exec to run web searches for current data. Search for:
+
+          - Median home price OR median rent in the user's city/metro (match to what the identity signals — buying vs renting)
+          - Property tax rate for their county/state
+          - State + local income tax rates for their state
+          - Average monthly utilities in their city
+          - Average car payment + insurance + fuel per vehicle the household needs
+          - Childcare or school tuition costs if children are mentioned
+          - Health insurance costs (individual/family plan in their state)
+          - Grocery costs for their household size
+          - Any other specific lifestyle items mentioned (travel budget, gym, hobbies)
+
+          If a web search fails or returns no data for a specific item, use these conservative benchmarks and FLAG that you used a default:
+          - Housing: 28% of gross monthly income (or $2,500/mo baseline for HCOL areas, $1,500 for MCOL, $1,000 for LCOL)
+          - Transportation: $800/mo per vehicle
+          - Food: $400/mo per adult, $250/mo per child
+          - Health insurance: $500/mo individual, $1,200/mo family
+          - Utilities: $300/mo
+          - Childcare: $1,500/mo per child (HCOL), $800/mo (LCOL)
+
+          ## STEP 3: BUILD THE FINANCIAL MODEL
+
+          Construct a monthly budget breakdown:
+
+          | Category | Monthly Cost | Annual Cost | Source |
+          |----------|-------------|-------------|--------|
+          | Housing (mortgage/rent + tax + insurance) | $X | $X | [source] |
+          | Transportation | $X | $X | [source] |
+          | Food & Groceries | $X | $X | [source] |
+          | Childcare / Education | $X | $X | [source] |
+          | Health Insurance | $X | $X | [source] |
+          | Utilities | $X | $X | [source] |
+          | Savings / Emergency Fund (min 10%) | $X | $X | calculated |
+          | Taxes (federal + state + local + self-employment) | $X | $X | [rate source] |
+          | Discretionary / Lifestyle | $X | $X | estimated |
+          | **TOTAL REQUIRED** | **$X** | **$X** | |
+
+          Then calculate:
+          - REQUIRED GROSS MONTHLY INCOME = Total monthly cost (pre-tax, accounting for tax burden)
+          - STATED INCOME TARGET from the goals file
+          - GAP = Required - Stated (positive means lifestyle exceeds income target)
+
+          ## STEP 4: GAP ANALYSIS AND RECONCILIATION
+
+          Compare the required income to the stated income goals AND to the revenue trajectory timeline in the plan.
+
+          A. If GAP <= 0 (income target covers lifestyle): Validate that the revenue RAMP can reach the target in the stated timeline. If the ramp is too slow, the person hits the income target eventually but lives beyond means during the ramp-up. Calculate the deficit during ramp-up months and flag it.
+
+          B. If GAP is 1-20% of stated target: Adjust the income target upward in the goals. Note what drove the increase.
+
+          C. If GAP is 20-50%: This is a serious mismatch. Present the conflict with full math. Show which lifestyle items are the biggest cost drivers. Offer two paths:
+             - PATH A: Scale income target to match lifestyle (show what revenue/client load that requires)
+             - PATH B: Scale lifestyle to match income (show which items to cut or defer and by how much)
+             Choose the path that better matches identity file signals (risk tolerance, priorities, life stage). Rewrite goals accordingly.
+
+          D. If GAP > 50%: The lifestyle and income target are fundamentally incompatible at the stated timeline. Show the math bluntly. Rewrite goals with a phased approach — what lifestyle is affordable at each revenue milestone? What lifestyle upgrades unlock at what income level?
+
+          ## STEP 5: REWRITE GOALS
+
+          Rewrite the ENTIRE goals file incorporating your financial reality findings:
+
+          - Every income/revenue target must now show what lifestyle it supports (or fails to support)
+          - Add a "Financial Reality" section showing the monthly budget model
+          - Adjust any timeline that assumed a lifestyle the income cannot support during that period
+          - For the 2-year vision: Does the endpoint income support the endpoint lifestyle?
+          - For the 13-week arc: What is financially achievable in 13 weeks given current state?
+          - For daily goals: Are there any daily financial actions missing (invoicing, lead gen, cost cutting)?
+
+          Do NOT remove goals that fail the financial test — ANNOTATE them with what they actually require. The user must see the real cost of their desires.
+
+          Use exec to save the updated file. Confirm what you changed and provide a summary of: (1) total lifestyle cost found, (2) income gap if any, (3) key adjustments made.
+        successCriteria: Goals file rewritten with financially grounded targets, real cost data, and gap analysis
+        completionContract: Exit when the updated file is saved with financial reality annotations
+
+  # Response
+  - id: node-3000000000040
+    type: workflow
+    position:
+      x: 500
+      y: 1480
+    data:
+      subtype: response
+      category: io
+      label: Refined Plan
+      config:
+        responseTemplate: Goal cycle complete for this time horizon. The goals file has been written and refined through timeline & relevance audit and financial reality audit.
+
+edges:
+  # Trigger -> Load Skill
+  - id: e-trigger-skill
+    source: node-3000000000001
+    target: node-3000000000002
+    animated: true
+
+  # Load Skill -> Parallel
+  - id: e-skill-parallel
+    source: node-3000000000002
+    target: node-3000000000003
+    animated: true
+
+  # Parallel -> 7 lenses
+  - id: e-parallel-financial
+    source: node-3000000000003
+    target: node-3000000000010
+    animated: true
+  - id: e-parallel-health
+    source: node-3000000000003
+    target: node-3000000000011
+    animated: true
+  - id: e-parallel-family
+    source: node-3000000000003
+    target: node-3000000000012
+    animated: true
+  - id: e-parallel-relationships
+    source: node-3000000000003
+    target: node-3000000000013
+    animated: true
+  - id: e-parallel-business
+    source: node-3000000000003
+    target: node-3000000000014
+    animated: true
+  - id: e-parallel-purpose
+    source: node-3000000000003
+    target: node-3000000000015
+    animated: true
+  - id: e-parallel-growth
+    source: node-3000000000003
+    target: node-3000000000016
+    animated: true
+
+  # 7 lenses -> Merge
+  - id: e-financial-merge
+    source: node-3000000000010
+    target: node-3000000000020
+    animated: true
+  - id: e-health-merge
+    source: node-3000000000011
+    target: node-3000000000020
+    animated: true
+  - id: e-family-merge
+    source: node-3000000000012
+    target: node-3000000000020
+    animated: true
+  - id: e-relationships-merge
+    source: node-3000000000013
+    target: node-3000000000020
+    animated: true
+  - id: e-business-merge
+    source: node-3000000000014
+    target: node-3000000000020
+    animated: true
+  - id: e-purpose-merge
+    source: node-3000000000015
+    target: node-3000000000020
+    animated: true
+  - id: e-growth-merge
+    source: node-3000000000016
+    target: node-3000000000020
+    animated: true
+
+  # Merge -> Synthesis
+  - id: e-merge-synthesis
+    source: node-3000000000020
+    target: node-3000000000021
+    animated: true
+
+  # Synthesis -> Write Goals to File
+  - id: e-synthesis-write
+    source: node-3000000000021
+    target: node-3000000000025
+    animated: true
+
+  # Write Goals -> Timeline Critic
+  - id: e-write-critic
+    source: node-3000000000025
+    target: node-3000000000032
+    animated: true
+
+  # Timeline Critic -> Financial Reality Critic
+  - id: e-timeline-financial
+    source: node-3000000000032
+    target: node-3000000000035
+    animated: true
+
+  # Financial Reality Critic -> Response
+  - id: e-financial-response
+    source: node-3000000000035
+    target: node-3000000000040
+    animated: true
+_status: production
+viewport:
+  x: -709.3429626840475
+  y: -481.12812725292224
+  zoom: 1.824703875770942

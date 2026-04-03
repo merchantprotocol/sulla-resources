@@ -1,0 +1,17 @@
+# assemblyai.v2-auth.yaml
+# Authentication for AssemblyAI API v2
+# Uses Bearer token (API key)
+
+api:
+  name: assemblyai-v2
+  version: v2
+  provider: assemblyai
+  base_url: https://api.assemblyai.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${ASSEMBLYAI_API_KEY}"
+  # Get from: https://www.assemblyai.com/app/account
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,16 @@
+# threads.v1-auth.yaml
+# Authentication configuration for Threads API (Meta)
+# OAuth 2.0 via Instagram/Facebook login
+
+api:
+  name: threads-v1
+  version: v1.0
+  provider: meta
+  base_url: https://graph.threads.net/v1.0
+
+auth:
+  type: bearer
+  client_secret: "${THREADS_ACCESS_TOKEN}"  # Long-lived Threads user access token
+
+  headers:
+    Accept: "application/json"

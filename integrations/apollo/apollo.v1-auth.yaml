@@ -1,0 +1,18 @@
+# apollo.v1-auth.yaml
+# Authentication for Apollo.io API v1
+# Uses API key via X-Api-Key header
+
+api:
+  name: apollo-v1
+  version: v1
+  provider: apollo
+  base_url: https://api.apollo.io/v1
+
+auth:
+  type: apikey
+  header: X-Api-Key
+  client_secret: "${APOLLO_API_KEY}"
+  # Get from: Apollo → Settings → Integrations → API Keys
+
+  token_storage: local
+  refresh_automatically: false

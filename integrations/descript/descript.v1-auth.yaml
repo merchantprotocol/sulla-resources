@@ -1,0 +1,17 @@
+# descript.v1-auth.yaml
+# Authentication for Descript API v1
+# Uses Bearer token (API key)
+
+api:
+  name: descript-v1
+  version: v1
+  provider: descript
+  base_url: https://api.descript.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${DESCRIPT_API_KEY}"
+  # Get from: https://web.descript.com (API settings)
+
+  token_storage: local
+  refresh_automatically: false

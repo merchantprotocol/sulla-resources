@@ -1,0 +1,16 @@
+# yelp.v3-auth.yaml
+# Authentication configuration for Yelp Fusion API v3
+# API key auth (bearer token)
+
+api:
+  name: yelp-fusion-v3
+  version: v3
+  provider: yelp
+  base_url: https://api.yelp.com/v3
+
+auth:
+  type: bearer
+  client_secret: "${YELP_API_KEY}"
+
+  headers:
+    Accept: "application/json"

@@ -1,0 +1,51 @@
+# plane-auth.yaml
+# Authentication configuration for Plane Project Management API v1
+# Uses API key authentication via X-API-Key header
+
+api:
+  name: plane-rest
+  version: "v1"
+  provider: plane
+  base_url: http://localhost:30270/api/v1
+
+auth:
+  type: api_key
+  header: X-API-Key
+  token: "${PLANE_API_KEY}"
+  notes: |
+    API keys are generated from Plane workspace settings.
+    Navigate to Workspace Settings > API Tokens to create a new token.
+    The token must be passed in the X-API-Key header on every request.
+    For self-hosted instances, ensure the API module is enabled.
+
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+  rate_limit:
+    requests: 60
+    period: 60
+
+docker:
+  container_name: plane-web
+  image: makeplane/plane-app:v1.2.2
+  host_port: 30270
+  internal_port: 80
+  network: sulla_default
+  notes: |
+    Plane is an open-source project management tool (Jira/Linear alternative).
+    Docker image makeplane/plane-app:v1.2.2.
+    Host port 30270 maps to container port 80 (nginx proxy).
+    The API server runs internally on port 8000 behind nginx.
+    Requires additional containers: plane-api, plane-worker, plane-beat, plane-db, plane-redis.
+
+discovery:
+  endpoint: /api/v1/
+  description: |
+    Plane REST API v1 base endpoint.
+    All workspace-scoped resources are under /api/v1/workspaces/{workspace_slug}/.
+    Supports cursor-based pagination with 'cursor' query parameter.
+    Use 'expand' to include related objects and 'fields' to select specific fields.
+    Note: /api/v1/.../issues/ endpoints are being deprecated in favor of
+    /api/v1/.../work-items/ (end of support March 31, 2026). Both paths
+    currently work; these definitions use the issues path for v1.2.2 compatibility.

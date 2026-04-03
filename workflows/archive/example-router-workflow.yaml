@@ -1,0 +1,210 @@
+id: example-router-workflow
+name: Example - Router Pattern
+description: Demonstrates routing based on user input to different processing paths
+version: 1
+createdAt: 2026-03-14T00:00:00.000Z
+updatedAt: 2026-03-14T00:00:00.000Z
+tags:
+  - example
+  - router
+  - routing
+pattern: router
+nodes:
+  # Trigger: User submits a request
+  - id: node-2001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "User submits request for processing"
+  
+  # Classification Agent: Determines request type
+  - id: node-2002
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: agent
+      category: agent
+      label: Classify Request Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Classify the user request into one of these categories: support, sales, or technical. Output only the category name."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Request has been classified"
+        completionContract: ""
+  
+  # Router: Route based on classification
+  - id: node-2003
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: router
+      category: routing
+      label: Route by Request Type
+      config:
+        classificationPrompt: "Route based on the classification from the previous agent"
+        routes:
+          - id: route-0
+            label: Support Request
+            description: "Route for customer support inquiries"
+          - id: route-1
+            label: Sales Request
+            description: "Route for sales and pricing questions"
+          - id: route-2
+            label: Technical Request
+            description: "Route for technical issues and bugs"
+  
+  # Support Handler
+  - id: node-2004
+    type: workflow
+    position:
+      x: 200
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Support Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "You are a customer support specialist. Help the user with their support request."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Support issue resolved or escalated"
+        completionContract: ""
+  
+  # Sales Handler
+  - id: node-2005
+    type: workflow
+    position:
+      x: 400
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Sales Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "You are a sales specialist. Help the user with pricing and product questions."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Sales inquiry addressed"
+        completionContract: ""
+  
+  # Technical Handler
+  - id: node-2006
+    type: workflow
+    position:
+      x: 600
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Technical Support Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "You are a technical support specialist. Help troubleshoot technical issues."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Technical issue diagnosed or resolved"
+        completionContract: ""
+  
+  # Merge: Combine all paths
+  - id: node-2007
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Responses
+      config:
+        mergeStrategy: "last"
+  
+  # Response: Send unified response
+  - id: node-2008
+    type: workflow
+    position:
+      x: 400
+      y: 850
+    data:
+      subtype: response
+      category: io
+      label: Send Response
+      config:
+        responseTemplate: "{{merge.result}}"
+        includeContext: true
+edges:
+  # Trigger → Classifier
+  - id: edge-2001
+    source: node-2001
+    target: node-2002
+    sourceHandle: null
+    targetHandle: null
+  # Classifier → Router
+  - id: edge-2002
+    source: node-2002
+    target: node-2003
+    sourceHandle: null
+    targetHandle: null
+  # Router → Support (route-0)
+  - id: edge-2003
+    source: node-2003
+    target: node-2004
+    sourceHandle: route-0
+    targetHandle: null
+  # Router → Sales (route-1)
+  - id: edge-2004
+    source: node-2003
+    target: node-2005
+    sourceHandle: route-1
+    targetHandle: null
+  # Router → Technical (route-2)
+  - id: edge-2005
+    source: node-2003
+    target: node-2006
+    sourceHandle: route-2
+    targetHandle: null
+  # Support → Merge
+  - id: edge-2006
+    source: node-2004
+    target: node-2007
+    sourceHandle: null
+    targetHandle: null
+  # Sales → Merge
+  - id: edge-2007
+    source: node-2005
+    target: node-2007
+    sourceHandle: null
+    targetHandle: null
+  # Technical → Merge
+  - id: edge-2008
+    source: node-2006
+    target: node-2007
+    sourceHandle: null
+    targetHandle: null
+  # Merge → Response
+  - id: edge-2009
+    source: node-2007
+    target: node-2008
+    sourceHandle: null
+    targetHandle: null
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

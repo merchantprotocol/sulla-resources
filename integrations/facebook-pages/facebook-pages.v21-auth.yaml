@@ -1,0 +1,16 @@
+# facebook-pages.v21-auth.yaml
+# Authentication configuration for Facebook/Meta Pages API
+# OAuth 2.0 (requires Page access token)
+
+api:
+  name: facebook-pages-v21
+  version: v21.0
+  provider: meta
+  base_url: https://graph.facebook.com/v21.0
+
+auth:
+  type: bearer
+  client_secret: "${FACEBOOK_PAGE_ACCESS_TOKEN}"  # Long-lived Page Access Token
+
+  headers:
+    Accept: "application/json"

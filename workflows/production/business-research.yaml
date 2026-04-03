@@ -1,0 +1,261 @@
+id: workflow-business-research
+name: Business Research Pipeline
+description: Deep research on businesses in Twenty CRM. Gathers website data, Google presence, social profiles, identifies decision makers, triggers individual research for each.
+version: 1
+enabled: true
+nodes:
+  # === TRIGGER ===
+  - id: node-1760000000001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Business Research Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "Research a specific business from Twenty CRM queue"
+
+  # === LOAD COMPANY FROM CRM ===
+  - id: node-1760000000002
+    type: workflow
+    position:
+      x: 400
+      y: 220
+    data:
+      subtype: agent
+      category: agent
+      label: Fetch Company from CRM
+      config:
+        agentId: crm-fetcher
+        agentName: Twenty CRM Company Fetcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Query Twenty CRM for companies where researchStatus='queued_for_research' OR researchStatus='discovered'. Order by icpScore DESC. Take the top company. Return full company record including: id, name, domainName, address, employees, linkedinLink, xLink, icpScore, icpReasoning, dataSources."
+        successCriteria: Company record fetched
+        completionContract: Exit when company is fetched
+
+  # === CHECK IF COMPANY HAS WEBSITE ===
+  - id: node-1760000000003
+    type: workflow
+    position:
+      x: 400
+      y: 340
+    data:
+      subtype: router
+      category: routing
+      label: Has Website?
+      config:
+        classificationPrompt: "Determine if the fetched company has a valid website (domainName or website URL exists and is not empty). If yes route to website research. If no route to skip website research."
+        routes:
+          - id: route-website
+            label: "Yes - Research Website"
+            description: "Company has website - research it"
+          - id: route-no-website
+            label: "No Website - Skip"
+            description: "No website - skip that step"
+
+  # === WEBSITE RESEARCH ===
+  - id: node-1760000000004
+    type: workflow
+    position:
+      x: 250
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Website Deep Research
+      config:
+        agentId: website-researcher
+        agentName: Business Website Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Visit the company's website. Collect: about page content, team/leadership page, services/products offered, contact information (email, phone), location(s), founding year, team size indicators, blog content (topics), technology stack (from page source or tech mentions), social media links. Summarize in structured format."
+        successCriteria: Website data collected
+        completionContract: Exit when website research complete
+
+  # === GOOGLE SEARCH RESEARCH ===
+  - id: node-1760000000005
+    type: workflow
+    position:
+      x: 400
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Google Search Research
+      config:
+        agentId: google-searcher
+        agentName: Google Search Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Perform Google search for: '[company name] reviews', '[company name] LinkedIn', '[company name] news', '[company name] team', '[company name] CEO', '[company name] founder'. Also search for the domain to find business directories they're listed on. Collect all relevant results."
+        successCriteria: Google search results collected
+        completionContract: Exit when search complete
+
+  # === SOCIAL PROFILES RESEARCH ===
+  - id: node-1760000000006
+    type: workflow
+    position:
+      x: 550
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Social Profiles Research
+      config:
+        agentId: social-researcher
+        agentName: Social Media Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Search for the company's presence on: LinkedIn (company page), Twitter/X, Facebook, Instagram. Collect: follower counts, recent posts, company description, industry tags, employee showcases. Look for any employee lists or team pages."
+        successCriteria: Social profiles collected
+        completionContract: Exit when social research complete
+
+  # === UPDATE COMPANY RECORD ===
+  - id: node-1760000000007
+    type: workflow
+    position:
+      x: 400
+      y: 580
+    data:
+      subtype: agent
+      category: agent
+      label: Update Company in CRM
+      config:
+        agentId: crm-updater
+        agentName: Twenty CRM Company Updater
+        additionalPrompt: ""
+        orchestratorInstructions: "Update the company in Twenty CRM with all research findings: researchStatus='researched', researchDate=today, add website data (from node-4), add Google search findings (from node-5), add social profiles (from node-6), add services_description, add team_insights, add technology_stack if found. Also update: number of employees (if found on site), founding year, any other enriched data."
+        successCriteria: Company updated in Twenty CRM
+        completionContract: Exit when company updated
+
+  # === IDENTIFY DECISION MAKERS ===
+  - id: node-1760000000008
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Identify Decision Makers
+      config:
+        agentId: decision-maker-finder
+        agentName: Decision Maker Identifier
+        additionalPrompt: ""
+        orchestratorInstructions: "Analyze all research data to identify potential decision makers. Look for: CEO/founder names (from website, LinkedIn), CTO/technical lead (for tech decisions), marketing head, operations manager, key team members mentioned. For each person: name, likely role, LinkedIn profile URL, Twitter if available. Prioritize: owner, executive, manager levels. Output: decision_makers array with: name, likely_title, linkedin_url, twitter_url, decision_level (owner/executive/manager/ic), confidence (1-10)."
+        successCriteria: Decision makers identified
+        completionContract: Exit when decision makers identified
+
+  # === ROUTER: ANY DECISION MAKERS? ===
+  - id: node-1760000000009
+    type: workflow
+    position:
+      x: 400
+      y: 820
+    data:
+      subtype: router
+      category: routing
+      label: Decision Makers Found?
+      config:
+        classificationPrompt: "Determine if any decision makers were identified (decision_makers array has length > 0). If yes route to create people. If no route to completion."
+        routes:
+          - id: route-create-people
+            label: "Yes - Create People"
+            description: "Decision makers found - create in Twenty CRM"
+          - id: route-no-people
+            label: "No - Complete"
+            description: "No decision makers found - complete"
+
+  # === CREATE PEOPLE RECORDS ===
+  - id: node-1760000000010
+    type: workflow
+    position:
+      x: 250
+      y: 940
+    data:
+      subtype: agent
+      category: agent
+      label: Create People in CRM
+      config:
+        agentId: crm-people-creator
+        agentName: Twenty CRM People Creator
+        additionalPrompt: ""
+        orchestratorInstructions: "For each decision maker identified: 1) Create person record in Twenty CRM with: firstName, lastName (parse from full name), jobTitle (likely_title), linkedinLink (url + label), xLink (if twitter found), company (link to parent company), isDecisionMaker=true, decisionLevel (from findings), contactConfidence=5 (initial, will improve with individual research), verificationDate=null, researchStatus='discovered'. 2) Link person to the company. Log all creates."
+        successCriteria: People created in Twenty CRM
+        completionContract: Exit when all people created
+
+  # === TRIGGER INDIVIDUAL RESEARCH (per person) ===
+  - id: node-1760000000011
+    type: workflow
+    position:
+      x: 250
+      y: 1060
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Trigger Individual Research
+      config:
+        workflowId: individual-research
+        awaitResponse: false
+
+  # === COMPLETION ===
+  - id: node-1760000000012
+    type: workflow
+    position:
+      x: 400
+      y: 1060
+    data:
+      subtype: agent
+      category: agent
+      label: Research Completion
+      config:
+        agentId: workflow-completer
+        agentName: Business Research Completion Reporter
+        additionalPrompt: ""
+        orchestratorInstructions: "Report business research results: company_name, website_found (yes/no), google_results_count, social_profiles_found, decision_makers_identified, people_created. Log to ~/sulla/daily-logs/{date}/lead-prospecting/business-research.md"
+        successCriteria: Completion report generated
+        completionContract: Exit when report generated
+
+edges:
+  - id: edge-1
+    source: node-1760000000001
+    target: node-1760000000002
+  - id: edge-2
+    source: node-1760000000002
+    target: node-1760000000003
+  - id: edge-3
+    source: node-1760000000003
+    target: node-1760000000004
+  - id: edge-4
+    source: node-1760000000003
+    target: node-1760000000005
+  - id: edge-5
+    source: node-1760000000003
+    target: node-1760000000006
+  - id: edge-6
+    source: node-1760000000004
+    target: node-1760000000007
+  - id: edge-7
+    source: node-1760000000005
+    target: node-1760000000007
+  - id: edge-8
+    source: node-1760000000006
+    target: node-1760000000007
+  - id: edge-9
+    source: node-1760000000007
+    target: node-1760000000008
+  - id: edge-10
+    source: node-1760000000008
+    target: node-1760000000009
+  - id: edge-11
+    source: node-1760000000009
+    target: node-1760000000010
+  - id: edge-12
+    source: node-1760000000009
+    target: node-1760000000012
+  - id: edge-13
+    source: node-1760000000010
+    target: node-1760000000011
+  - id: edge-14
+    source: node-1760000000011
+    target: node-1760000000012

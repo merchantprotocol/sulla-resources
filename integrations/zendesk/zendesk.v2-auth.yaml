@@ -1,0 +1,20 @@
+# zendesk.v2-auth.yaml
+# Authentication for Zendesk API v2
+# Supports Basic auth (email/token + API token) or Bearer token
+
+api:
+  name: zendesk-v2
+  version: v2
+  provider: zendesk
+  base_url: https://${ZENDESK_SUBDOMAIN}.zendesk.com/api/v2
+
+auth:
+  type: basic
+  # Basic auth: {email}/token as username, API token as password
+  # Or set type: bearer and use client_secret with OAuth token
+  username: "${ZENDESK_EMAIL}/token"
+  password: "${ZENDESK_API_TOKEN}"
+  # Get from: Zendesk Admin → Channels → API → Add API Token
+
+  token_storage: local
+  refresh_automatically: false

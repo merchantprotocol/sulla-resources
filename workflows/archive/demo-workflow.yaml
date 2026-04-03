@@ -1,0 +1,423 @@
+id: workflow-1772929641704
+name: Demo Workflow
+description: ""
+version: 1
+createdAt: 2026-03-08T00:27:21.704Z
+updatedAt: 2026-03-17T00:39:31.430Z
+nodes:
+  - id: node-1772929759772
+    type: workflow
+    position:
+      x: 392.25
+      y: 110.875
+    data:
+      subtype: calendar
+      category: trigger
+      label: Calendar Trigger
+      config:
+        triggerType: calendar
+        triggerDescription: ""
+  - id: node-1772929761007
+    type: workflow
+    position:
+      x: 550.75
+      y: 102.875
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat App Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: ""
+  - id: node-1772929762190
+    type: workflow
+    position:
+      x: 324.75
+      y: 80.375
+    data:
+      subtype: heartbeat
+      category: trigger
+      label: Heartbeat Trigger
+      config:
+        triggerType: heartbeat
+        triggerDescription: ""
+  - id: node-1772929763392
+    type: workflow
+    position:
+      x: 474.25
+      y: 80.875
+    data:
+      subtype: sulla-desktop
+      category: trigger
+      label: Desktop Trigger
+      config:
+        triggerType: sulla-desktop
+        triggerDescription: ""
+  - id: node-1772929770643
+    type: workflow
+    position:
+      x: 628.25
+      y: 89.375
+    data:
+      subtype: workbench
+      category: trigger
+      label: Workbench Trigger
+      config:
+        triggerType: workbench
+        triggerDescription: ""
+  - id: node-1772929777773
+    type: workflow
+    position:
+      x: 265.25
+      y: 118.375
+    data:
+      subtype: chat-completions
+      category: trigger
+      label: API Trigger
+      config:
+        triggerType: chat-completions
+        triggerDescription: ""
+  - id: node-1772929782833
+    type: workflow
+    position:
+      x: 477.4264592567415
+      y: 267.101478520281
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: project-resource-document
+        agentName: PRD Manager
+        additionalPrompt: ""
+        userMessage: ""
+  - id: node-1772929812282
+    type: workflow
+    position:
+      x: 449.5675881350556
+      y: 385.03677037162925
+    data:
+      subtype: router
+      category: routing
+      label: Router
+      config:
+        classificationPrompt: this is what the primary agent will see and use to choose between the routes
+        routes:
+          - label: test route 1
+            description: if these conditions are true
+          - label: test route 2
+            description: if conditions are not met
+  - id: node-1772929820110
+    type: workflow
+    position:
+      x: 628.2151193551283
+      y: 546.8742175259335
+    data:
+      subtype: condition
+      category: routing
+      label: Condition
+      config:
+        rules:
+          - field: sentiment
+            operator: equals
+            value: positive
+        combinator: and
+  - id: node-1772929927191
+    type: workflow
+    position:
+      x: 340.54485999682544
+      y: 551.8576349719763
+    data:
+      subtype: wait
+      category: flow-control
+      label: Wait
+      config:
+        delayAmount: 5
+        delayUnit: seconds
+  - id: node-1772929939046
+    type: workflow
+    position:
+      x: 341.26063848899605
+      y: 667.0509653792041
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Parallel
+      config: {}
+  - id: node-1772929953130
+    type: workflow
+    position:
+      x: 341.15133057731794
+      y: 806.3533104575035
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: ""
+        userMessage: ""
+  - id: node-1772929955697
+    type: workflow
+    position:
+      x: 424.11010653764856
+      y: 808.3644322989661
+    data:
+      subtype: integration-call
+      category: agent
+      label: Integration Call
+      config:
+        integrationSlug: ""
+        endpointName: ""
+        accountId: default
+        defaults: {}
+  - id: node-1772929966116
+    type: workflow
+    position:
+      x: 265.2314810621063
+      y: 808.8672127593318
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: ""
+        userMessage: ""
+  - id: node-1772929971201
+    type: workflow
+    position:
+      x: 340.9708554045398
+      y: 956.8819157851792
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge
+      config:
+        strategy: wait-all
+  - id: node-1772930002384
+    type: workflow
+    position:
+      x: 616.6198012286301
+      y: 708.2601208996459
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: ""
+        userMessage: ""
+  - id: node-1772931106603
+    type: workflow
+    position:
+      x: 616.2637629579135
+      y: 826.3314068454407
+    data:
+      subtype: response
+      category: io
+      label: Response
+      config:
+        responseTemplate: show the user what this looks like
+  - id: node-1772961442275
+    type: workflow
+    position:
+      x: 834.0941230147506
+      y: 699.495811163608
+    data:
+      subtype: loop
+      category: flow-control
+      label: Loop
+      config:
+        maxIterations: 10
+        condition: ""
+  - id: node-1772962489598
+    type: workflow
+    position:
+      x: 835.7508910330412
+      y: 860.1791559226649
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: ""
+        userMessage: ""
+        beforePrompt: ""
+        successCriteria: ""
+        completionContract: ""
+  - id: node-1772962520842
+    type: workflow
+    position:
+      x: 745.255932057688
+      y: 794.1898966814688
+    data:
+      subtype: response
+      category: io
+      label: Response
+      config:
+        responseTemplate: ""
+edges:
+  - id: vueflow__edge-node-1772929777773-node-1772929782833
+    source: node-1772929777773
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929762190-node-1772929782833
+    source: node-1772929762190
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929759772-node-1772929782833
+    source: node-1772929759772
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929763392-node-1772929782833
+    source: node-1772929763392
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929761007-node-1772929782833
+    source: node-1772929761007
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929770643-node-1772929782833
+    source: node-1772929770643
+    target: node-1772929782833
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929782833-node-1772929812282
+    source: node-1772929782833
+    target: node-1772929812282
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929812282route-1-node-1772929820110
+    source: node-1772929812282
+    target: node-1772929820110
+    sourceHandle: route-1
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929812282route-0-node-1772929927191
+    source: node-1772929812282
+    target: node-1772929927191
+    sourceHandle: route-0
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929927191-node-1772929939046
+    source: node-1772929927191
+    target: node-1772929939046
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929939046-node-1772929953130
+    source: node-1772929939046
+    target: node-1772929953130
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929939046-node-1772929955697
+    source: node-1772929939046
+    target: node-1772929955697
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929939046-node-1772929966116
+    source: node-1772929939046
+    target: node-1772929966116
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929966116-node-1772929971201
+    source: node-1772929966116
+    target: node-1772929971201
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929953130-node-1772929971201
+    source: node-1772929953130
+    target: node-1772929971201
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929955697-node-1772929971201
+    source: node-1772929955697
+    target: node-1772929971201
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929820110condition-true-node-1772930002384
+    source: node-1772929820110
+    target: node-1772930002384
+    sourceHandle: condition-true
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772930002384-node-1772931106603
+    source: node-1772930002384
+    target: node-1772931106603
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772961442275loop-start-node-1772962489598
+    source: node-1772961442275
+    target: node-1772962489598
+    sourceHandle: loop-start
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772929820110condition-false-node-1772961442275loop-entry
+    source: node-1772929820110
+    target: node-1772961442275
+    sourceHandle: condition-false
+    targetHandle: loop-entry
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772962489598-node-1772961442275loop-back
+    source: node-1772962489598
+    target: node-1772961442275
+    sourceHandle: null
+    targetHandle: loop-back
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1772961442275loop-exit-node-1772962520842
+    source: node-1772961442275
+    target: node-1772962520842
+    sourceHandle: loop-exit
+    targetHandle: null
+    label: ""
+    animated: true
+viewport:
+  x: 292.64406616808367
+  y: 270.1926146051445
+  zoom: 0.5

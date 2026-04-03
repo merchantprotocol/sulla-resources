@@ -1,0 +1,32 @@
+# gbusiness.v1-auth.yaml
+# Authentication configuration for Google Business Profile API (My Business)
+# OAuth 2.0 (requires business.manage scope)
+
+api:
+  name: google-business-profile-v1
+  version: v1
+  provider: google
+  base_url: https://mybusinessbusinessinformation.googleapis.com/v1
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${GOOGLE_CLIENT_ID}"
+  client_secret: "${GOOGLE_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://accounts.google.com/o/oauth2/v2/auth
+  token_url: https://oauth2.googleapis.com/token
+
+  pkce: true
+  code_challenge_method: S256
+  access_type: offline
+  prompt: consent
+
+  scopes:
+    - https://www.googleapis.com/auth/business.manage
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

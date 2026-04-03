@@ -1,0 +1,17 @@
+# openai.v1-auth.yaml
+# Authentication for OpenAI API v1
+# Uses Bearer token (API key)
+
+api:
+  name: openai-v1
+  version: v1
+  provider: openai
+  base_url: https://api.openai.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${OPENAI_API_KEY}"
+  # Get from: https://platform.openai.com/api-keys
+
+  token_storage: local
+  refresh_automatically: false

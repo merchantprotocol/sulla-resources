@@ -1,0 +1,17 @@
+# mastodon.v1-auth.yaml
+# Authentication configuration for Mastodon API v1
+# OAuth 2.0 (instance-specific)
+
+api:
+  name: mastodon-v1
+  version: v1
+  provider: mastodon
+  base_url: "${MASTODON_INSTANCE_URL}/api/v1"  # e.g., https://mastodon.social/api/v1
+
+auth:
+  type: bearer
+  client_secret: "${MASTODON_ACCESS_TOKEN}"
+
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"

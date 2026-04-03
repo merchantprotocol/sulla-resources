@@ -1,0 +1,17 @@
+# bing-places.v1-auth.yaml
+# Authentication configuration for Bing Places for Business API
+# OAuth 2.0 (Microsoft identity platform)
+
+api:
+  name: bing-places-v1
+  version: v1
+  provider: microsoft
+  base_url: https://ssl.bing.com/partner/bpb/api/v1
+
+auth:
+  type: bearer
+  client_secret: "${BING_PLACES_TOKEN}"  # Microsoft OAuth access token
+
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"

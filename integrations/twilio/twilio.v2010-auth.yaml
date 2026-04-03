@@ -1,0 +1,18 @@
+# twilio.v2010-auth.yaml
+# Authentication for Twilio REST API
+# Uses Basic Auth (Account SID + Auth Token)
+
+api:
+  name: twilio-v2010
+  version: v2010
+  provider: twilio
+  base_url: https://api.twilio.com/2010-04-01
+
+auth:
+  type: basic
+  username: "${TWILIO_ACCOUNT_SID}"
+  password: "${TWILIO_AUTH_TOKEN}"
+  # Get from: https://console.twilio.com → Account Info
+
+  token_storage: local
+  refresh_automatically: false

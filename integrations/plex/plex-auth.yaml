@@ -1,0 +1,50 @@
+auth:
+  name: plex-auth
+  description: Authentication configuration for Plex Media Server
+  base_url: http://localhost:30210
+  docker_port: 30210
+  headers:
+    - name: X-Plex-Token
+      description: Authentication token for Plex Media Server. Obtain from Plex account settings or via sign-in flow.
+      required: true
+      type: header
+    - name: X-Plex-Client-Identifier
+      description: Unique identifier for this client application. Should be a UUID or other unique string that persists across sessions.
+      required: true
+      type: header
+    - name: Accept
+      description: Response format preference
+      required: false
+      type: header
+      default: application/json
+  optional_headers:
+    - name: X-Plex-Product
+      description: Name of the client application
+      required: false
+      type: header
+      default: Sulla
+    - name: X-Plex-Version
+      description: Version of the client application
+      required: false
+      type: header
+    - name: X-Plex-Platform
+      description: Platform name (e.g., Linux, macOS, Windows)
+      required: false
+      type: header
+    - name: X-Plex-Platform-Version
+      description: Platform version string
+      required: false
+      type: header
+    - name: X-Plex-Device
+      description: Device name
+      required: false
+      type: header
+    - name: X-Plex-Device-Name
+      description: Device friendly name
+      required: false
+      type: header
+  notes: >
+    Plex uses token-based authentication via the X-Plex-Token query parameter or header.
+    The X-Plex-Client-Identifier header is required on all requests to uniquely identify
+    the client. Tokens can be obtained from https://plex.tv/users/sign_in.json or from
+    the Plex Web UI under Settings > Account > Authorized Devices.

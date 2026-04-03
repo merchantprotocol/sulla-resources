@@ -1,0 +1,20 @@
+# cloudflare.v4-auth.yaml
+# Authentication for Cloudflare API v4
+# Uses Bearer token (API Token)
+
+api:
+  name: cloudflare-v4
+  version: v4
+  provider: cloudflare
+  base_url: https://api.cloudflare.com/client/v4
+
+auth:
+  type: bearer
+  client_secret: "${CLOUDFLARE_API_TOKEN}"
+  # Get from: Cloudflare -> My Profile -> API Tokens -> Create Token
+
+  headers:
+    Content-Type: "application/json"
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,19 @@
+# wise.v3-auth.yaml
+# Authentication for Wise (TransferWise) API v3
+# Uses Bearer token (API key)
+
+api:
+  name: wise-v3
+  version: v3
+  provider: wise
+  base_url: https://api.transferwise.com
+
+auth:
+  type: bearer
+  client_secret: "${WISE_API_KEY}"
+  # Wise uses API key as Bearer token
+  # Authorization: Bearer <api_key>
+  # Sandbox: https://api.sandbox.transferwise.tech
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,75 @@
+# slack-auth.yaml
+# Authentication configuration for Slack Web API
+# (OAuth 2.0 - Bot Token + App-Level Token for Socket Mode)
+
+api:
+  name: slack-web-api
+  version: v1
+  provider: slack
+  base_url: https://slack.com/api
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${SLACK_CLIENT_ID}"
+  client_secret: "${SLACK_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+    - "https://yourapp.com/auth/slack/callback"
+
+  authorization_url: https://slack.com/oauth/v2/authorize
+  token_url: https://slack.com/api/oauth.v2.access
+
+  pkce: false
+  access_type: bot
+
+  scopes:
+    - app_mentions:read
+    - bookmarks:read
+    - bookmarks:write
+    - channels:history
+    - channels:join
+    - channels:read
+    - channels:write.invites
+    - chat:write
+    - chat:write.customize
+    - emoji:read
+    - files:read
+    - files:write
+    - groups:history
+    - groups:read
+    - groups:write
+    - groups:write.invites
+    - groups:write.topic
+    - im:history
+    - im:read
+    - im:write
+    - im:write.topic
+    - links:read
+    - mpim:history
+    - mpim:read
+    - mpim:write
+    - mpim:write.topic
+    - pins:read
+    - pins:write
+    - reactions:write
+    - reminders:read
+    - search:read.files
+    - search:read.public
+    - search:read.users
+    - team:read
+    - usergroups:read
+    - usergroups:write
+    - users.profile:read
+    - users:read
+    - users:read.email
+    - users:write
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300
+
+app_level_token:
+  enabled: true
+  value: "${SLACK_APP_TOKEN}"
+  description: App-level token (xapp-) for Socket Mode connections

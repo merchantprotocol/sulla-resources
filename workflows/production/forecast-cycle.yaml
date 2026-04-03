@@ -1,0 +1,380 @@
+id: workflow-forecast-cycle
+name: Forecast Cycle
+description: Reusable forecasting sub-workflow — runs 7 perspective lenses in parallel, synthesizes a conditions report, then refines through 6 critic rounds
+version: 1
+createdAt: 2026-03-18T18:00:00.000Z
+updatedAt: 2026-03-18T18:00:00.000Z
+nodes:
+  - id: node-5000000000001
+    type: workflow
+    position:
+      x: 500
+      y: 0
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives time horizon, topic lens, compressed inputs, and constraints from parent forecaster workflow
+
+  - id: node-5000000000002
+    type: workflow
+    position:
+      x: 500
+      y: 120
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Load Skill
+      config:
+        prompt: Load the forecasting-perspectives skill using the load_skill tool. Do NOT execute it — just load it and wait for further instructions.
+
+  - id: node-5000000000003
+    type: workflow
+    position:
+      x: 500
+      y: 250
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Perspectives
+      config: {}
+
+  # 7 Perspective Lens Agents
+  - id: node-5000000000010
+    type: workflow
+    position:
+      x: 100
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Economic Lens
+      config:
+        agentId: forecaster
+        agentName: Economic Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Economic perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What are the current economic conditions and trajectory relevant to our topic lens subjects? Follow Lens 1 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon. Cite specific observations."
+        successCriteria: A complete single-perspective forecast from the economic angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000011
+    type: workflow
+    position:
+      x: 250
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Market Lens
+      config:
+        agentId: forecaster
+        agentName: Market Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Market/Niche perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What are the conditions in the specific markets and niches relevant to our topic lens subjects? Follow Lens 2 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the market angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000012
+    type: workflow
+    position:
+      x: 400
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Technology Lens
+      config:
+        agentId: forecaster
+        agentName: Technology Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Technology perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What technological changes are relevant to our topic lens subjects? Follow Lens 3 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the technology angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000013
+    type: workflow
+    position:
+      x: 550
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Labor Lens
+      config:
+        agentId: forecaster
+        agentName: Labor Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Labor/Talent perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What are the workforce and talent conditions relevant to our topic lens subjects? Follow Lens 4 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the labor angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000014
+    type: workflow
+    position:
+      x: 700
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Regulatory Lens
+      config:
+        agentId: forecaster
+        agentName: Regulatory Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Regulatory/Political perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What regulatory and political conditions are relevant to our topic lens subjects? Follow Lens 5 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the regulatory angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000015
+    type: workflow
+    position:
+      x: 850
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Social Lens
+      config:
+        agentId: forecaster
+        agentName: Social Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Social/Cultural perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What social and cultural trends are relevant to our topic lens subjects? Follow Lens 6 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the social angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  - id: node-5000000000016
+    type: workflow
+    position:
+      x: 1000
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Risk Lens
+      config:
+        agentId: forecaster
+        agentName: Risk Perspective
+        additionalPrompt: ""
+        orchestratorInstructions: "You are the Risk/Black Swan perspective lens. Using the world observation logs, identity file, and topic lens provided in the trigger context, answer: What emerging risks and potential disruptions are relevant to our topic lens subjects? Follow Lens 7 from the forecasting-perspectives skill. Produce a single-perspective forecast for the requested time horizon."
+        successCriteria: A complete single-perspective forecast from the risk angle with confidence levels
+        completionContract: Exit when the perspective forecast is written
+
+  # Merge all perspectives
+  - id: node-5000000000020
+    type: workflow
+    position:
+      x: 500
+      y: 600
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Perspectives
+      config:
+        strategy: wait-all
+
+  # Synthesis agent
+  - id: node-5000000000021
+    type: workflow
+    position:
+      x: 500
+      y: 740
+    data:
+      subtype: agent
+      category: agent
+      label: Conditions Synthesis
+      config:
+        agentId: forecaster
+        agentName: Conditions Synthesizer
+        additionalPrompt: ""
+        orchestratorInstructions: "You have received 7 perspective forecasts from the merge. Follow all three Synthesis prompts from the forecasting-perspectives skill in order: (1) Find Convergence, (2) Find Contradictions, (3) The Conditions Report. Produce a unified conditions report for this time horizon. Remember: report reality, not what we want to hear."
+        successCriteria: A unified conditions report with convergence map, resolved contradictions, opportunities, threats, and forecasts with confidence levels
+        completionContract: Exit when the conditions report is complete
+
+  # Critic loop
+  - id: node-5000000000030
+    type: workflow
+    position:
+      x: 500
+      y: 880
+    data:
+      subtype: loop
+      category: flow-control
+      label: Critic Rounds
+      config:
+        loopMode: for-each
+        maxIterations: 6
+        condition: ""
+        conditionMode: template
+
+  - id: node-5000000000031
+    type: workflow
+    position:
+      x: 500
+      y: 1020
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Inject Critic Prompt
+      config:
+        prompt: |-
+          You are reviewing and improving a world conditions forecast. Here is the current version:
+
+          {{loop.currentItem.result}}
+
+          Apply the following critique methodology to this forecast. Be specific, rigorous, and constructive. After your critique, rewrite the ENTIRE conditions report with improvements incorporated:
+
+          {{loop.currentItem.label}}
+
+  - id: node-5000000000032
+    type: workflow
+    position:
+      x: 500
+      y: 1160
+    data:
+      subtype: agent
+      category: agent
+      label: Critic
+      config:
+        agentId: forecaster
+        agentName: Forecast Critic
+        additionalPrompt: ""
+        orchestratorInstructions: ""
+        successCriteria: A rewritten conditions report that addresses the specific critique
+        completionContract: Exit when the revised report is complete
+
+  # Response
+  - id: node-5000000000040
+    type: workflow
+    position:
+      x: 500
+      y: 1340
+    data:
+      subtype: response
+      category: io
+      label: Refined Forecast
+      config:
+        responseTemplate: Return the final refined conditions report after all critic rounds.
+
+edges:
+  # Trigger → Load Skill
+  - id: e-trigger-skill
+    source: node-5000000000001
+    target: node-5000000000002
+    animated: true
+
+  # Load Skill → Parallel
+  - id: e-skill-parallel
+    source: node-5000000000002
+    target: node-5000000000003
+    animated: true
+
+  # Parallel → 7 lenses
+  - id: e-parallel-economic
+    source: node-5000000000003
+    target: node-5000000000010
+    animated: true
+  - id: e-parallel-market
+    source: node-5000000000003
+    target: node-5000000000011
+    animated: true
+  - id: e-parallel-technology
+    source: node-5000000000003
+    target: node-5000000000012
+    animated: true
+  - id: e-parallel-labor
+    source: node-5000000000003
+    target: node-5000000000013
+    animated: true
+  - id: e-parallel-regulatory
+    source: node-5000000000003
+    target: node-5000000000014
+    animated: true
+  - id: e-parallel-social
+    source: node-5000000000003
+    target: node-5000000000015
+    animated: true
+  - id: e-parallel-risk
+    source: node-5000000000003
+    target: node-5000000000016
+    animated: true
+
+  # 7 lenses → Merge
+  - id: e-economic-merge
+    source: node-5000000000010
+    target: node-5000000000020
+    animated: true
+  - id: e-market-merge
+    source: node-5000000000011
+    target: node-5000000000020
+    animated: true
+  - id: e-technology-merge
+    source: node-5000000000012
+    target: node-5000000000020
+    animated: true
+  - id: e-labor-merge
+    source: node-5000000000013
+    target: node-5000000000020
+    animated: true
+  - id: e-regulatory-merge
+    source: node-5000000000014
+    target: node-5000000000020
+    animated: true
+  - id: e-social-merge
+    source: node-5000000000015
+    target: node-5000000000020
+    animated: true
+  - id: e-risk-merge
+    source: node-5000000000016
+    target: node-5000000000020
+    animated: true
+
+  # Merge → Synthesis
+  - id: e-merge-synthesis
+    source: node-5000000000020
+    target: node-5000000000021
+    animated: true
+
+  # Synthesis → Critic Loop entry
+  - id: e-synthesis-loop
+    source: node-5000000000021
+    target: node-5000000000030
+    sourceHandle: null
+    targetHandle: loop-entry
+    animated: true
+
+  # Loop start → Inject Critic Prompt
+  - id: e-loop-inject
+    source: node-5000000000030
+    target: node-5000000000031
+    sourceHandle: loop-start
+    targetHandle: null
+    animated: true
+
+  # Inject → Critic Agent
+  - id: e-inject-critic
+    source: node-5000000000031
+    target: node-5000000000032
+    animated: true
+
+  # Critic → Loop back
+  - id: e-critic-loopback
+    source: node-5000000000032
+    target: node-5000000000030
+    sourceHandle: null
+    targetHandle: loop-back
+    animated: true
+
+  # Loop exit → Response
+  - id: e-loop-response
+    source: node-5000000000030
+    target: node-5000000000040
+    sourceHandle: loop-exit
+    targetHandle: null
+    animated: true
+_status: production
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

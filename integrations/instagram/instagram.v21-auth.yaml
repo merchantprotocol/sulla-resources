@@ -1,0 +1,16 @@
+# instagram.v21-auth.yaml
+# Authentication configuration for Instagram Graph API (via Meta)
+# OAuth 2.0 (Facebook Login with instagram_basic scope)
+
+api:
+  name: instagram-graph-v21
+  version: v21.0
+  provider: meta
+  base_url: https://graph.facebook.com/v21.0
+
+auth:
+  type: bearer
+  client_secret: "${INSTAGRAM_ACCESS_TOKEN}"  # Long-lived Page/User access token with Instagram permissions
+
+  headers:
+    Accept: "application/json"

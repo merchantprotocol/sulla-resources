@@ -1,0 +1,24 @@
+# salesforce.v62-auth.yaml
+# Authentication configuration for Salesforce REST API v62.0
+# Bearer token auth with instance-specific base URL
+
+api:
+  name: salesforce-rest-v62
+  version: v62.0
+  provider: salesforce
+  base_url: "${SALESFORCE_INSTANCE_URL}/services/data/v62.0"  # e.g., https://yourorg.my.salesforce.com/services/data/v62.0
+
+auth:
+  type: bearer
+  client_secret: "${SALESFORCE_ACCESS_TOKEN}"  # OAuth access token or session ID - never commit this
+
+  # Login endpoint for token retrieval (not used directly by bearer, but documented for reference)
+  login_url: https://login.salesforce.com
+
+  # Required headers for Salesforce API
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"
+
+  # Token storage & refresh hints
+  token_storage: local

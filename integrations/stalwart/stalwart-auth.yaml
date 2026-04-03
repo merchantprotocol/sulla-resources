@@ -1,0 +1,83 @@
+# stalwart-auth.yaml
+# Authentication configuration for Stalwart Mail Server
+# Supports JMAP (RFC 8620/8621) and Management REST API
+
+api:
+  name: stalwart-mail
+  version: "latest"
+  provider: stalwart
+  base_url: http://localhost:30205
+
+auth:
+  management:
+    type: basic
+    username: "${STALWART_ADMIN_USER}"
+    password: "${STALWART_ADMIN_PASSWORD}"
+    notes: |
+      Management API uses HTTP Basic Authentication.
+      The admin account is configured during initial setup.
+      Authorization header: Basic base64(username:password)
+      API keys can also be used: create a principal of type "apiKey"
+      with enabledPermissions to grant specific access.
+  jmap:
+    type: bearer_token
+    notes: |
+      JMAP clients authenticate via OAuth 2.0 bearer tokens or HTTP Basic Auth.
+      Bearer token flow:
+      1. Discover OAuth endpoints via /.well-known/openid-configuration
+      2. Obtain access token via OAuth authorization code or password grant
+      3. Include token in Authorization header: Bearer <access_token>
+      Alternatively, Basic Auth (username:password) works for JMAP as well.
+      OAuth token endpoint: POST /auth/token
+      OAuth device code: POST /auth/device
+
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+docker:
+  container_name: stalwart
+  host_port: 30205
+  internal_port: 8080
+  additional_ports:
+    smtp: 25
+    smtps: 465
+    submission: 587
+    imap: 143
+    imaps: 993
+    pop3: 110
+    pop3s: 995
+    managesieve: 4190
+  notes: |
+    Stalwart Mail Server is an all-in-one mail and collaboration server.
+    Port 8080 (mapped to 30205) serves:
+    - JMAP API: /jmap
+    - Management API: /api
+    - Web Admin UI: /
+    - OAuth endpoints: /auth/*
+    - Well-known: /.well-known/jmap, /.well-known/openid-configuration
+
+endpoints:
+  jmap_api: /jmap
+  jmap_session: /.well-known/jmap
+  management_api: /api
+  blob_upload: /jmap/upload/{accountId}/
+  blob_download: /jmap/download/{accountId}/{blobId}/{name}?accept={type}
+  event_source: /jmap/eventsource/?types={types}&closeafter={closeafter}&ping={ping}
+  oauth_token: /auth/token
+  oauth_device: /auth/device
+  openid_config: /.well-known/openid-configuration
+
+principal_types:
+  notes: |
+    Stalwart manages all entities (users, domains, groups, etc.) as "principals"
+    via the /api/principal endpoint. Principal types:
+    - individual: a user account (email user)
+    - domain: a local domain the server manages
+    - group: a group of users
+    - list: a mailing list
+    - superuser: admin account with full access
+    - apiKey: API key for programmatic access
+    - oauthClient: OAuth client registration
+    - tenant: multi-tenant organization unit
+    - role: a role with permissions

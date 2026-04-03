@@ -1,0 +1,17 @@
+# vimeo.v3-auth.yaml
+# Authentication for Vimeo API v3
+# Uses Bearer token (access token)
+
+api:
+  name: vimeo-v3
+  version: v3
+  provider: vimeo
+  base_url: https://api.vimeo.com
+
+auth:
+  type: bearer
+  client_secret: "${VIMEO_ACCESS_TOKEN}"
+  # Get from: https://developer.vimeo.com/apps
+
+  token_storage: local
+  refresh_automatically: false

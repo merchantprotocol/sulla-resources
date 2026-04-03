@@ -1,0 +1,17 @@
+# typeform.v1-auth.yaml
+# Authentication for Typeform API v1
+# Uses Bearer token (personal access token)
+
+api:
+  name: typeform-v1
+  version: v1
+  provider: typeform
+  base_url: https://api.typeform.com
+
+auth:
+  type: bearer
+  client_secret: "${TYPEFORM_ACCESS_TOKEN}"
+  # Get from: Typeform → Account → Personal tokens → Generate new token
+
+  token_storage: local
+  refresh_automatically: false

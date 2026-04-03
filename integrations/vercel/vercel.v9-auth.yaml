@@ -1,0 +1,17 @@
+# vercel.v9-auth.yaml
+# Authentication for Vercel API v9
+# Uses Bearer token
+
+api:
+  name: vercel-v9
+  version: v9
+  provider: vercel
+  base_url: https://api.vercel.com
+
+auth:
+  type: bearer
+  client_secret: "${VERCEL_TOKEN}"
+  # Get from: Vercel -> Settings -> Tokens -> Create
+
+  token_storage: local
+  refresh_automatically: false

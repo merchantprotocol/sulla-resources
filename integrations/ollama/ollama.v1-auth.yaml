@@ -1,0 +1,14 @@
+# ollama.v1-auth.yaml
+# Authentication for Ollama API (local)
+# No authentication required - runs locally
+
+api:
+  name: ollama-v1
+  version: v1
+  provider: ollama
+  base_url: http://localhost:11434
+
+auth:
+  type: none
+  # Ollama runs locally, no authentication needed
+  # Ensure Ollama is running: ollama serve

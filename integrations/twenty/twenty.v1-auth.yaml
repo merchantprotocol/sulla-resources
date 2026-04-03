@@ -1,0 +1,35 @@
+# twenty.v1-auth.yaml
+# Authentication configuration for Twenty CRM REST & GraphQL APIs
+# Credentials are stored via the IntegrationService (Settings → Integrations → Twenty CRM)
+# Properties: bearer_token (API key), base_url (instance URL)
+
+api:
+  name: twenty-crm-rest
+  version: v1
+  provider: twenty
+  base_url: "http://localhost:30207"
+
+auth:
+  type: bearer
+  token_storage: local
+  refresh_automatically: false
+
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+rate_limits:
+  requests_per_second: 10
+  requests_per_minute: 600
+  batch_max_records: 60
+
+discovery:
+  rest_endpoint: /rest/metadata/objects
+  graphql_endpoint: /graphql
+  description: |
+    Use the metadata endpoint to discover all standard and custom objects.
+    The GraphQL endpoint supports introspection for schema discovery.
+    REST API supports filter, orderBy, limit, and cursor query parameters
+    for pagination and filtering on all collection endpoints.
+    API keys are generated in Settings → API & Webhooks inside the Twenty UI.
+    Both REST and GraphQL APIs use the same Bearer token for authentication.

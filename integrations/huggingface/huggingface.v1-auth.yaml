@@ -1,0 +1,17 @@
+# huggingface.v1-auth.yaml
+# Authentication for Hugging Face API
+# Uses Bearer token (access token)
+
+api:
+  name: huggingface-v1
+  version: v1
+  provider: huggingface
+  base_url: https://huggingface.co/api
+
+auth:
+  type: bearer
+  client_secret: "${HUGGINGFACE_TOKEN}"
+  # Get from: https://huggingface.co/settings/tokens
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,234 @@
+id: workflow-goal-setter
+name: Goal Setter
+description: Multi-horizon goal-setting workflow — compresses inputs, runs goal-cycle at 2yr/13wk/daily horizons, derives weekly goals, writes goals journal
+version: 1
+createdAt: 2026-03-18T06:00:00.000Z
+updatedAt: 2026-03-19T23:40:00.000Z
+nodes:
+  - id: node-4000000000001
+    type: workflow
+    position:
+      x: 500
+      y: 0
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives domain name, identity file path, and journal path from parent daily planning workflow
+  - id: node-1773844547163
+    type: workflow
+    position:
+      x: 496.42591852560633
+      y: 135.91562290425833
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Load Goals Skill
+      config:
+        prompt: |-
+          The trigger message tells you the domain and file paths for goal setting.
+          Determine the domain (human, business, world, or agent) from the trigger.
+
+          Step 1: Call your file_search tool with query "goals-journal" to find the goals-journal skill file.
+          Step 2: Use exec to read the full contents of the SKILL.md file found in step 1.
+          Step 3: Return the complete skill content as your output. Do NOT summarize — return the full text.
+  - id: node-4000000000010
+    type: workflow
+    position:
+      x: 500
+      y: 260
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Compress Inputs
+      config: {}
+  - id: node-4000000000012
+    type: workflow
+    position:
+      x: 378.2400385748284
+      y: 425.0377389428038
+    data:
+      subtype: agent
+      category: agent
+      label: Extract Identity Delta
+      config:
+        agentId: goal-setter
+        agentName: Identity Extractor
+        additionalPrompt: ""
+        orchestratorInstructions: "Read the identity file for this domain. Extract: (1) recent changes from the change log, (2) current state snapshot of goals, pains, patterns, emotional state, and financial state, (3) trajectory — where is this entity heading? Produce a compressed snapshot, not the full file."
+        successCriteria: A compressed identity snapshot under 600 words
+        completionContract: Exit when snapshot is complete
+  - id: node-4000000000013
+    type: workflow
+    position:
+      x: 618.7189834210853
+      y: 425.3366266901998
+    data:
+      subtype: agent
+      category: agent
+      label: Extract Journal State
+      config:
+        agentId: goal-setter
+        agentName: Journal Extractor
+        additionalPrompt: ""
+        orchestratorInstructions: "Read the current Goals Journal file for this domain. If no journal exists yet, report that. Otherwise extract: (1) current 2-year vision summary, (2) 13-week arc status and milestone progress, (3) current week's objectives and progress, (4) habit streaks and recent scores, (5) last 3 daily focus entries. Produce a compressed state report."
+        successCriteria: A compressed journal state under 800 words
+        completionContract: Exit when state report is complete
+  - id: node-4000000000020
+    type: workflow
+    position:
+      x: 500
+      y: 580
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Inputs
+      config:
+        strategy: wait-all
+  - id: node-4000000000030
+    type: workflow
+    position:
+      x: 500
+      y: 720
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Goals 2-Year Vision
+      config:
+        workflowId: workflow-goal-cycle
+        awaitResponse: true
+        agentId: goal-setter
+        orchestratorPrompt: "Run the goal-cycle for the 2-YEAR VISION time horizon. Here are the compressed inputs from the reader agents — pass them all to the goal-cycle trigger. The question for each perspective lens: 'If the only goal were [your perspective], what would the 2-year vision look like?' No constraints from higher horizons — this IS the highest horizon."
+  - id: node-4000000000040
+    type: workflow
+    position:
+      x: 524.8205441811268
+      y: 880
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Goals 13-Week Arc
+      config:
+        workflowId: workflow-goal-cycle
+        awaitResponse: true
+        agentId: goal-setter
+        orchestratorPrompt: "Run the goal-cycle for the 13-WEEK ARC time horizon. Pass the compressed inputs AND the refined 2-year vision from the previous step. The 2-year vision is a hard constraint — the 13-week arc must serve it. The question for each perspective lens: 'Given the 2-year vision, if the only goal were [your perspective], what 13-week arc would best advance it?'"
+  - id: node-4000000000050
+    type: workflow
+    position:
+      x: 479.55955185083667
+      y: 1050.2202240745817
+    data:
+      subtype: agent
+      category: agent
+      label: Derive Weekly Goals
+      config:
+        agentId: goal-setter
+        agentName: Weekly Goals
+        additionalPrompt: ""
+        orchestratorInstructions: Using the refined 13-week arc from the previous step and the compressed journal state, derive this week's goals. Set 3 weekly objectives that directly advance the 13-week critical drivers. Set 3 big-three wins targets. Follow the Goals Journal format from the goals-journal skill for the Weekly Project section. This is tactical — decisions were made at higher horizons. Just operationalize them.
+        successCriteria: A complete weekly project section following the journal format
+        completionContract: Exit when weekly goals are written
+  - id: node-4000000000060
+    type: workflow
+    position:
+      x: 500
+      y: 1200
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Goals Daily Focus
+      config:
+        workflowId: workflow-goal-cycle
+        awaitResponse: true
+        agentId: goal-setter
+        orchestratorPrompt: "Run the goal-cycle for the DAILY FOCUS time horizon. Pass the compressed inputs, the 2-year vision, the 13-week arc, AND the weekly goals. All higher horizons are constraints. The question for each perspective lens: 'Given the weekly objectives and 13-week arc, what should today look like from [your perspective]?' The daily goals are what the planner will turn into action — they must be precise, achievable, and grounded in today's observed energy and emotional state."
+  - id: node-4000000000070
+    type: workflow
+    position:
+      x: 500.8310167854597
+      y: 1372.4652517818959
+    data:
+      subtype: agent
+      category: agent
+      label: Write Goals Journal
+      config:
+        agentId: goal-setter
+        agentName: Journal Writer
+        additionalPrompt: ""
+        orchestratorInstructions: "You have the refined goals from all 4 horizons: 2-year vision, 13-week arc, weekly project, and daily focus. Compile them into the Goals Journal format defined in the goals-journal skill. Write to the journal file path provided in the trigger message. If a journal already exists, update it — append the daily focus, update the weekly section, and only modify higher horizons if they changed. Write the change log documenting what changed and why."
+        successCriteria: Complete Goals Journal file written in the correct format
+        completionContract: Exit when journal file is saved
+  - id: node-4000000000099
+    type: workflow
+    position:
+      x: 500
+      y: 1520
+    data:
+      subtype: response
+      category: io
+      label: Done
+      config:
+        responseTemplate: Goal setting complete for this domain. Goals journal updated.
+edges:
+  - id: vueflow__edge-node-4000000000001-node-1773844547163
+    source: node-4000000000001
+    target: node-1773844547163
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: vueflow__edge-node-1773844547163-node-4000000000010
+    source: node-1773844547163
+    target: node-4000000000010
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+  - id: e-compress-identity
+    source: node-4000000000010
+    target: node-4000000000012
+    animated: true
+  - id: e-compress-journal
+    source: node-4000000000010
+    target: node-4000000000013
+    animated: true
+  - id: e-identity-merge
+    source: node-4000000000012
+    target: node-4000000000020
+    animated: true
+  - id: e-journal-merge
+    source: node-4000000000013
+    target: node-4000000000020
+    animated: true
+  - id: e-merge-2yr
+    source: node-4000000000020
+    target: node-4000000000030
+    animated: true
+  - id: e-2yr-13wk
+    source: node-4000000000030
+    target: node-4000000000040
+    animated: true
+  - id: e-13wk-weekly
+    source: node-4000000000040
+    target: node-4000000000050
+    animated: true
+  - id: e-weekly-daily
+    source: node-4000000000050
+    target: node-4000000000060
+    animated: true
+  - id: e-daily-journal
+    source: node-4000000000060
+    target: node-4000000000070
+    animated: true
+  - id: e-journal-done
+    source: node-4000000000070
+    target: node-4000000000099
+    animated: true
+_status: production
+viewport:
+  x: -709.3429626840475
+  y: -481.12812725292224
+  zoom: 1.824703875770942

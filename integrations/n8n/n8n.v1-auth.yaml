@@ -1,0 +1,21 @@
+# n8n.v1-auth.yaml
+# Authentication for n8n API v1
+# Supports Bearer token or API key via X-N8N-API-KEY header
+
+api:
+  name: n8n-v1
+  version: v1
+  provider: n8n
+  base_url: http://127.0.0.1:30119/api/v1
+
+auth:
+  type: apikey
+  header: X-N8N-API-KEY
+  client_secret: "${N8N_API_KEY}"
+  # Get from: n8n → Settings → API → Create API Key
+  # Update base_url to match your n8n instance URL
+  # Self-hosted default: http://localhost:5678
+  # n8n Cloud: https://<your-instance>.app.n8n.cloud
+
+  token_storage: local
+  refresh_automatically: false

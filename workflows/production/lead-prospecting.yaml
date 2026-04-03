@@ -1,0 +1,596 @@
+id: workflow-lead-prospecting
+name: Lead Prospecting Pipeline
+description: Multi-source business discovery with strict tab management. Daily dated folders with source subdirectories. Dynamic source expansion, file-based scoring and dedup. Exits early on bot blocking.
+version: 6
+enabled: true
+nodes:
+  - id: node-1750000000001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Lead Prospecting Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "Lead prospecting - discover businesses from multiple sources"
+
+  - id: node-1750000000002
+    type: workflow
+    position:
+      x: 400
+      y: 220
+    data:
+      subtype: agent
+      category: agent
+      label: Load ICP Config + Set Date
+      config:
+        agentId: icp-loader
+        agentName: ICP Config Loader
+        additionalPrompt: ""
+        orchestratorInstructions: "Load ICP criteria, geographic focus, target industries. Get current date as YYYY-MM-DD. Output config: icp_criteria, geo_focus, target_industries, available_sources, today_date."
+        successCriteria: Config loaded with date
+        completionContract: Exit when config ready
+
+  - id: node-1750000000003
+    type: workflow
+    position:
+      x: 400
+      y: 340
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Parallel Source Discovery
+      config: {}
+
+  - id: node-1750000000004
+    type: workflow
+    position:
+      x: 50
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Google Maps Scraper
+      config:
+        agentId: google-maps-scraper
+        agentName: Google Maps Scraper
+        additionalPrompt: |
+          You are scraping Google Maps ONLY. Do not use any other source.
+          
+          DATE: {today_date}
+          
+          DIRECTORY STRUCTURE:
+          - Base: ~/sulla/projects/leads/{today_date}/
+          - Your directory: ~/sulla/projects/leads/{today_date}/google-maps/
+          
+          TAB MANAGEMENT RULES:
+          - You may have only ONE browser tab open at a time
+          - Before opening a new tab, CLOSE the current tab
+          - Never have multiple tabs open simultaneously
+          
+          BOT PREVENTION:
+          - If you encounter CAPTCHA, Cloudflare, "suspicious activity" messages, or any blocking:
+            - Stop immediately
+            - Return partial results collected so far
+            - Do NOT try to work around it
+            - Exit early with what you have
+          
+          TASK:
+          1. Create directories:
+             - mkdir -p ~/sulla/projects/leads/{today_date}/google-maps/
+          2. Open Google Maps in a single browser tab
+          3. Search for: "{industry} in {location}"
+          4. Scroll through results, collect businesses matching ICP
+          5. For each business extract:
+             - business_name, address, phone, website
+             - rating, review_count, category
+             - place_id, hours, status
+          6. Apply 5-second delay between searches
+          7. Max 20 results per search term
+          
+          SAVE LEADS:
+          - For each lead, create markdown file:
+            - Filename: {business-name-slug}.md
+            - Location: ~/sulla/projects/leads/{today_date}/google-maps/
+          
+          MARKDOWN TEMPLATE:
+          ```markdown
+          # {business_name}
+          
+          **Source:** Google Maps
+          **Discovered:** {today_date}
+          **Category:** {category}
+          
+          ## Contact
+          - **Website:** {website}
+          - **Phone:** {phone}
+          - **Address:** {address}
+          
+          ## Business Info
+          - **Rating:** {rating}/5 ({review_count} reviews)
+          - **Status:** {status}
+          - **Hours:** {hours}
+          
+          ## Raw Data
+          {raw_data_json}
+          ```
+          
+          OUTPUT:
+          - Report: number of leads saved, file paths, was_blocked (true/false)
+          
+          When done, close your browser tab and exit.
+        orchestratorInstructions: "Search Google Maps for businesses matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/google-maps/."
+        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/google-maps/
+        completionContract: Exit when saves complete or blocked. Close all tabs.
+
+  - id: node-1750000000005
+    type: workflow
+    position:
+      x: 200
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Yelp Scraper
+      config:
+        agentId: yelp-scraper
+        agentName: Yelp Scraper
+        additionalPrompt: |
+          You are scraping Yelp ONLY. Do not use any other source.
+          
+          DATE: {today_date}
+          
+          DIRECTORY STRUCTURE:
+          - Base: ~/sulla/projects/leads/{today_date}/
+          - Your directory: ~/sulla/projects/leads/{today_date}/yelp/
+          
+          TAB MANAGEMENT RULES:
+          - You may have only ONE browser tab open at a time
+          - Before opening a new tab, CLOSE the current tab
+          - Never have multiple tabs open simultaneously
+          
+          BOT PREVENTION:
+          - If you encounter CAPTCHA, Cloudflare, "suspicious activity" messages, or any blocking:
+            - Stop immediately
+            - Return partial results collected so far
+            - Do NOT try to work around it
+            - Exit early with what you have
+          
+          TASK:
+          1. Create directories:
+             - mkdir -p ~/sulla/projects/leads/{today_date}/yelp/
+          2. Open Yelp in a single browser tab
+          3. Search for: "{industry} in {location}"
+          4. Scroll through results, collect businesses matching ICP
+          5. For each business extract:
+             - business_name, address, phone, website
+             - rating, review_count, category
+             - years_in_business (if available)
+          6. Apply 3-second delay between searches
+          6. Max 50 results
+          
+          SAVE LEADS:
+          - For each lead, create markdown file:
+            - Filename: {business-name-slug}.md
+            - Location: ~/sulla/projects/leads/{today_date}/yelp/
+          
+          MARKDOWN TEMPLATE:
+          ```markdown
+          # {business_name}
+          
+          **Source:** Yelp
+          **Discovered:** {today_date}
+          **Category:** {category}
+          
+          ## Contact
+          - **Website:** {website}
+          - **Phone:** {phone}
+          - **Address:** {address}
+          
+          ## Business Info
+          - **Rating:** {rating}/5 ({review_count} reviews)
+          - **Years in Business:** {years}
+          
+          ## Raw Data
+          {raw_data_json}
+          ```
+          
+          OUTPUT:
+          - Report: number of leads saved, file paths, was_blocked (true/false)
+          
+          When done, close your browser tab and exit.
+        orchestratorInstructions: "Search Yelp for businesses matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/yelp/."
+        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/yelp/
+        completionContract: Exit when saves complete or blocked. Close all tabs.
+
+  - id: node-1750000000006
+    type: workflow
+    position:
+      x: 350
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Crunchbase Scraper
+      config:
+        agentId: crunchbase-scraper
+        agentName: Crunchbase Scraper
+        additionalPrompt: |
+          You are scraping Crunchbase ONLY. Do not use any other source.
+          
+          DATE: {today_date}
+          
+          DIRECTORY STRUCTURE:
+          - Base: ~/sulla/projects/leads/{today_date}/
+          - Your directory: ~/sulla/projects/leads/{today_date}/crunchbase/
+          
+          TAB MANAGEMENT RULES:
+          - You may have only ONE browser tab open at a time
+          - Before opening a new tab, CLOSE the current tab
+          - Never have multiple tabs open simultaneously
+          
+          BOT PREVENTION:
+          - If you encounter CAPTCHA, Cloudflare, login walls, or any blocking:
+            - Stop immediately
+            - Return partial results collected so far
+            - Do NOT try to work around it
+            - Exit early with what you have
+          
+          TASK:
+          1. Create directories:
+             - mkdir -p ~/sulla/projects/leads/{today_date}/crunchbase/
+          2. Open Crunchbase in a single browser tab
+          3. Search for startups in target industries with 2-200 employees
+          4. Filter by location: Idaho, Eastern Washington
+          5. For each company extract:
+             - company_name, domain, industry
+             - funding_stage, funding_amount
+             - employee_count, location
+             - description, founded_year
+          6. Apply 10-second delay between requests
+          7. Max 30 results
+          
+          SAVE LEADS:
+          - For each lead, create markdown file:
+            - Filename: {company-name-slug}.md
+            - Location: ~/sulla/projects/leads/{today_date}/crunchbase/
+          
+          MARKDOWN TEMPLATE:
+          ```markdown
+          # {company_name}
+          
+          **Source:** Crunchbase
+          **Discovered:** {today_date}
+          **Industry:** {industry}
+          
+          ## Contact
+          - **Website:** {website}
+          - **Location:** {location}
+          
+          ## Company Info
+          - **Employees:** {employee_count}
+          - **Funding Stage:** {funding_stage}
+          - **Funding Amount:** {funding_amount}
+          - **Founded:** {founded_year}
+          - **Description:** {description}
+          
+          ## Raw Data
+          {raw_data_json}
+          ```
+          
+          OUTPUT:
+          - Report: number of leads saved, file paths, was_blocked (true/false)
+          
+          When done, close your browser tab and exit.
+        orchestratorInstructions: "Search Crunchbase for startups matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/crunchbase/."
+        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/crunchbase/
+        completionContract: Exit when saves complete or blocked. Close all tabs.
+
+  - id: node-1750000000007
+    type: workflow
+    position:
+      x: 500
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: GitHub Scraper
+      config:
+        agentId: github-scraper
+        agentName: GitHub Scraper
+        additionalPrompt: |
+          You are scraping GitHub ONLY. Do not use any other source.
+          
+          DATE: {today_date}
+          
+          DIRECTORY STRUCTURE:
+          - Base: ~/sulla/projects/leads/{today_date}/
+          - Your directory: ~/sulla/projects/leads/{today_date}/github/
+          
+          TAB MANAGEMENT RULES:
+          - You may have only ONE browser tab open at a time
+          - Before opening a new tab, CLOSE the current tab
+          - Never have multiple tabs open simultaneously
+          
+          BOT PREVENTION:
+          - If you encounter rate limiting, CAPTCHA, or any blocking:
+            - Stop immediately
+            - Return partial results collected so far
+            - Do NOT try to work around it
+            - Exit early with what you have
+          
+          TASK:
+          1. Create directories:
+             - mkdir -p ~/sulla/projects/leads/{today_date}/github/
+          2. Open GitHub in a single browser tab
+          3. Search for organizations in target industries
+          4. Filter by location: Coeur d'Alene, Spokane, Idaho in bio/location
+          5. For each org extract:
+             - org_name, domain (from README or profile)
+             - description, location
+             - repo_count, member_count
+             - primary_language, last_activity
+          6. Apply 3-second delay between requests
+          7. Max 40 results
+          
+          SAVE LEADS:
+          - For each lead, create markdown file:
+            - Filename: {org-name-slug}.md
+            - Location: ~/sulla/projects/leads/{today_date}/github/
+          
+          MARKDOWN TEMPLATE:
+          ```markdown
+          # {org_name}
+          
+          **Source:** GitHub
+          **Discovered:** {today_date}
+          **Tech Stack:** {primary_language}
+          
+          ## Contact
+          - **Website:** {website}
+          - **Location:** {location}
+          
+          ## Organization Info
+          - **Description:** {description}
+          - **Repositories:** {repo_count}
+          - **Members:** {member_count}
+          - **Last Activity:** {last_activity}
+          
+          ## Raw Data
+          {raw_data_json}
+          ```
+          
+          OUTPUT:
+          - Report: number of leads saved, file paths, was_blocked (true/false)
+          
+          When done, close your browser tab and exit.
+        orchestratorInstructions: "Search GitHub for organizations matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/github/."
+        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/github/
+        completionContract: Exit when saves complete or blocked. Close all tabs.
+
+  - id: node-1750000000008
+    type: workflow
+    position:
+      x: 400
+      y: 580
+    data:
+      subtype: agent
+      category: agent
+      label: Evaluate Additional Sources
+      config:
+        agentId: source-evaluator
+        agentName: Source Expansion Evaluator
+        additionalPrompt: |
+          You are evaluating whether to scrape additional sources beyond the initial parallel batch.
+          
+          DATE: {today_date}
+          
+          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          
+          AVAILABLE SOURCES (from ICP config):
+          - google_maps (completed?)
+          - yelp (completed?)
+          - crunchbase (completed?)
+          - github (completed?)
+          - merchant_circle (available?)
+          - yellowpages (available?)
+          - angellist (available?)
+          - linkedin (available?)
+          - industry_specific (available?)
+          
+          TASK:
+          1. Check which sources were scraped in the parallel batch:
+             - Look for directories: ~/sulla/projects/leads/{today_date}/{source}/
+             - Check if each has .md files
+          
+          2. For each source NOT yet scraped:
+             - Evaluate: Is this source valuable for the ICP?
+             - Check: Was the source blocked in previous attempts (check logs)?
+             - Decide: Should we scrape it now?
+          
+          3. For sources to scrape:
+             - Spawn a sub-agent for each new source
+             - Pass: industry, location, ICP criteria, today_date, source-specific instructions
+             - Sub-agent creates: ~/sulla/projects/leads/{today_date}/{source}/
+             - Sub-agent saves leads to that directory
+          
+          4. Wait for all sub-agents to complete
+          
+          OUTPUT:
+          - Report: sources_evaluated, sources_added, new_leads_count
+          - List of all source directories with lead counts
+          
+          DECISION CRITERIA:
+          - Add source if: ICP-relevant, not previously blocked, likely to have quality leads
+          - Skip source if: already scraped, known to be blocked, not relevant to ICP
+        orchestratorInstructions: "Evaluate which sources were scraped, identify gaps, spawn sub-agents for additional valuable sources. Wait for completion before proceeding."
+        successCriteria: Additional sources scraped (or decision made to skip)
+        completionContract: Exit when evaluation complete and any additional scrapers finished
+
+  - id: node-1750000000009
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Score Leads (File-Based)
+      config:
+        agentId: lead-scorer
+        agentName: Lead Scorer
+        additionalPrompt: |
+          You are scoring leads by updating files directly. Do NOT load all files into memory.
+          
+          DATE: {today_date}
+          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          
+          SCORING CRITERIA (0-100):
+          - Has website: +20
+          - Rating > 4.0: +15
+          - Review count > 10: +10
+          - Employee count 10-200: +15
+          - Recent activity (GitHub): +10
+          - Funding raised (Crunchbase): +15
+          - Complete contact info: +15
+          
+          TASK:
+          1. Find all source directories: ~/sulla/projects/leads/{today_date}/*/
+          2. For EACH source directory, iterate through .md files:
+             a. Read the file
+             b. Extract: website, rating, review_count, employee_count, funding, contact info
+             c. Calculate score based on criteria above
+             d. Update the file: add "**Lead Score:** {score}/100" after the title
+             e. Write the file back
+          
+          3. Track: files_processed, average_score, high_score_count (>=70)
+          
+          OUTPUT:
+          - Report: total files scored, score distribution by source
+          
+          WORK FILE-BY-FILE. Never load all files at once.
+        orchestratorInstructions: "Score each lead file individually in ~/sulla/projects/leads/{today_date}/. Read, calculate score, update file in place. Process all source directories."
+        successCriteria: All lead files scored and updated
+        completionContract: Exit when all files processed
+
+  - id: node-1750000000010
+    type: workflow
+    position:
+      x: 400
+      y: 820
+    data:
+      subtype: agent
+      category: agent
+      label: Deduplicate Leads (File-Based)
+      config:
+        agentId: lead-deduplicator
+        agentName: Lead Deduplicator
+        additionalPrompt: |
+          You are removing duplicate leads by deleting files. Do NOT load all files into memory.
+          
+          DATE: {today_date}
+          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          
+          DEDUPLICATION LOGIC:
+          - Duplicate = same business_name OR same website domain
+          - When duplicates found: KEEP the file with highest lead score, DELETE the others
+          
+          TASK:
+          1. Build an index by reading files one at a time:
+             - Find all .md files in ~/sulla/projects/leads/{today_date}/*/
+             - Extract: business_name, website, lead_score, file_path
+             - Store in memory: {normalized_key: {score, path}}
+          
+          2. Normalize keys:
+             - business_name: lowercase, remove punctuation
+             - website: extract domain, lowercase, remove www
+          
+          3. When duplicate detected:
+             - Compare lead scores
+             - DELETE the file with lower score: rm {file_path}
+             - Keep the higher-scored file
+          
+          4. Track: duplicates_found, files_deleted, files_kept
+          
+          OUTPUT:
+          - Report: duplicates removed, files remaining per source
+          
+          WORK FILE-BY-FILE. Only store index in memory, not file contents.
+        orchestratorInstructions: "Scan all lead files in ~/sulla/projects/leads/{today_date}/, identify duplicates by name/website, delete lower-scored duplicates. Keep highest score."
+        successCriteria: Duplicates removed, only unique leads remain
+        completionContract: Exit when deduplication complete
+
+  - id: node-1750000000011
+    type: workflow
+    position:
+      x: 400
+      y: 940
+    data:
+      subtype: agent
+      category: agent
+      label: Generate Summary
+      config:
+        agentId: summary-generator
+        agentName: Summary Generator
+        additionalPrompt: |
+          Generate a concise summary of the lead prospecting run.
+          
+          DATE: {today_date}
+          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          
+          Include:
+          - Source directories and lead counts (count .md files in each)
+          - Average lead score
+          - Duplicates removed
+          - Final unique lead count
+          - Top 5 leads by score (read top files)
+          - Directory path for user reference
+          
+          Output as formatted markdown for the user.
+        orchestratorInstructions: "Count files in each source directory under ~/sulla/projects/leads/{today_date}/, calculate stats, report top leads."
+        successCriteria: Summary generated
+        completionContract: Exit when summary complete
+
+edges:
+  - id: edge-001
+    source: node-1750000000001
+    target: node-1750000000002
+  - id: edge-002
+    source: node-1750000000002
+    target: node-1750000000003
+  - id: edge-003
+    source: node-1750000000003
+    target: node-1750000000004
+  - id: edge-004
+    source: node-1750000000003
+    target: node-1750000000005
+  - id: edge-005
+    source: node-1750000000003
+    target: node-1750000000006
+  - id: edge-006
+    source: node-1750000000003
+    target: node-1750000000007
+  - id: edge-007
+    source: node-1750000000004
+    target: node-1750000000008
+  - id: edge-008
+    source: node-1750000000005
+    target: node-1750000000008
+  - id: edge-009
+    source: node-1750000000006
+    target: node-1750000000008
+  - id: edge-010
+    source: node-1750000000007
+    target: node-1750000000008
+  - id: edge-011
+    source: node-1750000000008
+    target: node-1750000000009
+  - id: edge-012
+    source: node-1750000000009
+    target: node-1750000000010
+  - id: edge-013
+    source: node-1750000000010
+    target: node-1750000000011

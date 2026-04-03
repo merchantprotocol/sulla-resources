@@ -1,0 +1,43 @@
+# chatwoot-auth.yaml
+# Authentication configuration for Chatwoot API (local Docker install)
+# Uses api_access_token header for all authenticated requests
+
+api:
+  name: chatwoot-api
+  version: v1
+  provider: chatwoot
+  base_url: http://localhost:30290/api/v1
+
+auth:
+  type: api_key
+  key_name: api_access_token
+  key_location: header
+  value: "${CHATWOOT_API_ACCESS_TOKEN}"
+
+  # User API key - obtained from Chatwoot profile settings
+  # Super admin token can also be used for platform-level endpoints
+  notes: |
+    Authentication is done via the api_access_token header.
+    Each user has a unique API access token found in their profile settings.
+    Platform API endpoints (/platform) require a platform_app access token.
+
+  headers:
+    Content-Type: application/json
+
+  docker:
+    container_name: chatwoot
+    network: sulla_default
+    internal_url: http://chatwoot:3000/api/v1
+    host_port: 30290
+    notes: |
+      Chatwoot runs on port 3000 internally, mapped to 30290 on the host.
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).
+      Some report endpoints use /api/v2 instead of /api/v1.
+
+account:
+  account_id: "${CHATWOOT_ACCOUNT_ID}"
+  description: |
+    Most API paths are scoped to an account:
+    /api/v1/accounts/{account_id}/...
+    The account_id is required for nearly all endpoints.

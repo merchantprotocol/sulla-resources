@@ -1,0 +1,17 @@
+# sendgrid.v3-auth.yaml
+# Authentication for SendGrid API v3
+# Uses Bearer token (API key)
+
+api:
+  name: sendgrid-v3
+  version: v3
+  provider: sendgrid
+  base_url: https://api.sendgrid.com/v3
+
+auth:
+  type: bearer
+  client_secret: "${SENDGRID_API_KEY}"
+  # Get from: SendGrid -> Settings -> API Keys -> Create API Key
+
+  token_storage: local
+  refresh_automatically: false

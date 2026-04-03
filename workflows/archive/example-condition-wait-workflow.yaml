@@ -1,0 +1,200 @@
+id: example-condition-wait-workflow
+name: Example - Condition & Wait Pattern
+description: Demonstrates conditional logic with timed delays for external processes
+version: 1
+createdAt: 2026-03-14T00:00:00.000Z
+updatedAt: 2026-03-14T00:00:00.000Z
+tags:
+  - example
+  - condition
+  - wait
+  - flow-control
+pattern: condition-wait
+nodes:
+  # Trigger: User initiates a process requiring external validation
+  - id: node-5001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "User initiates process requiring validation"
+  
+  # Action Agent: Start the external process
+  - id: node-5002
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: agent
+      category: agent
+      label: Initiate Process Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Initiate the requested process and return a tracking ID or reference."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Process initiated with tracking ID"
+        completionContract: ""
+  
+  # Wait: Give external process time to complete
+  - id: node-5003
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: wait
+      category: flow-control
+      label: Wait for Processing
+      config:
+        delayAmount: 30
+        delayUnit: seconds
+  
+  # Check Agent: Verify process completion
+  - id: node-5004
+    type: workflow
+    position:
+      x: 400
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Check Status Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Check if the process with tracking ID {{agent.trackingId}} has completed. Return success/failure status."
+        userMessage: "Check status for: {{agent.trackingId}}"
+        beforePrompt: ""
+        successCriteria: "Status determined"
+        completionContract: ""
+  
+  # Condition: Check if process succeeded
+  - id: node-5005
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: condition
+      category: routing
+      label: Process Successful?
+      config:
+        rules:
+          - field: status
+            operator: equals
+            value: success
+        combinator: and
+  
+  # Success Handler
+  - id: node-5006
+    type: workflow
+    position:
+      x: 200
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Success Handler Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Process the successful result and prepare confirmation for the user."
+        userMessage: "Process completed successfully"
+        beforePrompt: ""
+        successCriteria: "Success message prepared"
+        completionContract: ""
+  
+  # Failure Handler
+  - id: node-5007
+    type: workflow
+    position:
+      x: 600
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Failure Handler Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Handle the failed process. Determine if retry is needed or if user should be notified of failure."
+        userMessage: "Process failed. Error details: {{check.errorDetails}}"
+        beforePrompt: ""
+        successCriteria: "Failure handled appropriately"
+        completionContract: ""
+  
+  # Response: Send result
+  - id: node-5008
+    type: workflow
+    position:
+      x: 400
+      y: 1000
+    data:
+      subtype: response
+      category: io
+      label: Send Result
+      config:
+        responseTemplate: "{{handler.message}}"
+        includeContext: true
+edges:
+  # Trigger → Initiate
+  - id: edge-5001
+    source: node-5001
+    target: node-5002
+    sourceHandle: null
+    targetHandle: null
+  # Initiate → Wait
+  - id: edge-5002
+    source: node-5002
+    target: node-5003
+    sourceHandle: null
+    targetHandle: null
+  # Wait → Check
+  - id: edge-5003
+    source: node-5003
+    target: node-5004
+    sourceHandle: null
+    targetHandle: null
+  # Check → Condition
+  - id: edge-5004
+    source: node-5004
+    target: node-5005
+    sourceHandle: null
+    targetHandle: null
+  # Condition True → Success Handler
+  - id: edge-5005
+    source: node-5005
+    target: node-5006
+    sourceHandle: condition-true
+    targetHandle: null
+  # Condition False → Failure Handler
+  - id: edge-5006
+    source: node-5005
+    target: node-5007
+    sourceHandle: condition-false
+    targetHandle: null
+  # Success Handler → Response
+  - id: edge-5007
+    source: node-5006
+    target: node-5008
+    sourceHandle: null
+    targetHandle: null
+  # Failure Handler → Response
+  - id: edge-5008
+    source: node-5007
+    target: node-5008
+    sourceHandle: null
+    targetHandle: null
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

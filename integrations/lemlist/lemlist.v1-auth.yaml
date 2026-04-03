@@ -1,0 +1,20 @@
+# lemlist.v1-auth.yaml
+# Authentication for Lemlist API v1
+# Uses API key via query parameter or Basic auth (apiKey as password)
+
+api:
+  name: lemlist-v1
+  version: v1
+  provider: lemlist
+  base_url: https://api.lemlist.com/api
+
+auth:
+  type: api_key
+  location: query
+  param_name: apiKey
+  client_secret: "${LEMLIST_API_KEY}"
+  # Get from: Lemlist -> Settings -> Integrations -> API
+  # Can also be used as Basic auth with empty username and API key as password
+
+  token_storage: local
+  refresh_automatically: false

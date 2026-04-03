@@ -1,0 +1,19 @@
+# mailgun.v3-auth.yaml
+# Authentication for Mailgun API v3
+# Uses HTTP Basic auth (api:MAILGUN_API_KEY)
+
+api:
+  name: mailgun-v3
+  version: v3
+  provider: mailgun
+  base_url: https://api.mailgun.net/v3
+
+auth:
+  type: basic
+  username: "api"
+  client_secret: "${MAILGUN_API_KEY}"
+  # Get from: Mailgun -> API Security -> API Keys
+  # For EU region, use https://api.eu.mailgun.net/v3 as base_url
+
+  token_storage: local
+  refresh_automatically: false

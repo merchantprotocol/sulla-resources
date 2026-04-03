@@ -1,0 +1,15 @@
+auth:
+  name: immich
+  description: Immich photo and video management server authentication configuration
+  base_url: http://localhost:30211/api
+  docker_port: 30211
+  version: 1.131.x
+  auth_method: api_key
+  auth_header: x-api-key
+  auth_token_env: IMMICH_API_KEY
+  notes: |
+    Immich is a self-hosted photo and video management solution.
+    All API requests require the x-api-key header with a valid API key.
+    API keys can be created in the Immich web UI under Account Settings > API Keys.
+    The base URL includes the /api prefix for all endpoints.
+    This configuration targets Immich pre-2.0 (1.131.x).

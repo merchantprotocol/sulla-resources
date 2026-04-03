@@ -1,0 +1,7 @@
+endpoint:
+  name: ping
+  description: Health check — returns pong with a timestamp.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp

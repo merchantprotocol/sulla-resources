@@ -1,0 +1,86 @@
+# erpnext-auth.yaml
+# Authentication configuration for ERPNext REST API (Frappe Framework v15)
+# Supports token-based auth (API Key + Secret), Bearer token (OAuth2), and Basic auth
+
+api:
+  name: erpnext-rest
+  version: "15"
+  provider: erpnext
+  base_url: http://localhost:30280
+
+auth:
+  # Primary: Token-based authentication (API Key + API Secret)
+  # Generate keys: User > Settings > API Access > Generate Keys
+  type: token
+  api_key: "${ERPNEXT_API_KEY}"
+  api_secret: "${ERPNEXT_API_SECRET}"
+  method: token  # Authorization: token api_key:api_secret
+
+  # Alternative: Bearer token (OAuth2)
+  # type: bearer
+  # access_token: "${ERPNEXT_ACCESS_TOKEN}"
+  # method: bearer  # Authorization: Bearer access_token
+
+  # Alternative: Basic auth (username:password base64 encoded)
+  # type: basic
+  # username: "${ERPNEXT_USERNAME}"
+  # password: "${ERPNEXT_PASSWORD}"
+  # method: basic_auth  # base64(username:password) in Authorization header
+
+  notes: |
+    ERPNext uses Frappe Framework authentication. Three methods are supported:
+
+    1. Token Auth (recommended for API integrations):
+       - Go to User list, open user, click Settings tab
+       - Expand API Access section, click Generate Keys
+       - Copy the API Secret (shown only once)
+       - Header: Authorization: token api_key:api_secret
+
+    2. Bearer Token (OAuth2):
+       - Set up OAuth2 client in Frappe
+       - Obtain access_token via OAuth2 flow
+       - Header: Authorization: Bearer access_token
+
+    3. Basic Auth:
+       - Header: Authorization: Basic base64(username:password)
+       - Not recommended for production use
+
+    All API responses are JSON. Successful responses wrap data in {"data": ...} for
+    resource endpoints, or {"message": ...} for method endpoints.
+    Error responses include {"exc_type": "...", "exception": "...", "_server_messages": "..."}.
+
+  # Headers sent with every request
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+docker:
+  container_name: erpnext-frontend
+  network: sulla_default
+  internal_url: http://erpnext-frontend:8080
+  host_port: 30280
+  internal_port: 8080
+  notes: |
+    ERPNext runs behind nginx in the erpnext-frontend container.
+    Port 30280 on the host maps to port 8080 inside the container.
+    For inter-container communication, use the internal_url.
+    For host-to-container, use base_url (localhost:30280).
+
+    Typical ERPNext Docker stack containers:
+    - erpnext-frontend (nginx reverse proxy, port 8080)
+    - erpnext-backend (gunicorn, Frappe/ERPNext app)
+    - erpnext-worker-short / erpnext-worker-long (background jobs)
+    - erpnext-scheduler (scheduled tasks)
+    - erpnext-redis-cache / erpnext-redis-queue (Redis instances)
+    - erpnext-db (MariaDB/PostgreSQL)
+
+discovery:
+  endpoint: /api/method/frappe.client.get_list
+  description: |
+    ERPNext does not have a single discovery endpoint like WordPress.
+    Frappe REST API uses /api/resource/{DocType} for all CRUD operations.
+    /api/method/{dotted.path} calls whitelisted server methods.
+    Use /api/method/ping to verify connectivity (returns {"message": "pong"}).
+    Use /api/method/frappe.client.get_list to query any DocType.
+    Use /api/method/frappe.client.get_count to count records.
+    Use /api/method/frappe.utils.change_log.get_versions for version info.

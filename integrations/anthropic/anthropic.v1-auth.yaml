@@ -1,0 +1,21 @@
+# anthropic.v1-auth.yaml
+# Authentication for Anthropic API v1
+# Uses API key via x-api-key header with required anthropic-version header
+
+api:
+  name: anthropic-v1
+  version: v1
+  provider: anthropic
+  base_url: https://api.anthropic.com/v1
+
+auth:
+  type: apiKey
+  client_secret: "${ANTHROPIC_API_KEY}"
+  # Get from: https://console.anthropic.com/settings/keys
+  header: x-api-key
+
+  extra_headers:
+    anthropic-version: "2023-06-01"
+
+  token_storage: local
+  refresh_automatically: false

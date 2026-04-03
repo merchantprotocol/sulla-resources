@@ -1,0 +1,34 @@
+# bigcommerce.v3-auth.yaml
+# Authentication configuration for BigCommerce API v3
+# Uses API Key (X-Auth-Token) with client ID (X-Auth-Client)
+
+api:
+  name: bigcommerce
+  version: "3"
+  provider: bigcommerce
+  base_url: https://api.bigcommerce.com/stores/${BIGCOMMERCE_STORE_HASH}/v3
+
+auth:
+  type: apiKey
+  header: X-Auth-Token
+  token: "${BIGCOMMERCE_ACCESS_TOKEN}"
+
+  additional_headers:
+    X-Auth-Client: "${BIGCOMMERCE_CLIENT_ID}"
+
+  # OAuth 2.0 for app-level auth
+  authorization_url: https://login.bigcommerce.com/oauth2/authorize
+  token_url: https://login.bigcommerce.com/oauth2/token
+  client_id: "${BIGCOMMERCE_CLIENT_ID}"
+  client_secret: "${BIGCOMMERCE_CLIENT_SECRET}"
+
+  scopes:
+    - store_v2_products
+    - store_v2_orders
+    - store_v2_customers
+    - store_v2_content
+    # - store_v2_information
+    # - store_v2_marketing
+
+  token_storage: local
+  refresh_automatically: false

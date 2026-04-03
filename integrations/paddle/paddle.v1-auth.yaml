@@ -1,0 +1,25 @@
+# paddle.v1-auth.yaml
+# Authentication configuration for Paddle API v1 (Billing)
+# Uses Bearer token (API key)
+
+api:
+  name: paddle
+  version: "1"
+  provider: paddle
+  base_url: https://api.paddle.com
+
+auth:
+  type: bearer
+  token: "${PADDLE_API_KEY}"
+
+  # No OAuth flow - uses static API keys generated in dashboard
+  # https://vendors.paddle.com/authentication
+  # Sandbox: https://sandbox-api.paddle.com
+
+  scopes: []
+  # Paddle API keys have full access to the account
+
+  token_storage: local
+  refresh_automatically: false
+
+  sandbox_base_url: https://sandbox-api.paddle.com

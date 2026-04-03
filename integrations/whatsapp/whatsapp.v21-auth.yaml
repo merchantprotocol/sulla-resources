@@ -1,0 +1,18 @@
+# whatsapp.v21-auth.yaml
+# Authentication for WhatsApp Business Cloud API v21.0
+# Uses Bearer token (permanent access token or system user token)
+
+api:
+  name: whatsapp-cloud-v21
+  version: v21
+  provider: whatsapp
+  base_url: https://graph.facebook.com/v21.0
+
+auth:
+  type: bearer
+  client_secret: "${WHATSAPP_ACCESS_TOKEN}"
+  # Get from: Meta Business Suite → System Users → Generate Token
+  # Or use a temporary token from Meta for Developers
+
+  token_storage: local
+  refresh_automatically: false

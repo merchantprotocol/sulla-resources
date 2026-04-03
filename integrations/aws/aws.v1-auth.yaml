@@ -1,0 +1,33 @@
+# aws.v1-auth.yaml
+# Authentication for AWS REST APIs
+# Uses Bearer token (AWS SSO / temporary credentials via STS)
+#
+# IMPORTANT: Most AWS APIs require AWS Signature V4 request signing,
+# which this ConfigAPI system does NOT support natively.
+# For full AWS API access, use the AWS SDK or CLI directly.
+#
+# However, some AWS services support simpler auth:
+# - API Gateway endpoints (custom APIs) use API keys or IAM auth
+# - AWS REST APIs can be called with temporary bearer tokens from STS
+# - Pre-signed URLs work for S3 without signing each request
+#
+# This integration provides endpoint definitions for documentation
+# and for use with manually-obtained temporary credentials.
+
+api:
+  name: aws-v1
+  version: v1
+  provider: aws
+  base_url: https://${AWS_REGION}.amazonaws.com
+
+auth:
+  type: bearer
+  client_secret: "${AWS_SESSION_TOKEN}"
+  # Obtain via: aws sts get-session-token
+  # Or via AWS SSO: aws sso login && aws configure export-credentials
+
+  default_headers:
+    X-Amz-Security-Token: "${AWS_SESSION_TOKEN}"
+
+  token_storage: local
+  refresh_automatically: false

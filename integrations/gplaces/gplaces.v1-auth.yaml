@@ -1,0 +1,17 @@
+# gplaces.v1-auth.yaml
+# Authentication configuration for Google Places API (New)
+# API key auth (Places API uses API keys, not OAuth)
+
+api:
+  name: google-places-v1
+  version: v1
+  provider: google
+  base_url: https://places.googleapis.com/v1
+
+auth:
+  type: apiKey
+  header_name: "X-Goog-Api-Key"
+  value: "${GOOGLE_API_KEY}"
+
+  headers:
+    Content-Type: "application/json"

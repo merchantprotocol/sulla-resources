@@ -1,0 +1,17 @@
+# instantly.v1-auth.yaml
+# Authentication for Instantly.ai API v1
+# Uses Bearer token
+
+api:
+  name: instantly-v1
+  version: v1
+  provider: instantly
+  base_url: https://api.instantly.ai/api/v1
+
+auth:
+  type: bearer
+  client_secret: "${INSTANTLY_API_KEY}"
+  # Get from: Instantly.ai -> Settings -> API -> API Key
+
+  token_storage: local
+  refresh_automatically: false

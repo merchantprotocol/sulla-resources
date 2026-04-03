@@ -1,0 +1,17 @@
+# runway.v1-auth.yaml
+# Authentication for Runway Gen-3 API v1
+# Uses Bearer token (API key)
+
+api:
+  name: runway-v1
+  version: v1
+  provider: runway
+  base_url: https://api.dev.runwayml.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${RUNWAY_API_KEY}"
+  # Get from: https://dev.runwayml.com/
+
+  token_storage: local
+  refresh_automatically: false

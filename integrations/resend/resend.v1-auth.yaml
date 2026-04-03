@@ -1,0 +1,17 @@
+# resend.v1-auth.yaml
+# Authentication for Resend API v1
+# Uses Bearer token
+
+api:
+  name: resend-v1
+  version: v1
+  provider: resend
+  base_url: https://api.resend.com
+
+auth:
+  type: bearer
+  client_secret: "${RESEND_API_KEY}"
+  # Get from: Resend -> API Keys -> Create API Key
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,31 @@
+# zoom.v2-auth.yaml
+# Authentication configuration for Zoom REST API v2
+# OAuth 2.0 (Server-to-Server or User-managed app)
+
+api:
+  name: zoom-rest-v2
+  version: v2
+  provider: zoom
+  base_url: https://api.zoom.us/v2
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${ZOOM_CLIENT_ID}"
+  client_secret: "${ZOOM_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://zoom.us/oauth/authorize
+  token_url: https://zoom.us/oauth/token
+
+  scopes:
+    - meeting:read
+    - meeting:write
+    - user:read
+    - recording:read
+    # - cloud_recording:read   # for cloud recordings
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

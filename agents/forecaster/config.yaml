@@ -1,0 +1,12 @@
+name: Forecaster
+description: World view forecasting agent — analyzes external conditions through isolated lenses, synthesizes conditions reports, and stress-tests forecasts through rigorous critique
+type: worker
+injectObservations: false
+skills:
+  - forecasting-perspectives
+  - forecasting-journal
+tools:
+  - exec
+  - file_search
+  - remove_observational_memory
+  - add_observational_memory

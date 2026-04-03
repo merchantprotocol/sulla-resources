@@ -1,0 +1,18 @@
+# square.v2-auth.yaml
+# Authentication for Square API v2
+# Uses Bearer token (access token)
+
+api:
+  name: square-v2
+  version: v2
+  provider: square
+  base_url: https://connect.squareup.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${SQUARE_ACCESS_TOKEN}"
+  # Square uses: Authorization: Bearer <access_token>
+  # Get from: https://developer.squareup.com/apps → Credentials
+
+  token_storage: local
+  refresh_automatically: false

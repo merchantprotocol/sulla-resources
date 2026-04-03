@@ -1,0 +1,27 @@
+# xero.v2-auth.yaml
+# Authentication for Xero API v2
+# Uses OAuth2 with access token
+
+api:
+  name: xero-v2
+  version: v2
+  provider: xero
+  base_url: https://api.xero.com/api.xro/2.0
+
+auth:
+  type: oauth2
+  client_id: "${XERO_CLIENT_ID}"
+  client_secret: "${XERO_CLIENT_SECRET}"
+  authorization_url: https://login.xero.com/identity/connect/authorize
+  token_url: https://identity.xero.com/connect/token
+  scopes:
+    - openid
+    - profile
+    - email
+    - accounting.transactions.read
+    - accounting.contacts.read
+    - accounting.settings.read
+  # Requires Xero-tenant-id header for multi-org support
+
+  token_storage: local
+  refresh_automatically: true

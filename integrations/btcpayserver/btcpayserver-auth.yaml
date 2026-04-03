@@ -1,0 +1,56 @@
+# btcpayserver-auth.yaml
+# Authentication configuration for BTCPay Server Greenfield API v1
+# Supports Basic auth and API key token authentication
+
+api:
+  name: btcpayserver-greenfield-api
+  version: v1
+  provider: btcpayserver
+  base_url: http://localhost:30320/api/v1
+
+auth:
+  # Primary: API Key (recommended)
+  # Obtain from BTCPay Server > Account > Manage Account > API Keys
+  type: api_key
+  token: "${BTCPAY_API_KEY}"
+  method: header  # Authorization: token <apikey>
+  header_format: "token ${BTCPAY_API_KEY}"
+
+  # Alternative: Basic Auth
+  # type: basic_auth
+  # username: "${BTCPAY_USERNAME}"
+  # password: "${BTCPAY_PASSWORD}"
+  # method: basic_auth  # base64(username:password) in Authorization header
+
+  # Headers sent with every request
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+  # Docker-specific
+  docker:
+    container_name: btcpayserver
+    network: sulla_default
+    internal_url: http://btcpayserver:49392/api/v1
+    host_port: 30320
+    notes: |
+      BTCPay Server Greenfield API v1 (BTCPay 2.3.5).
+      API keys can be scoped with specific permissions:
+        - btcpay.store.canviewstoresettings
+        - btcpay.store.canmodifystoresettings
+        - btcpay.store.cancreateinvoice
+        - btcpay.store.canviewinvoices
+        - btcpay.store.canmodifyinvoices
+        - btcpay.store.canviewpaymentrequests
+        - btcpay.store.canmanagepullpayments
+        - btcpay.store.cancreatenonapprovedpullpayments
+        - btcpay.server.canviewusers (admin)
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).
+
+discovery:
+  endpoint: /api/v1/health
+  description: |
+    BTCPay Server health check endpoint.
+    Returns { "synchronized": true/false } indicating server sync status.
+    Use this to verify the API is accessible.

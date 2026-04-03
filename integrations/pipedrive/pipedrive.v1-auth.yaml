@@ -1,0 +1,17 @@
+# pipedrive.v1-auth.yaml
+# Authentication for Pipedrive CRM API v1
+# Uses Bearer token (API token)
+
+api:
+  name: pipedrive-v1
+  version: v1
+  provider: pipedrive
+  base_url: https://api.pipedrive.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${PIPEDRIVE_API_TOKEN}"
+  # Get from: Pipedrive → Settings → Personal preferences → API → Your personal API token
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,33 @@
+# MCP Server Integration Template
+# ================================
+# This folder contains reference docs for connecting MCP servers.
+# The actual MCP endpoints work without any config files here.
+#
+# To connect an MCP server, make these HTTP calls:
+# ----------------------------------------------
+#
+# 1. REGISTER a new MCP server:
+#    POST http://host.docker.internal:3000/v1/mcp/register
+#    Body: {"account_id": "your-mcp-name", "server_url": "https://your-mcp-server.com/mcp", "auth_token": "optional-token"}
+#
+# 2. DISCOVER available tools:
+#    POST http://host.docker.internal:3000/v1/mcp/{account_id}/discover
+#
+# 3. FINALIZE to generate endpoint configs:
+#    POST http://host.docker.internal:3000/v1/mcp/{account_id}/finalize
+#    (This creates YAML files in ~/sulla/integrations/{account_id}/)
+#
+# Example workflow (DataRipple):
+# ------------------------------
+# curl -X POST http://host.docker.internal:3000/v1/mcp/register \
+#   -H "Content-Type: application/json" \
+#   -d '{"account_id": "dataripple", "server_url": "https://localhost/mcp", "auth_token": "bbb611..."}'
+#
+# curl -X POST http://host.docker.internal:3000/v1/mcp/dataripple/discover
+#
+# curl -X POST http://host.docker.internal:3000/v1/mcp/dataripple/finalize
+#
+# To remove: DELETE /v1/mcp/{account_id}/configs
+#
+# Generated endpoints appear in: GET /v1/tools/list
+# Call them: POST /v1/tools/{accountId}/{slug}/{endpoint}/call

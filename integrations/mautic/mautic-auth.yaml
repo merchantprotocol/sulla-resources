@@ -1,0 +1,55 @@
+# mautic-auth.yaml
+# Authentication configuration for Mautic 5.x Marketing Automation API
+# Supports OAuth2 and Basic HTTP authentication
+
+api:
+  name: mautic-api
+  version: v5
+  provider: mautic
+  base_url: http://localhost:30285/api
+
+auth:
+  # Primary: Basic HTTP Authentication
+  type: basic_auth
+  username: "${MAUTIC_USERNAME}"
+  password: "${MAUTIC_PASSWORD}"
+  method: basic_auth  # base64(username:password) in Authorization header
+
+  # Alternative: OAuth2 (recommended for production)
+  # type: oauth2
+  # grant_type: authorization_code
+  # authorize_url: http://localhost:30285/oauth/v2/authorize
+  # token_url: http://localhost:30285/oauth/v2/token
+  # client_id: "${MAUTIC_CLIENT_ID}"
+  # client_secret: "${MAUTIC_CLIENT_SECRET}"
+  # redirect_uri: "${MAUTIC_REDIRECT_URI}"
+  # scopes: []
+
+  # Headers sent with every request
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+
+  # Docker-specific
+  docker:
+    container_name: mautic
+    network: sulla_default
+    internal_url: http://mautic:80/api
+    host_port: 30285
+    notes: |
+      Mautic 5.x runs on Symfony 6 with PHP 8.1+.
+      Enable API in Mautic Configuration > API Settings.
+      Enable HTTP Basic Auth in API Settings if using basic_auth.
+      For OAuth2, create API credentials under Settings > API Credentials.
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).
+
+discovery:
+  endpoint: /api
+  description: |
+    Mautic REST API base endpoint.
+    Returns available API routes when accessed.
+    All API endpoints are prefixed with /api/.
+    Mautic uses JSON for request and response bodies.
+    Pagination uses start and limit query parameters.
+    Rate limiting may apply depending on server configuration.

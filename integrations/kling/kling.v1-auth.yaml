@@ -1,0 +1,17 @@
+# kling.v1-auth.yaml
+# Authentication for Kling AI API v1
+# Uses Bearer token (API key)
+
+api:
+  name: kling-v1
+  version: v1
+  provider: kling
+  base_url: https://api.klingai.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${KLING_API_KEY}"
+  # Get from: https://klingai.com/
+
+  token_storage: local
+  refresh_automatically: false

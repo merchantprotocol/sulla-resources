@@ -1,0 +1,35 @@
+# meta-ads.v21-auth.yaml
+# Authentication configuration for Meta Marketing API v21.0
+# (Facebook Ads, Instagram Ads — OAuth 2.0)
+
+api:
+  name: meta-marketing-v21
+  version: v21.0
+  provider: meta
+  base_url: https://graph.facebook.com/v21.0
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${META_APP_ID}"
+  client_secret: "${META_APP_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://www.facebook.com/v21.0/dialog/oauth
+  token_url: https://graph.facebook.com/v21.0/oauth/access_token
+
+  pkce: false
+  access_type: offline
+
+  scopes:
+    - ads_management            # full CRUD on ad objects
+    - ads_read                  # read-only access to ads
+    - business_management       # manage business assets
+    - read_insights             # read ad performance data
+    # - pages_read_engagement  # if promoting page posts
+    # - instagram_basic        # if managing IG placements
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

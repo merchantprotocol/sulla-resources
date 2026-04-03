@@ -1,0 +1,20 @@
+# klaviyo.v2024-auth.yaml
+# Authentication for Klaviyo API (revision 2024-10-15)
+# Uses Bearer token + required revision header
+
+api:
+  name: klaviyo-v2024
+  version: "2024-10-15"
+  provider: klaviyo
+  base_url: https://a.klaviyo.com/api
+
+auth:
+  type: bearer
+  client_secret: "${KLAVIYO_API_KEY}"
+  # Get from: Klaviyo -> Settings -> API Keys -> Create Private API Key
+
+  token_storage: local
+  refresh_automatically: false
+
+  headers:
+    revision: "2024-10-15"

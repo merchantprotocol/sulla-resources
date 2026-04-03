@@ -1,0 +1,15 @@
+endpoint:
+  name: generate_static
+  description: Trigger a Simply Static site export. This is an asynchronous
+    process — use static_status to check progress. Returns immediately with
+    confirmation that the export was started.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  type:
+    type: string
+    required: false
+    description: 'Export type: "export" for full export, "update" for incremental
+      update. Default: export.'

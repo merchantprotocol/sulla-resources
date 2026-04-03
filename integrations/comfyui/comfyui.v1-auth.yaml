@@ -1,0 +1,12 @@
+# comfyui.v1-auth.yaml
+# Configuration for local ComfyUI server API
+# No authentication required - local Docker instance
+
+api:
+  name: comfyui-server-v1
+  version: v1
+  provider: comfyui
+  base_url: http://localhost:30340
+
+auth:
+  type: none

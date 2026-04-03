@@ -1,0 +1,18 @@
+# pinecone.v1-auth.yaml
+# Authentication for Pinecone API v1
+# Uses API key via Api-Key header
+
+api:
+  name: pinecone-v1
+  version: v1
+  provider: pinecone
+  base_url: https://api.pinecone.io
+
+auth:
+  type: apiKey
+  client_secret: "${PINECONE_API_KEY}"
+  # Get from: https://app.pinecone.io/ -> API Keys
+  header: Api-Key
+
+  token_storage: local
+  refresh_automatically: false

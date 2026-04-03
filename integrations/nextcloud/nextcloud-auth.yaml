@@ -1,0 +1,49 @@
+# nextcloud-auth.yaml
+# Authentication configuration for Nextcloud OCS + WebDAV API (local Docker install)
+# Nextcloud 30+ with Basic Auth and OCS-APIRequest header
+
+api:
+  name: nextcloud-api
+  version: v2
+  provider: nextcloud
+  base_url: http://localhost:30220
+
+auth:
+  type: basic_auth
+  username: "${NEXTCLOUD_USERNAME}"
+  password: "${NEXTCLOUD_PASSWORD}"
+  method: basic_auth  # base64(username:password) in Authorization header
+
+  # Required header for all OCS API requests
+  # Without this header, OCS endpoints return login page HTML instead of API responses
+  headers:
+    OCS-APIRequest: "true"
+    Content-Type: application/json
+
+  # Docker-specific
+  docker:
+    container_name: nextcloud
+    network: sulla_default
+    internal_url: http://nextcloud:80
+    host_port: 30220
+    notes: |
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).
+      Nextcloud requires the OCS-APIRequest: true header on all OCS API calls.
+      Without it, the server returns a 401 or redirects to the login page.
+
+discovery:
+  endpoint: /status.php
+  description: |
+    Nextcloud status endpoint. Returns server version, installation status,
+    maintenance mode, and edition info as JSON. No auth required.
+    Use /ocs/v2.php/cloud/capabilities for full capabilities discovery.
+
+notes: |
+  Nextcloud exposes two main API surfaces:
+  1. OCS API (v2) - /ocs/v2.php/... - structured endpoints for shares, users, notifications, etc.
+     - Default response format is XML; append ?format=json for JSON responses.
+     - OCS v2 returns proper HTTP status codes (v1 always returns 200 with status in body).
+  2. WebDAV - /remote.php/dav/... - file operations (list, upload, download, move, copy, delete).
+     - Uses standard WebDAV methods: PROPFIND, GET, PUT, DELETE, MOVE, COPY, MKCOL.
+  Both require Basic Auth. OCS endpoints additionally require the OCS-APIRequest header.

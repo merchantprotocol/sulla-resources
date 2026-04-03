@@ -1,0 +1,19 @@
+# wave.v1-auth.yaml
+# Authentication for Wave API (GraphQL)
+# Uses Bearer token
+
+api:
+  name: wave-v1
+  version: v1
+  provider: wave
+  base_url: https://gql.waveapps.com/graphql/public
+
+auth:
+  type: bearer
+  client_secret: "${WAVE_ACCESS_TOKEN}"
+  # Wave uses a full access token obtained via OAuth2
+  # All requests go to a single GraphQL endpoint
+  # Authorization: Bearer <token>
+
+  token_storage: local
+  refresh_automatically: false

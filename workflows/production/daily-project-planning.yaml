@@ -1,0 +1,433 @@
+id: workflow-project-planning
+name: Daily Project Planning
+description: Goal-driven project ideation using parallel lenses, persistent idea tracking in PROJECT_IDEAS.md, and async human approval via prompt injection into human-facing agents.
+version: 2
+createdAt: 2026-03-18T22:00:00.000Z
+updatedAt: 2026-04-02T06:58:45.772Z
+nodes:
+  - id: node-pp-trigger
+    type: workflow
+    position:
+      x: 400
+      y: 0
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives context from daily planning pipeline after cleanup completes
+  - id: node-pp-load-skills
+    type: workflow
+    position:
+      x: 400
+      y: 130
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Load Skills
+      config: {}
+  - id: node-pp-load-project-skill
+    type: workflow
+    position:
+      x: 300
+      y: 260
+    data:
+      subtype: tool-call
+      category: agent
+      label: Load Project Skill
+      config:
+        toolName: load_skill
+        defaults:
+          skill_name: project-management
+  - id: node-pp-load-ideas-skill
+    type: workflow
+    position:
+      x: 500
+      y: 260
+    data:
+      subtype: tool-call
+      category: agent
+      label: Load Ideas Skill
+      config:
+        toolName: load_skill
+        defaults:
+          skill_name: project-ideas
+  - id: node-pp-skills-merge
+    type: workflow
+    position:
+      x: 400
+      y: 380
+    data:
+      subtype: merge
+      category: flow-control
+      label: Skills Loaded
+      config:
+        strategy: wait-all
+  - id: node-pp-compress-inputs
+    type: workflow
+    position:
+      x: 400
+      y: 500
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Read Goals & State
+      config: {}
+  - id: node-pp-read-human-goals
+    type: workflow
+    position:
+      x: 100
+      y: 660
+    data:
+      subtype: agent
+      category: agent
+      label: Read Human Goals
+      config:
+        agentId: goal-setter
+        agentName: Human Goals Reader
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Read the human goals journal at ~/sulla/identity/human/goals.md and the human identity file at ~/sulla/identity/human/identity.md. Extract a compressed snapshot of: (1) 2-year vision summary, (2) 13-week arc critical drivers and milestone status, (3) current weekly objectives, (4) daily focus goals, (5) key pain points and emotional state. If the journal doesn't exist, read the identity file only and note that goals haven't been set yet. Output under 500 words.
+        successCriteria: Compressed human goals snapshot
+        completionContract: Exit when snapshot is complete
+  - id: node-pp-read-business-goals
+    type: workflow
+    position:
+      x: 400
+      y: 660
+    data:
+      subtype: agent
+      category: agent
+      label: Read Business Goals
+      config:
+        agentId: goal-setter
+        agentName: Business Goals Reader
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Read the business goals journal at ~/sulla/identity/business/goals.md and the business identity file at ~/sulla/identity/business/identity.md. Extract a compressed snapshot of: (1) 2-year vision summary, (2) 13-week arc critical drivers and milestone status, (3) current weekly objectives, (4) daily focus goals, (5) active revenue streams and financial pressures. If the journal doesn't exist, read the identity file only and note that goals haven't been set yet. Output under 500 words.
+        successCriteria: Compressed business goals snapshot
+        completionContract: Exit when snapshot is complete
+  - id: node-pp-read-active-projects
+    type: workflow
+    position:
+      x: 700
+      y: 660
+    data:
+      subtype: agent
+      category: agent
+      label: Read Active Projects & Ideas
+      config:
+        agentId: goal-setter
+        agentName: Project State Reader
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Read THREE sources:
+          1. ~/sulla/projects/ACTIVE_PROJECTS.md — the current project registry.
+             Scan ~/sulla/projects/ for any PROJECT.md files that exist but are NOT
+             listed in ACTIVE_PROJECTS.md — these are orphaned projects.
+             For each active project: slug, status, priority, purpose.
+             For orphaned projects: slug, title, status from frontmatter.
+
+          2. **Active project health** — for each active project in ACTIVE_PROJECTS.md,
+             read its PROJECT.md and assess:
+             - Is it blocked? (waiting on credentials, external dependency, human decision)
+             - Is it in progress? (checklist items being completed)
+             - Is it stale? (no progress in 3+ days despite being "active")
+             - Is it nearly complete? (most checklist items done)
+             - What's the blocker if blocked? (credentials, decision, dependency, unclear)
+             Classify each as: progressing | blocked | stale | nearly-complete | complete
+
+          3. ~/sulla/projects/PROJECT_IDEAS.md — the persistent ideas registry.
+             If it doesn't exist, note that (first run). If it does exist, extract:
+             - Ideas with status "pending" (still proposable)
+             - Ideas with status "rejected" and their rejection count
+             - Ideas with status "retired" (never propose these again)
+             - Any ideas that were previously proposed but not yet responded to
+             - Summary stats from the top of the file
+
+          Also read the agent goals journal at ~/sulla/identity/agent/goals.md if it exists. Output a structured report covering project state, project health, and idea history.
+        successCriteria: Complete project state + health assessment + idea history report
+        completionContract: Exit when report is complete
+  - id: node-pp-merge-inputs
+    type: workflow
+    position:
+      x: 400
+      y: 830
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Inputs
+      config:
+        strategy: wait-all
+  - id: node-pp-ideation-lenses
+    type: workflow
+    position:
+      x: 400
+      y: 970
+    data:
+      subtype: agent
+      category: agent
+      label: Project Ideation
+      config:
+        agentId: thinker-worker
+        agentName: Project Ideator
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          You have compressed snapshots of human goals, business goals, current project state, and the idea history from PROJECT_IDEAS.md. Your job is to ideate projects that would advance the goals.
+          Use <PROMPT> tags to delegate to parallel ideation lenses. Each lens should analyze the goals from a different angle and propose 1-3 concrete project ideas. Each idea needs a suggested slug (kebab-case) so it can be matched to the registry.
+          <PROMPT agentId="thinker-worker" label="Goal Alignment"> Review the human and business 13-week arc critical drivers and weekly objectives. What concrete projects would DIRECTLY advance these goals? Focus on the highest-priority goals that don't already have a project assigned. For each project idea, provide: a slug, the goal it serves, what it would produce, estimated complexity (small/medium/large), and why now. </PROMPT>
+          <PROMPT agentId="thinker-worker" label="Pain Point Solutions"> Review the pain points, obstacles, and frustrations from the human and business identity snapshots. What projects would ELIMINATE the biggest pain points? Focus on recurring pains that are blocking progress. For each project idea: a slug, the pain it solves, what it would produce, estimated complexity, and expected relief. </PROMPT>
+          <PROMPT agentId="thinker-worker" label="Opportunity Capture"> Review the world identity file at ~/sulla/identity/world/identity.md and the world journal at ~/sulla/identity/world/goals.md (if they exist). What projects would capitalize on emerging market opportunities, trends, or timing advantages? Focus on opportunities that align with the business goals. For each idea: a slug, the opportunity, what it would produce, time sensitivity, and estimated complexity. </PROMPT>
+          <PROMPT agentId="thinker-worker" label="Capability Building"> Review what the human and agent are currently capable of vs what the goals require. What projects would build skills, tools, or infrastructure that make ALL future goals easier? Focus on force multipliers. For each idea: a slug, the capability gap, what it would build, how it compounds, and estimated complexity. </PROMPT>
+          <PROMPT agentId="thinker-worker" label="Quick Wins"> Review all goals across horizons. What small projects (completable in 1-3 days) would deliver immediate visible progress? Focus on things that build momentum, create tangible deliverables, or unblock larger work. For each idea: a slug, what it delivers, why it's quick, and which goal it advances. </PROMPT>
+        successCriteria: All ideation lenses complete with concrete project proposals including slugs
+        completionContract: Exit when all lens results are collected
+  - id: node-pp-synthesize
+    type: workflow
+    position:
+      x: 382.9498289623717
+      y: 1159.102622576967
+    data:
+      subtype: agent
+      category: agent
+      label: Synthesize & Update Registry
+      config:
+        agentId: thinker-worker
+        agentName: Idea Synthesizer
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          You have ideation results from 5 parallel lenses and the current PROJECT_IDEAS.md registry (from the project state reader). Follow the project-ideas skill to update the registry and select the top 3 proposals.
+          **Step 1: Read the existing registry** Read ~/sulla/projects/PROJECT_IDEAS.md. If it doesn't exist, you'll create it.
+          **Step 2: Match new ideas to existing entries** For each idea from the ideation lenses: - Search the registry by slug and by semantic similarity - If a match exists: increment Times Ideated, update Last Surfaced, update Source Lenses - If no match: create a new entry with Times Ideated: 1, all other counters at 0
+          **Step 3: Check for previous proposal responses** Look at ideas that were proposed in previous runs (Times Proposed > 0). If the human has since responded (check ~/sulla/daily-logs/ for project-planning response logs or check if a project was created matching an accepted idea): - Update Times Accepted / Times Rejected / Times Ignored accordingly - Retire ideas that hit 3+ rejections or 5+ ignores
+          **Step 4: Deduplicate and reconcile** - Merge similar ideas across lenses into single proposals - If an idea matches an existing active or orphaned project, note that
+          **Step 5: DECIDE — propose new projects or stay focused?**
+          This is the critical decision gate. Assess the current project portfolio health from the project state reader and make one of these decisions:
+          **Decision: PROPOSE** — actively propose new projects when: - There are NO active projects (empty portfolio — definitely propose) - All active projects are blocked and there's nothing the human can do to unblock
+            them right now (need something productive to work on)
+          - Active projects are nearly complete or complete (about to have free capacity) - A new idea scores dramatically higher than current work (>8 combined score vs
+            current projects advancing <5-scoring goals) — this is a potential pivot
+          - The human has few active projects (1-2) and likely has capacity for more
+          **Decision: FOCUS** — do NOT propose new projects when: - Active projects are progressing well and there are 3+ of them (plate is full) - Active projects are in a critical phase (momentum matters more than breadth) - The human's emotional state suggests overwhelm (from identity file) - All top ideas are weaker than current project alignment to goals
+          **Decision: UNBLOCK** — instead of proposing new projects, recommend unblocking actions: - Active projects are blocked but the blocker is resolvable (credentials needed,
+            decision needed, dependency can be worked around)
+          - Propose specific unblocking actions for blocked projects instead of new work - May also propose a quick win to keep momentum while waiting for unblock
+          Record your decision and reasoning. This decision determines what gets written to the injection file.
+          **Step 6: Score and rank using registry intelligence** Even if the decision is FOCUS or UNBLOCK, still score all ideas — they go into the registry for future reference. But only select top 3 for proposal if the decision is PROPOSE.
+          Score each unique, non-retired proposal on: - Goal alignment (0-10) - Urgency (0-10) - Feasibility (0-10) - Impact (0-10) - Registry boost: +1 for each time ideated beyond the first (keeps surfacing = important) - Registry penalty: -2 for each prior rejection (human said no) - Ignored ideas are neutral (don't penalize, human may not have had time)
+          **Step 7: Write the registry** Write the updated ~/sulla/projects/PROJECT_IDEAS.md following the project-ideas skill format. If decision is PROPOSE, increment Times Proposed for the selected ideas. Update summary stats at the top. ALL ideas go into the registry regardless of the decision — the registry is the institutional memory.
+          **Step 8: Output based on decision**
+          If PROPOSE: - Output the top 3 proposals with: slug, title, description, goals it advances,
+            source lenses, Times Ideated, scores, size, PRD tier, why this and why now
+          - Include any recommendations for existing projects
+          If FOCUS: - Output "DECISION: FOCUS" with reasoning - Output a brief project portfolio status (what's in progress, what's on track) - Still output the top 3 ideas as "banked for later" (they stay in registry)
+          If UNBLOCK: - Output "DECISION: UNBLOCK" with reasoning - Output specific unblocking recommendations for each blocked project - Optionally output 1 quick-win proposal if there's idle capacity while waiting
+        successCriteria: PROJECT_IDEAS.md updated, decision made (PROPOSE/FOCUS/UNBLOCK), output ready
+        completionContract: Exit when registry is written and decision output is complete
+  - id: node-pp-write-injection
+    type: workflow
+    position:
+      x: 400
+      y: 1350
+    data:
+      subtype: agent
+      category: agent
+      label: Write Proposal Injection
+      config:
+        agentId: prompt-engineer
+        agentName: Project Proposal Injector
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          You have the synthesizer's output which includes a DECISION (PROPOSE, FOCUS, or UNBLOCK) and supporting data. Your job is to write the agent's project briefing file — a living document that keeps the agent informed about the current project landscape, what to propose, what's blocked, and how to help the human.
+          **Write to:** ~/sulla/agents/sulla-desktop/projects.md
+          This file is loaded alongside the sulla agent's prompt and goals.md. It is refreshed daily by this workflow and updated in real-time when the human responds to proposals or project status changes. It serves as the agent's ongoing project awareness — not just proposals, but everything project-related the agent should know to help the human effectively.
+          **The content depends on the decision:**
+          ---
+          **If DECISION is PROPOSE:**
+          ```markdown # Project Briefing — [YYYY-MM-DD] **Mode: PROPOSE**
+          ## Current Portfolio {List each active project with status — progressing/blocked/nearly-complete}
+          ## New Project Proposals
+          When there is a natural opportunity in conversation — such as the human discussing goals, planning their day, asking what to work on, or mentioning a pain point that aligns with a proposal — present these project ideas. Do NOT force them into unrelated conversations. Wait for the right moment.
+          When you present them, frame it as: "Based on your current goals, I have some project ideas I'd like to run by you."
+          ### 1. [RECOMMENDED] {Title} {One-sentence description} - **Advances**: {specific goals} - **Size**: {small/medium/large} | **Times this idea surfaced**: {N} - **Why now**: {brief reasoning}
+          ### 2. {Title} ...
+          ### 3. {Title} ...
+          {If any existing projects should be reprioritized/paused/archived, mention those too}
+          ## How to Help - Present proposals when the moment is right, not forced - Help the human with active projects in the meantime - If a project gets blocked during conversation, note it for the next briefing - If the human completes a project, update its status and suggest the proposals
+          ## Resources - Active projects: ~/sulla/projects/ACTIVE_PROJECTS.md - Idea registry: ~/sulla/projects/PROJECT_IDEAS.md - Skills: project-management, project-ideas ```
+          ---
+          **If DECISION is FOCUS:**
+          ```markdown # Project Briefing — [YYYY-MM-DD] **Mode: FOCUS**
+          The project pipeline assessed today's portfolio and decided: stay focused on current projects. Do NOT propose new project ideas today unless the human explicitly asks "what should I work on next?" or similar.
+          ## Current Portfolio {List each active project with status and what's next on their checklist} {Note any that are nearly complete — the human may want to push these over the line}
+          ## Banked Ideas (for when there's capacity) 1. {Title} — {one-line description} 2. {Title} — {one-line description} 3. {Title} — {one-line description}
+          ## How to Help - Help the human make progress on active projects - If a project gets completed, celebrate it and mention there are banked ideas
+            ready when they want them
+          - If the human asks about new ideas, the full registry is at
+            ~/sulla/projects/PROJECT_IDEAS.md
+          - If a project gets blocked, help troubleshoot or suggest switching to another
+            active project
+
+          ## Resources - Active projects: ~/sulla/projects/ACTIVE_PROJECTS.md - Idea registry: ~/sulla/projects/PROJECT_IDEAS.md - Skills: project-management, project-ideas ```
+          ---
+          **If DECISION is UNBLOCK:**
+          ```markdown # Project Briefing — [YYYY-MM-DD] **Mode: UNBLOCK**
+          The project pipeline found blocked projects that need attention. When the topic comes up naturally, suggest these unblocking actions.
+          ## Current Portfolio {List each active project with status}
+          ## Blocked — Needs Attention - **{Project Title}**: Blocked on {blocker}. Suggested action: {specific action} - **{Project Title}**: Blocked on {blocker}. Suggested action: {specific action}
+          {If a quick-win was also recommended, include it:} ## Quick Win While Waiting {Title} — {description}. This keeps momentum while blockers are resolved.
+          ## How to Help - Proactively offer to help unblock projects when the topic comes up naturally - If the human is working on something unrelated and seems to have bandwidth,
+            mention the blocked projects
+          - If the human resolves a blocker, update the project's PROJECT.md and celebrate - If asked about new ideas, the full registry is at
+            ~/sulla/projects/PROJECT_IDEAS.md
+
+          ## Resources - Active projects: ~/sulla/projects/ACTIVE_PROJECTS.md - Idea registry: ~/sulla/projects/PROJECT_IDEAS.md - Skills: project-management, project-ideas ```
+          ## When the Human Responds
+          When the human responds to any proposal, you MUST do TWO things:
+          ### 1. Update the Project Ideas Registry
+          Load the project-ideas skill (load_skill("project-ideas")) and update ~/sulla/projects/PROJECT_IDEAS.md immediately:
+          - **If they approve a proposal:**
+            Find the matching entry by slug. Increment Times Accepted. Set Status to "accepted".
+            Then use the project-management skill to create the project (search first,
+            create_workspace, write PROJECT.md, update ACTIVE_PROJECTS.md).
+
+          - **If they reject a proposal:**
+            Find the matching entry by slug. Increment Times Rejected.
+            If they gave a reason, add it as a note on the entry.
+            If Times Rejected >= 3, set Status to "retired" with a Retirement Reason.
+
+          - **If they ignore the proposals** (change topic, say "not now", etc.):
+            Find each presented entry by slug. Increment Times Ignored.
+            If Times Ignored >= 5 with zero acceptances, set Status to "retired".
+
+          - **If they suggest their own idea:**
+            Create a NEW entry in PROJECT_IDEAS.md with Status "accepted",
+            Times Ideated: 0 (human-originated), Times Accepted: 1.
+            Then create the project using the project-management skill.
+
+          Always update the summary stats at the top of PROJECT_IDEAS.md after changes.
+          ### 2. Write the Response Log
+          Write a record to ~/sulla/daily-logs/[today's date]/project-planning-response.md: - Date and time - Which proposals were presented (slugs + titles) - Human's response (accepted #N / rejected #N with reason / ignored / own idea) - What action was taken (project created, registry updated, etc.)
+          This log provides an audit trail and helps the pipeline detect preference patterns.
+          ### 3. Rewrite the Injection File
+          After recording the response, update ~/sulla/agents/sulla-desktop/projects.md to reflect the current state. Don't gut the file — keep it useful as an ongoing project reference. Update it to:
+          ```markdown # Project Briefing — [YYYY-MM-DD] **Mode: ACTIVE**
+          ## Current Portfolio {List each active project with current status: progressing/blocked/nearly-complete} {For blocked projects, note the blocker and any suggested actions} {For progressing projects, note what's next on their checklist}
+          ## Today's Proposals — Addressed {What the human chose and what was created/rejected}
+          ## How to Help - If the human mentions being stuck on a project, check its PROJECT.md for
+            context and help them through the blocker
+          - If the human asks "what should I work on?", reference the active projects
+            and their priorities
+          - If the human asks about new project ideas, the full idea registry is at
+            ~/sulla/projects/PROJECT_IDEAS.md — load the project-ideas skill to browse it
+          - If a project gets completed during conversation, update its status in
+            ACTIVE_PROJECTS.md and its PROJECT.md frontmatter
+
+          ## Resources - Active projects: ~/sulla/projects/ACTIVE_PROJECTS.md - Idea registry: ~/sulla/projects/PROJECT_IDEAS.md - Skills: project-management, project-ideas ```
+          This keeps the agent project-aware for the rest of the day. The daily pipeline will overwrite this file tomorrow with a fresh briefing. ```
+          Also write a brief version to any other human-facing agents if they exist (check ~/sulla/agents/ for agents with type "worker" or "conversational" that might interact with the human). Keep those briefer — just the titles and "defer to sulla for details."
+        successCriteria: Prompt injection file written to sulla agent folder
+        completionContract: Exit when injection file is written
+  - id: node-pp-log
+    type: workflow
+    position:
+      x: 400
+      y: 1530
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Log Results
+      config:
+        prompt: |
+          Write a summary of today's project planning to ~/sulla/daily-logs/{{YYYY-MM-DD}}/project-planning-log.md.
+          Include: - How many total ideas were generated across all lenses - How many were new vs matched existing ideas in the registry - The top 3 proposals that were selected (with their Times Ideated counts) - Registry stats: total ideas tracked, pending, accepted, rejected, retired - Any preference patterns observed from the registry data (e.g., "human has
+            accepted 3/5 Quick Win proposals but 0/4 Capability Building proposals —
+            preference for immediate results over infrastructure")
+          - What injection files were written and to which agents
+          Also check if ~/sulla/daily-logs/ contains any project-planning-response.md files from previous days that show how the human responded to past proposals. If found, summarize the response patterns.
+  - id: node-pp-done
+    type: workflow
+    position:
+      x: 400
+      y: 1670
+    data:
+      subtype: response
+      category: io
+      label: Done
+      config:
+        responseTemplate: Daily project planning complete. Proposals injected into human-facing agents.
+edges:
+  - id: e-pp-trigger-skills
+    source: node-pp-trigger
+    target: node-pp-load-skills
+    animated: true
+  - id: e-pp-skills-project
+    source: node-pp-load-skills
+    target: node-pp-load-project-skill
+    animated: true
+  - id: e-pp-skills-ideas
+    source: node-pp-load-skills
+    target: node-pp-load-ideas-skill
+    animated: true
+  - id: e-pp-project-skill-merge
+    source: node-pp-load-project-skill
+    target: node-pp-skills-merge
+    animated: true
+  - id: e-pp-ideas-skill-merge
+    source: node-pp-load-ideas-skill
+    target: node-pp-skills-merge
+    animated: true
+  - id: e-pp-skills-compress
+    source: node-pp-skills-merge
+    target: node-pp-compress-inputs
+    animated: true
+  - id: e-pp-compress-human
+    source: node-pp-compress-inputs
+    target: node-pp-read-human-goals
+    animated: true
+  - id: e-pp-compress-business
+    source: node-pp-compress-inputs
+    target: node-pp-read-business-goals
+    animated: true
+  - id: e-pp-compress-projects
+    source: node-pp-compress-inputs
+    target: node-pp-read-active-projects
+    animated: true
+  - id: e-pp-human-merge
+    source: node-pp-read-human-goals
+    target: node-pp-merge-inputs
+    animated: true
+  - id: e-pp-business-merge
+    source: node-pp-read-business-goals
+    target: node-pp-merge-inputs
+    animated: true
+  - id: e-pp-projects-merge
+    source: node-pp-read-active-projects
+    target: node-pp-merge-inputs
+    animated: true
+  - id: e-pp-merge-ideation
+    source: node-pp-merge-inputs
+    target: node-pp-ideation-lenses
+    animated: true
+  - id: e-pp-ideation-synthesize
+    source: node-pp-ideation-lenses
+    target: node-pp-synthesize
+    animated: true
+  - id: e-pp-synthesize-injection
+    source: node-pp-synthesize
+    target: node-pp-write-injection
+    animated: true
+  - id: e-pp-injection-log
+    source: node-pp-write-injection
+    target: node-pp-log
+    animated: true
+  - id: e-pp-log-done
+    source: node-pp-log
+    target: node-pp-done
+    animated: true
+_status: production
+viewport:
+  x: -0.5228716645489158
+  y: -1118.4358322744597
+  zoom: 1.1143583227445997

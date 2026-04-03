@@ -1,0 +1,41 @@
+# novu-auth.yaml
+# Authentication configuration for Novu Notification Platform API
+# Self-hosted Docker instance (v3.14.0)
+
+api:
+  name: novu-api
+  version: v1
+  provider: novu
+  base_url: http://localhost:30250/v1
+
+auth:
+  type: api_key
+  header: Authorization
+  prefix: "ApiKey"
+  value: "${NOVU_API_KEY}"
+
+  headers:
+    Content-Type: application/json
+
+  docker:
+    image: ghcr.io/novuhq/novu:3.14.0
+    network: sulla_default
+    ports:
+      api: 30250
+      dashboard: 30252
+      ws: 30253
+    internal_url: http://novu-api:3000/v1
+    notes: |
+      Novu self-hosted deployment consists of multiple services:
+      - API server (port 30250) - REST API for all operations
+      - Dashboard (port 30252) - Web UI for managing workflows and templates
+      - WebSocket server (port 30253) - Real-time notification delivery
+      Additional backing services: MongoDB, Redis, worker processes.
+      For inter-container communication, use the internal_url.
+      For host-to-container, use base_url (localhost with mapped port).
+
+discovery:
+  endpoint: /v1/health-check
+  description: |
+    Health check endpoint to verify the Novu API is accessible.
+    Returns status of the API server and backing services.

@@ -1,0 +1,18 @@
+# mux.v1-auth.yaml
+# Authentication for Mux Video API v1
+# Uses HTTP Basic auth (token_id:token_secret)
+
+api:
+  name: mux-v1
+  version: v1
+  provider: mux
+  base_url: https://api.mux.com
+
+auth:
+  type: basic
+  client_id: "${MUX_TOKEN_ID}"
+  client_secret: "${MUX_TOKEN_SECRET}"
+  # Get from: https://dashboard.mux.com/settings/api-keys
+
+  token_storage: local
+  refresh_automatically: false

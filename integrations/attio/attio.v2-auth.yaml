@@ -1,0 +1,17 @@
+# attio.v2-auth.yaml
+# Authentication for Attio API v2
+# Uses Bearer token (access token)
+
+api:
+  name: attio-v2
+  version: v2
+  provider: attio
+  base_url: https://api.attio.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${ATTIO_ACCESS_TOKEN}"
+  # Get from: Attio → Settings → Developers → Generate Access Token
+
+  token_storage: local
+  refresh_automatically: false

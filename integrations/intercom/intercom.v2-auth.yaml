@@ -1,0 +1,17 @@
+# intercom.v2-auth.yaml
+# Authentication for Intercom API v2
+# Uses Bearer token (access token from developer hub)
+
+api:
+  name: intercom-v2
+  version: v2
+  provider: intercom
+  base_url: https://api.intercom.io
+
+auth:
+  type: bearer
+  client_secret: "${INTERCOM_ACCESS_TOKEN}"
+  # Get from: Intercom → Settings → Integrations → Developer Hub → Your App → Authentication
+
+  token_storage: local
+  refresh_automatically: false

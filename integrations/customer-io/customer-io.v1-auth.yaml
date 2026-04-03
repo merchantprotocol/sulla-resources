@@ -1,0 +1,18 @@
+# customer-io.v1-auth.yaml
+# Authentication for Customer.io API v1
+# Uses Bearer token
+
+api:
+  name: customer-io-v1
+  version: v1
+  provider: customer-io
+  base_url: https://api.customer.io/v1
+
+auth:
+  type: bearer
+  client_secret: "${CUSTOMERIO_API_KEY}"
+  # Get from: Customer.io -> Settings -> API Credentials -> App API Key
+  # Note: Beta API for reading data uses https://beta-api.customer.io/v1/api
+
+  token_storage: local
+  refresh_automatically: false

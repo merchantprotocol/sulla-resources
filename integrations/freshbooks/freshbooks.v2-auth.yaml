@@ -1,0 +1,22 @@
+# freshbooks.v2-auth.yaml
+# Authentication for FreshBooks API v2
+# Uses OAuth2 Bearer token
+
+api:
+  name: freshbooks-v2
+  version: v2
+  provider: freshbooks
+  base_url: https://api.freshbooks.com/accounting/account/{account_id}
+
+auth:
+  type: oauth2
+  client_id: "${FRESHBOOKS_CLIENT_ID}"
+  client_secret: "${FRESHBOOKS_CLIENT_SECRET}"
+  authorization_url: https://auth.freshbooks.com/oauth/authorize
+  token_url: https://api.freshbooks.com/auth/oauth/token
+  scopes: []
+  # Bearer token via OAuth2. Requires account_id in base URL path.
+  # Get account_id from /auth/api/v1/users/me endpoint after auth.
+
+  token_storage: local
+  refresh_automatically: true

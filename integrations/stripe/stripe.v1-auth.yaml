@@ -1,0 +1,17 @@
+# stripe.v1-auth.yaml
+# Authentication for Stripe API v1
+# Uses Bearer token (secret key)
+
+api:
+  name: stripe-v1
+  version: v1
+  provider: stripe
+  base_url: https://api.stripe.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${STRIPE_SECRET_KEY}"
+  # Stripe uses: Authorization: Bearer sk_test_... or sk_live_...
+
+  token_storage: local
+  refresh_automatically: false  # API keys don't expire

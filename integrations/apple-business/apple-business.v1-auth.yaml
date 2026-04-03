@@ -1,0 +1,17 @@
+# apple-business.v1-auth.yaml
+# Authentication configuration for Apple Business Connect API
+# OAuth 2.0 (Apple Sign In with JWT)
+
+api:
+  name: apple-business-connect-v1
+  version: v1
+  provider: apple
+  base_url: https://business-api.apple.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${APPLE_BUSINESS_TOKEN}"  # Apple Business Connect API token
+
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"

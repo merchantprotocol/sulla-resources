@@ -1,0 +1,17 @@
+# calendly.v2-auth.yaml
+# Authentication for Calendly API v2
+# Uses Bearer token (personal access token)
+
+api:
+  name: calendly-v2
+  version: v2
+  provider: calendly
+  base_url: https://api.calendly.com
+
+auth:
+  type: bearer
+  client_secret: "${CALENDLY_ACCESS_TOKEN}"
+  # Get from: Calendly → Integrations → API & Webhooks → Generate Personal Access Token
+
+  token_storage: local
+  refresh_automatically: false

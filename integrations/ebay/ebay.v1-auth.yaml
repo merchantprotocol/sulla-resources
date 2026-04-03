@@ -1,0 +1,32 @@
+# ebay.v1-auth.yaml
+# Authentication configuration for eBay APIs (Buy/Sell)
+# Uses OAuth 2.0 Bearer token
+
+api:
+  name: ebay
+  version: "1"
+  provider: ebay
+  base_url: https://api.ebay.com
+
+auth:
+  type: bearer
+  client_id: "${EBAY_CLIENT_ID}"
+  client_secret: "${EBAY_CLIENT_SECRET}"
+
+  # OAuth 2.0
+  authorization_url: https://auth.ebay.com/oauth2/authorize
+  token_url: https://api.ebay.com/identity/v1/oauth2/token
+
+  scopes:
+    - https://api.ebay.com/oauth/api_scope
+    - https://api.ebay.com/oauth/api_scope/buy.browse
+    - https://api.ebay.com/oauth/api_scope/sell.fulfillment
+    - https://api.ebay.com/oauth/api_scope/sell.inventory
+    - https://api.ebay.com/oauth/api_scope/sell.account
+    # - https://api.ebay.com/oauth/api_scope/sell.marketing
+    # - https://api.ebay.com/oauth/api_scope/sell.analytics.readonly
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry: 7200  # 2 hours for user access tokens
+  refresh_token_expiry: 47304000  # 18 months

@@ -1,0 +1,22 @@
+# quickbooks.v3-auth.yaml
+# Authentication for QuickBooks Online API v3
+# Uses OAuth2 with access token
+
+api:
+  name: quickbooks-v3
+  version: v3
+  provider: quickbooks
+  base_url: https://quickbooks.api.intuit.com/v3
+
+auth:
+  type: oauth2
+  client_id: "${QUICKBOOKS_CLIENT_ID}"
+  client_secret: "${QUICKBOOKS_CLIENT_SECRET}"
+  authorization_url: https://appcenter.intuit.com/connect/oauth2
+  token_url: https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer
+  scopes:
+    - com.intuit.quickbooks.accounting
+  # Requires realm_id (company ID) in URL path: /v3/company/{realm_id}/...
+
+  token_storage: local
+  refresh_automatically: true

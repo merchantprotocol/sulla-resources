@@ -1,0 +1,17 @@
+# replicate.v1-auth.yaml
+# Authentication for Replicate API v1
+# Uses Bearer token (API token)
+
+api:
+  name: replicate-v1
+  version: v1
+  provider: replicate
+  base_url: https://api.replicate.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${REPLICATE_API_TOKEN}"
+  # Get from: https://replicate.com/account/api-tokens
+
+  token_storage: local
+  refresh_automatically: false

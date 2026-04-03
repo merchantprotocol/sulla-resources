@@ -1,0 +1,18 @@
+# airtable.v0-auth.yaml
+# Authentication for Airtable API v0
+# Uses Bearer token (personal access token)
+
+api:
+  name: airtable-v0
+  version: v0
+  provider: airtable
+  base_url: https://api.airtable.com/v0
+
+auth:
+  type: bearer
+  client_secret: "${AIRTABLE_ACCESS_TOKEN}"
+  # Get from: https://airtable.com/create/tokens → Create new token
+  # Scopes: data.records:read, schema.bases:read, webhook:manage
+
+  token_storage: local
+  refresh_automatically: false

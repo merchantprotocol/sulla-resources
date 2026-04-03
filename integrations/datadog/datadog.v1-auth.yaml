@@ -1,0 +1,21 @@
+# datadog.v1-auth.yaml
+# Authentication for Datadog API v1/v2
+# Uses API Key + Application Key headers
+
+api:
+  name: datadog-v1
+  version: v1
+  provider: datadog
+  base_url: https://api.datadoghq.com
+
+auth:
+  type: apiKey
+  # Datadog requires two keys sent as headers
+  headers:
+    DD-API-KEY: "${DATADOG_API_KEY}"
+    DD-APPLICATION-KEY: "${DATADOG_APP_KEY}"
+    Content-Type: "application/json"
+  # Get from: Datadog -> Organization Settings -> API Keys / Application Keys
+
+  token_storage: local
+  refresh_automatically: false

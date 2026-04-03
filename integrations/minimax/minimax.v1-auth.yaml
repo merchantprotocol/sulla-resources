@@ -1,0 +1,17 @@
+# minimax.v1-auth.yaml
+# Authentication for MiniMax/Hailuo Video API v1
+# Uses Bearer token (API key)
+
+api:
+  name: minimax-v1
+  version: v1
+  provider: minimax
+  base_url: https://api.minimaxi.chat/v1
+
+auth:
+  type: bearer
+  client_secret: "${MINIMAX_API_KEY}"
+  # Get from: https://www.minimaxi.com/
+
+  token_storage: local
+  refresh_automatically: false

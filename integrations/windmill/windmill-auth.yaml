@@ -1,0 +1,19 @@
+# windmill-auth.yaml
+# Authentication configuration for Windmill workflow automation platform
+
+api:
+  name: windmill-api
+  version: "1.651"
+  provider: windmill
+  base_url: http://localhost:30130/api
+
+auth:
+  type: bearer_token
+  token: "${WINDMILL_TOKEN}"
+  header: Authorization
+  format: "Bearer ${WINDMILL_TOKEN}"
+
+docker:
+  container_name: windmill
+  host_port: 30130
+  internal_port: 8000

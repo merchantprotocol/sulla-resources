@@ -1,0 +1,17 @@
+# beehiiv.v2-auth.yaml
+# Authentication for Beehiiv API v2
+# Uses Bearer token
+
+api:
+  name: beehiiv-v2
+  version: v2
+  provider: beehiiv
+  base_url: https://api.beehiiv.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${BEEHIIV_API_KEY}"
+  # Get from: Beehiiv -> Settings -> Integrations -> API
+
+  token_storage: local
+  refresh_automatically: false

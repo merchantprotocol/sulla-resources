@@ -1,0 +1,18 @@
+# drip.v2-auth.yaml
+# Authentication for Drip API v2
+# Uses Bearer token
+
+api:
+  name: drip-v2
+  version: v2
+  provider: drip
+  base_url: https://api.getdrip.com/v2/{account_id}
+
+auth:
+  type: bearer
+  client_secret: "${DRIP_API_KEY}"
+  # Get from: Drip -> Settings -> User Settings -> API Token
+  # The {account_id} in the base URL is your Drip account ID
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,17 @@
+# telegram.v1-auth.yaml
+# Authentication for Telegram Bot API
+# Uses Bot Token in URL path
+
+api:
+  name: telegram-bot-v1
+  version: v1
+  provider: telegram
+  base_url: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}
+
+auth:
+  type: none
+  # Telegram embeds the bot token in the base URL itself
+  # Get token from @BotFather on Telegram
+
+  token_storage: local
+  refresh_automatically: false

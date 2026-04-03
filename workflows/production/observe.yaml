@@ -1,0 +1,96 @@
+id: workflow-observe
+name: Observe
+description: Universal observation workflow — reads domain-specific observe skill topics and dispatches parallel observer agents
+version: 4
+createdAt: 2026-03-18T04:00:00.000Z
+updatedAt: 2026-03-19T21:07:38.429Z
+nodes:
+  - id: node-2000000000001
+    type: workflow
+    position:
+      x: 496.7673888255416
+      y: 77.80045610034206
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives domain and log path from parent workflow orchestrator
+  - id: node-2000000000010
+    type: workflow
+    position:
+      x: 496.12086659064994
+      y: 206.24743443557583
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Load Skill
+      config:
+        prompt: |
+          The trigger message tells you the domain to observe and the log path.
+          Determine the domain (human, business, world, or agent) from the trigger.
+
+          Step 1: Call your file_search tool with query "observe-{domain} SKILL.md"
+          to locate the skill file. For the human domain, search for
+          "observe-human SKILL.md".
+
+          Step 2: Use the file path returned by file_search to read the skill.
+          Call your exec tool with: cat {path-from-file-search}
+          Use the FULL absolute path returned by file_search, not a relative path.
+
+          Output the full contents of the skill file — this contains the
+          instructions you will use to direct the observer agents.
+  - id: node-2000000000002
+    type: workflow
+    position:
+      x: 496.76738882554173
+      y: 360.34435575826683
+    data:
+      subtype: agent
+      category: agent
+      label: Observe
+      config:
+        agentId: observer
+        agentName: Observer
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          The upstream context contains the observation skill with all the topics
+          to observe. The trigger message has the domain and the log path.
+
+          For each observation topic defined in the skill, dispatch a sub-agent
+          using a <PROMPT> tag. Each sub-agent should focus on one topic and write
+          its observation to {log_path}/{topic-slug}.md.
+
+          Dispatch ALL topics as parallel sub-agents. Wait for all to complete.
+        successCriteria: All observation topics from the skill have been dispatched and completed
+        completionContract: Exit when all observer agents have written their log files
+  - id: node-2000000000003
+    type: workflow
+    position:
+      x: 496.30406210108924
+      y: 507.8455992302411
+    data:
+      subtype: response
+      category: io
+      label: Done
+      config:
+        responseTemplate: Observation complete for the requested domain.
+edges:
+  - id: e-trigger-to-load-skill
+    source: node-2000000000001
+    target: node-2000000000010
+    animated: true
+  - id: e-load-skill-to-observe
+    source: node-2000000000010
+    target: node-2000000000002
+    animated: true
+  - id: e-observe-to-done
+    source: node-2000000000002
+    target: node-2000000000003
+    animated: true
+_status: production
+viewport:
+  x: -78.90790279492325
+  y: 23.700974571603012
+  zoom: 0.9753655299287737

@@ -1,0 +1,18 @@
+# freshsales.v2-auth.yaml
+# Authentication for Freshsales API v2
+# Uses Bearer token (API key)
+
+api:
+  name: freshsales-v2
+  version: v2
+  provider: freshsales
+  base_url: https://${FRESHSALES_DOMAIN}.myfreshworks.com/crm/sales/api
+
+auth:
+  type: bearer
+  client_secret: "${FRESHSALES_API_KEY}"
+  # Get from: Freshsales → Settings → API Settings → Your API Key
+  # FRESHSALES_DOMAIN is your account subdomain (e.g., mycompany)
+
+  token_storage: local
+  refresh_automatically: false

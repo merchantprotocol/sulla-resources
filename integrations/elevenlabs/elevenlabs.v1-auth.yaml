@@ -1,0 +1,18 @@
+# elevenlabs.v1-auth.yaml
+# Authentication for ElevenLabs API v1
+# Uses API key via xi-api-key header
+
+api:
+  name: elevenlabs-v1
+  version: v1
+  provider: elevenlabs
+  base_url: https://api.elevenlabs.io/v1
+
+auth:
+  type: api_key
+  header: xi-api-key
+  client_secret: "${ELEVENLABS_API_KEY}"
+  # Get from: https://elevenlabs.io/app/settings/api-keys
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,17 @@
+# murf.v1-auth.yaml
+# Authentication for Murf AI API v1
+# Uses Bearer token (API key)
+
+api:
+  name: murf-v1
+  version: v1
+  provider: murf
+  base_url: https://api.murf.ai/v1
+
+auth:
+  type: bearer
+  client_secret: "${MURF_API_KEY}"
+  # Get from: https://murf.ai/resources/api
+
+  token_storage: local
+  refresh_automatically: false

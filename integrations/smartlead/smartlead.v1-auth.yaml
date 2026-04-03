@@ -1,0 +1,19 @@
+# smartlead.v1-auth.yaml
+# Authentication for Smartlead API v1
+# Uses API key via query parameter
+
+api:
+  name: smartlead-v1
+  version: v1
+  provider: smartlead
+  base_url: https://server.smartlead.ai/api/v1
+
+auth:
+  type: api_key
+  location: query
+  param_name: api_key
+  client_secret: "${SMARTLEAD_API_KEY}"
+  # Get from: Smartlead -> Settings -> API -> API Key
+
+  token_storage: local
+  refresh_automatically: false

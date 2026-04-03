@@ -1,0 +1,22 @@
+# gohighlevel.v2-auth.yaml
+# Authentication for GoHighLevel API v2
+# Uses Bearer token (API key or OAuth access token)
+
+api:
+  name: gohighlevel-v2
+  version: v2
+  provider: gohighlevel
+  base_url: https://services.leadconnectorhq.com
+
+auth:
+  type: bearer
+  client_secret: "${GHL_API_KEY}"
+  # Get from: GHL → Settings → Business Profile → API Key
+  # Or use OAuth 2.0 for marketplace apps
+  # Requires Version header: 2021-07-28
+
+  default_headers:
+    Version: "2021-07-28"
+
+  token_storage: local
+  refresh_automatically: false

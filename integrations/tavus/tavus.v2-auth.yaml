@@ -1,0 +1,19 @@
+# tavus.v2-auth.yaml
+# Authentication for Tavus API v2
+# Uses Bearer token and x-api-key header
+
+api:
+  name: tavus-v2
+  version: v2
+  provider: tavus
+  base_url: https://tavusapi.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${TAVUS_API_KEY}"
+  extra_headers:
+    x-api-key: "${TAVUS_API_KEY}"
+  # Get from: https://app.tavus.io (API settings)
+
+  token_storage: local
+  refresh_automatically: false

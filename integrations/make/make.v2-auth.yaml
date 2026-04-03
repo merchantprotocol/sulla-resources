@@ -1,0 +1,19 @@
+# make.v2-auth.yaml
+# Authentication for Make (Integromat) API v2
+# Uses Bearer token
+
+api:
+  name: make-v2
+  version: v2
+  provider: make
+  base_url: https://eu1.make.com/api/v2
+
+auth:
+  type: bearer
+  client_secret: "${MAKE_API_TOKEN}"
+  # Get from: Make → Profile → API → Create Token
+  # Note: Base URL varies by region (eu1, us1, eu2, etc.)
+  # Update base_url to match your Make instance region
+
+  token_storage: local
+  refresh_automatically: false

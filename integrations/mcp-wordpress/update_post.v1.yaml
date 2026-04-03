@@ -1,0 +1,34 @@
+endpoint:
+  name: update_post
+  description: Update an existing WordPress post. Provide content directly or
+    specify a file_path to a markdown or HTML file on the server to import as
+    the post body.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  id:
+    type: integer
+    required: true
+    description: The post ID to update.
+  title:
+    type: string
+    required: false
+    description: New post title.
+  content:
+    type: string
+    required: false
+    description: New post content (HTML).
+  file_path:
+    type: string
+    required: false
+    description: Server filesystem path to a .md or .html file to import as post content.
+  status:
+    type: string
+    required: false
+    description: "Post status: publish, draft, pending, private."
+  excerpt:
+    type: string
+    required: false
+    description: Post excerpt.

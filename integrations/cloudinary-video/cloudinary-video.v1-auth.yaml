@@ -1,0 +1,19 @@
+# cloudinary-video.v1-auth.yaml
+# Authentication for Cloudinary API v1
+# Uses Basic auth (API key : API secret)
+
+api:
+  name: cloudinary-video-v1
+  version: v1
+  provider: cloudinary
+  base_url: https://api.cloudinary.com/v1_1/{cloud_name}
+
+auth:
+  type: basic
+  client_id: "${CLOUDINARY_API_KEY}"
+  client_secret: "${CLOUDINARY_API_SECRET}"
+  # Get from: https://console.cloudinary.com/settings/api-keys
+  # cloud_name is your Cloudinary cloud name, set via CLOUDINARY_CLOUD_NAME
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,19 @@
+# activecampaign.v3-auth.yaml
+# Authentication for ActiveCampaign API v3
+# Uses API key via Api-Token header
+
+api:
+  name: activecampaign-v3
+  version: v3
+  provider: activecampaign
+  base_url: https://{account}.api-us1.com/api/3
+
+auth:
+  type: apiKey
+  client_secret: "${ACTIVECAMPAIGN_API_KEY}"
+  # Get from: ActiveCampaign -> Settings -> Developer -> API Access
+  # The {account} in the base URL is your ActiveCampaign account name
+
+  header_name: Api-Token
+  token_storage: local
+  refresh_automatically: false

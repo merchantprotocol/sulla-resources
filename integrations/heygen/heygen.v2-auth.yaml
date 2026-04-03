@@ -1,0 +1,17 @@
+# heygen.v2-auth.yaml
+# Authentication for HeyGen API v2
+# Uses Bearer token (API key)
+
+api:
+  name: heygen-v2
+  version: v2
+  provider: heygen
+  base_url: https://api.heygen.com/v2
+
+auth:
+  type: bearer
+  client_secret: "${HEYGEN_API_KEY}"
+  # Get from: https://www.heygen.com/
+
+  token_storage: local
+  refresh_automatically: false

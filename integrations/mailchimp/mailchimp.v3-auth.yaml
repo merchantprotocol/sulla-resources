@@ -1,0 +1,18 @@
+# mailchimp.v3-auth.yaml
+# Authentication for Mailchimp API v3
+# Uses Bearer token (API key as bearer)
+
+api:
+  name: mailchimp-v3
+  version: v3
+  provider: mailchimp
+  base_url: https://{dc}.api.mailchimp.com/3.0
+
+auth:
+  type: bearer
+  client_secret: "${MAILCHIMP_API_KEY}"
+  # Get from: Mailchimp -> Account & Billing -> Extras -> API keys
+  # The API key suffix (e.g., us21) determines the {dc} (data center) in the base URL
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,17 @@
+# luma.v1-auth.yaml
+# Authentication for Luma Dream Machine API v1
+# Uses Bearer token (API key)
+
+api:
+  name: luma-v1
+  version: v1
+  provider: luma
+  base_url: https://api.lumalabs.ai/dream-machine/v1
+
+auth:
+  type: bearer
+  client_secret: "${LUMA_API_KEY}"
+  # Get from: https://lumalabs.ai/
+
+  token_storage: local
+  refresh_automatically: false

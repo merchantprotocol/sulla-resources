@@ -1,0 +1,15 @@
+api:
+  name: youtube-data-v3
+  version: v3
+  provider: google
+  base_url: https://www.googleapis.com/youtube/v3
+
+auth:
+  type: apiKey
+  header: false
+  param_name: key
+  token_storage: local
+
+  headers:
+    Content-Type: application/json
+    Accept: application/json

@@ -1,0 +1,17 @@
+# twitter.v2-auth.yaml
+# Authentication configuration for X (Twitter) API v2
+# OAuth 2.0 Bearer Token or User Context (OAuth 1.0a)
+
+api:
+  name: twitter-v2
+  version: v2
+  provider: x-corp
+  base_url: https://api.x.com/2
+
+auth:
+  type: bearer
+  client_secret: "${TWITTER_BEARER_TOKEN}"
+
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"

@@ -1,0 +1,41 @@
+id: workflow-1773103368485
+name: Debugging
+description: use this whenever there's a problem with software that we need to work on
+version: 1
+createdAt: 2026-03-10T00:42:48.485Z
+updatedAt: 2026-03-17T00:39:36.993Z
+nodes:
+  - id: node-1773103374419
+    type: workflow
+    position:
+      x: 415
+      y: 166
+    data:
+      subtype: workbench
+      category: trigger
+      label: Workbench Trigger
+      config:
+        triggerType: workbench
+        triggerDescription: ""
+  - id: node-1773103378117
+    type: workflow
+    position:
+      x: 470
+      y: 279.25
+    data:
+      subtype: agent
+      category: agent
+      label: Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: ""
+        userMessage: ""
+        beforePrompt: ""
+        successCriteria: ""
+        completionContract: ""
+edges: []
+viewport:
+  x: 292.64406616808367
+  y: 270.1926146051445
+  zoom: 0.5

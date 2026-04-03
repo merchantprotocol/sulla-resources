@@ -1,0 +1,98 @@
+id: angie-telegram-assistant
+name: Angie AI Assistant
+description: Telegram AI assistant with voice/text support, Gmail, Calendar, and Baserow integration
+version: 1.0.0
+trigger:
+  type: chat-app
+  config:
+    platform: telegram
+    botToken: "{{integrations.telegram.botToken}}"
+    allowedChatIds: ["123456789"]
+nodes:
+  - id: security-check
+    name: Security Allowlist Check
+    type: condition
+    subtype: allowlist
+    config:
+      combinator: and
+      rules:
+        - field: chatId
+          operator: in
+          value: ["123456789"]
+    edges:
+      true: voice-text-router
+      false: end
+
+  - id: voice-text-router
+    name: Voice or Text Router
+    type: condition
+    subtype: message-type
+    config:
+      combinator: or
+      rules:
+        - field: messageType
+          operator: equals
+          value: voice
+    edges:
+      true: voice-processing
+      false: text-extraction
+
+  - id: voice-processing
+    name: Voice Message Processing
+    type: agent
+    agentId: sula
+    config:
+      additionalPrompt: Download the voice message file from Telegram, save it to /tmp/voice_{messageId}.ogg, then transcribe it using OpenAI Whisper. Return only the transcribed text.
+      integrations:
+        - telegram
+        - openai
+    edges:
+      default: merge-inputs
+
+  - id: text-extraction
+    name: Text Message Extraction
+    type: agent
+    agentId: sula
+    config:
+      additionalPrompt: Extract the text content from the Telegram message. If it's a caption, include that too. Return only the text content.
+      integrations:
+        - telegram
+    edges:
+      default: merge-inputs
+
+  - id: merge-inputs
+    name: Merge Voice/Text Paths
+    type: merge
+    config:
+      strategy: first-valid
+    edges:
+      default: angie-agent
+
+  - id: angie-agent
+    name: Angie AI Agent
+    type: agent
+    agentId: angie-assistant
+    config:
+      additionalPrompt: You are Angie, a helpful AI assistant. You have access to Gmail, Google Calendar, and Baserow (tasks + contacts). Help the user with their requests using these tools. Be concise and friendly.
+      integrations:
+        - openai
+        - gmail
+        - google-calendar
+        - baserow
+    edges:
+      default: telegram-response
+
+  - id: telegram-response
+    name: Send Telegram Response
+    type: agent
+    agentId: sula
+    config:
+      additionalPrompt: Send the response from Angie back to the user via Telegram. Use the sendMessage method with the chatId from the original message.
+      integrations:
+        - telegram
+    edges:
+      default: end
+
+  - id: end
+    name: End
+    type: end

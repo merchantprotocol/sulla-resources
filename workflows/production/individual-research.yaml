@@ -1,0 +1,286 @@
+id: workflow-individual-research
+name: Individual Research Pipeline
+description: Deep research on individuals identified as decision makers. Finds social profiles, contact info, validates identity, enriches profile in Twenty CRM.
+version: 1
+enabled: true
+nodes:
+  # === TRIGGER ===
+  - id: node-1770000000001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Individual Research Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "Research a specific person from Twenty CRM"
+
+  # === LOAD PERSON FROM CRM ===
+  - id: node-1770000000002
+    type: workflow
+    position:
+      x: 400
+      y: 220
+    data:
+      subtype: agent
+      category: agent
+      label: Fetch Person from CRM
+      config:
+        agentId: crm-person-fetcher
+        agentName: Twenty CRM Person Fetcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Query Twenty CRM for people where researchStatus='discovered' OR contactConfidence < 10. Order by contactConfidence ASC (lowest first = most need of enrichment). Take the top person. Return full person record including: id, firstName, lastName, email, phone, jobTitle, linkedinLink, xLink, company (link), isDecisionMaker, decisionLevel, contactConfidence, verificationDate."
+        successCriteria: Person record fetched
+        completionContract: Exit when person is fetched
+
+  # === VALIDATE PERSON IDENTITY ===
+  - id: node-1770000000003
+    type: workflow
+    position:
+      x: 400
+      y: 340
+    data:
+      subtype: agent
+      category: agent
+      label: Validate Identity
+      config:
+        agentId: identity-validator
+        agentName: Person Identity Validator
+        additionalPrompt: ""
+        orchestratorInstructions: "Verify this is the correct person by: 1) If LinkedIn provided, visit LinkedIn profile and confirm name, title, company match. 2) Search Google for '[name] [company]' to find additional matches. 3) Cross-reference any other data points (location, education, etc.). Output: validation_result: { isValid: boolean, confidence: 1-10, conflicting_data: [], notes: '...' }. If multiple people found with same name, flag for manual review."
+        successCriteria: Identity validated
+        completionContract: Exit when identity validation complete
+
+  # === ROUTER: IDENTITY VALID? ===
+  - id: node-1770000000004
+    type: workflow
+    position:
+      x: 400
+      y: 460
+    data:
+      subtype: router
+      category: routing
+      label: Identity Valid?
+      config:
+        classificationPrompt: "Check validation_result.isValid from previous step. If true route to continue research. If false route to mark invalid and skip."
+        routes:
+          - id: route-valid
+            label: "Yes - Continue Research"
+            description: "Identity verified - continue with research"
+          - id: route-invalid
+            label: "No - Mark Invalid"
+            description: "Identity unclear - mark and skip"
+
+  # === PARALLEL START ===
+  - id: node-1770000000004b
+    type: workflow
+    position:
+      x: 400
+      y: 540
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Parallel Research
+      config: {}
+
+  # === LINKEDIN RESEARCH ===
+  - id: node-1770000000005
+    type: workflow
+    position:
+      x: 150
+      y: 640
+    data:
+      subtype: agent
+      category: agent
+      label: LinkedIn Deep Research
+      config:
+        agentId: linkedin-researcher
+        agentName: LinkedIn Profile Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Visit the person's LinkedIn profile. Collect: current job title, company, location, industry, headline, about/summary, experience (positions, dates), education, skills, recommendations, recent activity. Look for contact info if available (may show email to connections). Note any leadership or technical background."
+        successCriteria: LinkedIn data collected
+        completionContract: Exit when LinkedIn research complete
+
+  # === TWITTER/X RESEARCH ===
+  - id: node-1770000000006
+    type: workflow
+    position:
+      x: 320
+      y: 640
+    data:
+      subtype: agent
+      category: agent
+      label: Twitter/X Research
+      config:
+        agentId: twitter-researcher
+        agentName: Twitter Profile Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Search for the person on Twitter/X. If handle known: visit profile, collect bio, location, website, join date, follower count, recent tweets. If no handle: search '[name] [company]' on Twitter to find them. Note interests, engagement style, what they post about."
+        successCriteria: Twitter data collected
+        completionContract: Exit when Twitter research complete
+
+  # === EMAIL/PHONE FINDER ===
+  - id: node-1770000000007
+    type: workflow
+    position:
+      x: 490
+      y: 640
+    data:
+      subtype: agent
+      category: agent
+      label: Contact Info Finder
+      config:
+        agentId: contact-finder
+        agentName: Email & Phone Finder
+        additionalPrompt: ""
+        orchestratorInstructions: "Find contact information for this person. Use: 1) Hunter.io - search by name and company domain. 2) LinkedIn (may show email to 1st degree connections). 3) Twitter profile for website link → check for contact page. 4) Any personal website found. 5) Phonebook reverse lookup if phone known. Collect: email (verify via hunter), phone, any other contact. Rate limit: 3 seconds between requests."
+        successCriteria: Contact info found or confirmed absent
+        completionContract: Exit when contact finding complete
+
+  # === GOOGLE RESEARCH ===
+  - id: node-1770000000008
+    type: workflow
+    position:
+      x: 660
+      y: 640
+    data:
+      subtype: agent
+      category: agent
+      label: Additional Google Research
+      config:
+        agentId: google-researcher
+        agentName: Google Person Researcher
+        additionalPrompt: ""
+        orchestratorInstructions: "Search Google for: '[name] [company]', '[name] founder', '[name] CEO', '[name] LinkedIn', '[name] Twitter', '[name] email'. Also search by email if known to find associated accounts. Look for: news mentions, conference talks, podcast appearances, guest blog posts, other social profiles. Note any notable achievements or connections."
+        successCriteria: Additional data collected
+        completionContract: Exit when research complete
+
+  # === IDENTITY INVALID HANDLER ===
+  - id: node-1770000000011
+    type: workflow
+    position:
+      x: 650
+      y: 460
+    data:
+      subtype: agent
+      category: agent
+      label: Mark Invalid & Skip
+      config:
+        agentId: invalid-handler
+        agentName: Invalid Identity Handler
+        additionalPrompt: ""
+        orchestratorInstructions: "Update person record in Twenty CRM: contactConfidence=0, researchStatus='invalid', verification_notes='Identity could not be verified'. Log to research log for manual review. Do NOT delete the record - mark for review."
+        successCriteria: Person marked invalid
+        completionContract: Exit when marked
+
+  # === VERIFY & MERGE DATA ===
+  - id: node-1770000000009
+    type: workflow
+    position:
+      x: 400
+      y: 760
+    data:
+      subtype: agent
+      category: agent
+      label: Verify & Merge Data
+      config:
+        agentId: data-merger
+        agentName: Data Verifier & Merger
+        additionalPrompt: ""
+        orchestratorInstructions: "Analyze all data collected from LinkedIn, Twitter, contact finder, Google. Identify conflicts: - Name variations (nicknames, middle names) → keep full legal name - Title differences → note both - Company differences → this may indicate wrong person - Location conflicts Merge into single truth: best_name, best_title, best_company, best_location, all_social_profiles (array), all_contact_methods, verification_notes. If major conflicts (different person entirely), flag for manual review."
+        successCriteria: Data verified and merged
+        completionContract: Exit when data merge complete
+
+  # === UPDATE PERSON IN CRM ===
+  - id: node-1770000000010
+    type: workflow
+    position:
+      x: 400
+      y: 880
+    data:
+      subtype: agent
+      category: agent
+      label: Update Person in CRM
+      config:
+        agentId: crm-person-updater
+        agentName: Twenty CRM Person Updater
+        additionalPrompt: ""
+        orchestratorInstructions: "Update the person record in Twenty CRM with: email (if found), phone (if found), updated linkedinLink (more complete), updated xLink (if found), contactConfidence=calculated based on data completeness (see formula), verificationDate=today, researchStatus='researched', add verification_notes, add all_social_profiles (array as JSON string), add additional_sources (list of where data came from)."
+        successCriteria: Person updated in Twenty CRM
+        completionContract: Exit when person updated
+
+  # === COMPLETION ===
+  - id: node-1770000000012
+    type: workflow
+    position:
+      x: 400
+      y: 1000
+    data:
+      subtype: agent
+      category: agent
+      label: Research Completion
+      config:
+        agentId: workflow-completer
+        agentName: Individual Research Completion Reporter
+        additionalPrompt: ""
+        orchestratorInstructions: "Report individual research results: person_name, company, identity_valid (yes/no), linkedin_found (yes/no), twitter_found (yes/no), email_found (yes/no), phone_found (yes/no), contact_confidence_score, new_data_points. Log to ~/sulla/daily-logs/{date}/lead-prospecting/individual-research.md"
+        successCriteria: Completion report generated
+        completionContract: Exit when report generated
+
+edges:
+  - id: edge-1
+    source: node-1770000000001
+    target: node-1770000000002
+  - id: edge-2
+    source: node-1770000000002
+    target: node-1770000000003
+  - id: edge-3
+    source: node-1770000000003
+    target: node-1770000000004
+  - id: edge-4
+    source: node-1770000000004
+    target: node-1770000000004b
+  - id: edge-4b
+    source: node-1770000000004
+    target: node-1770000000011
+  # From parallel marker to all research agents
+  - id: edge-5a
+    source: node-1770000000004b
+    target: node-1770000000005
+  - id: edge-5b
+    source: node-1770000000004b
+    target: node-1770000000006
+  - id: edge-5c
+    source: node-1770000000004b
+    target: node-1770000000007
+  - id: edge-5d
+    source: node-1770000000004b
+    target: node-1770000000008
+  # From all research to merge
+  - id: edge-6a
+    source: node-1770000000005
+    target: node-1770000000009
+  - id: edge-6b
+    source: node-1770000000006
+    target: node-1770000000009
+  - id: edge-6c
+    source: node-1770000000007
+    target: node-1770000000009
+  - id: edge-6d
+    source: node-1770000000008
+    target: node-1770000000009
+  # Merge to update
+  - id: edge-7
+    source: node-1770000000009
+    target: node-1770000000010
+  # Update to completion
+  - id: edge-8
+    source: node-1770000000010
+    target: node-1770000000012
+  # Invalid handler to completion
+  - id: edge-9
+    source: node-1770000000011
+    target: node-1770000000012

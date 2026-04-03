@@ -1,0 +1,17 @@
+# resemble.v2-auth.yaml
+# Authentication for Resemble AI API v2
+# Uses Bearer token (API key)
+
+api:
+  name: resemble-v2
+  version: v2
+  provider: resemble
+  base_url: https://app.resemble.ai/api/v2
+
+auth:
+  type: bearer
+  client_secret: "${RESEMBLE_API_KEY}"
+  # Get from: https://app.resemble.ai/account/api
+
+  token_storage: local
+  refresh_automatically: false

@@ -1,0 +1,199 @@
+id: example-loop-workflow
+name: Example - Loop Pattern
+description: Demonstrates processing a list of items using a loop pattern
+version: 1
+createdAt: 2026-03-14T00:00:00.000Z
+updatedAt: 2026-03-14T00:00:00.000Z
+tags:
+  - example
+  - loop
+  - flow-control
+pattern: loop
+nodes:
+  # Trigger: User provides list of items
+  - id: node-3001
+    type: workflow
+    position:
+      x: 400
+      y: 100
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Chat Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: "User provides a list of items to process"
+  
+  # Prep Agent: Initialize loop variables
+  - id: node-3002
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: agent
+      category: agent
+      label: Initialize Loop Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Parse the user's input into a list of items. Set loopVariable to the first item and decrement the counter. Output the current item and remaining count."
+        userMessage: "{{trigger.message}}"
+        beforePrompt: ""
+        successCriteria: "Items parsed and first item selected"
+        completionContract: ""
+  
+  # Loop: Process each item
+  - id: node-3003
+    type: workflow
+    position:
+      x: 400
+      y: 400
+    data:
+      subtype: loop
+      category: flow-control
+      label: Process Items Loop
+      config:
+        loopCondition: "items.length > 0"
+        loopVariable: "currentItem"
+  
+  # Process Agent: Handle current item
+  - id: node-3004
+    type: workflow
+    position:
+      x: 400
+      y: 550
+    data:
+      subtype: agent
+      category: agent
+      label: Process Item Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Process the current item: {{loop.currentItem}}. Perform the required operation and store the result."
+        userMessage: "Process: {{loop.currentItem}}"
+        beforePrompt: ""
+        successCriteria: "Current item processed successfully"
+        completionContract: ""
+  
+  # Loop Control: Decide whether to continue
+  - id: node-3005
+    type: workflow
+    position:
+      x: 400
+      y: 700
+    data:
+      subtype: condition
+      category: routing
+      label: More Items?
+      config:
+        rules:
+          - field: items.length
+            operator: greaterThan
+            value: 0
+        combinator: and
+  
+  # Next Item Agent: Prepare next iteration
+  - id: node-3006
+    type: workflow
+    position:
+      x: 200
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Next Item Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Move to the next item in the list and update loop variables."
+        userMessage: ""
+        beforePrompt: ""
+        successCriteria: "Next item selected"
+        completionContract: ""
+  
+  # Aggregate Agent: Compile results
+  - id: node-3007
+    type: workflow
+    position:
+      x: 600
+      y: 850
+    data:
+      subtype: agent
+      category: agent
+      label: Aggregate Results Agent
+      config:
+        agentId: null
+        agentName: ""
+        additionalPrompt: "Compile all processed item results into a final summary."
+        userMessage: ""
+        beforePrompt: ""
+        successCriteria: "All results aggregated"
+        completionContract: ""
+  
+  # Response: Send final results
+  - id: node-3008
+    type: workflow
+    position:
+      x: 400
+      y: 1000
+    data:
+      subtype: response
+      category: io
+      label: Send Results
+      config:
+        responseTemplate: "{{aggregate.results}}"
+        includeContext: true
+edges:
+  # Trigger → Initialize
+  - id: edge-3001
+    source: node-3001
+    target: node-3002
+    sourceHandle: null
+    targetHandle: null
+  # Initialize → Loop Entry
+  - id: edge-3002
+    source: node-3002
+    target: node-3003
+    sourceHandle: null
+    targetHandle: loop-entry
+  # Loop Start → Process
+  - id: edge-3003
+    source: node-3003
+    target: node-3004
+    sourceHandle: loop-start
+    targetHandle: null
+  # Process → Condition
+  - id: edge-3004
+    source: node-3004
+    target: node-3005
+    sourceHandle: null
+    targetHandle: null
+  # Condition True → Next Item
+  - id: edge-3005
+    source: node-3005
+    target: node-3006
+    sourceHandle: condition-true
+    targetHandle: null
+  # Next Item → Loop Back
+  - id: edge-3006
+    source: node-3006
+    target: node-3003
+    sourceHandle: null
+    targetHandle: loop-entry
+  # Condition False → Loop Exit to Aggregate
+  - id: edge-3007
+    source: node-3003
+    target: node-3007
+    sourceHandle: loop-exit
+    targetHandle: null
+  # Aggregate → Response
+  - id: edge-3008
+    source: node-3007
+    target: node-3008
+    sourceHandle: null
+    targetHandle: null
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

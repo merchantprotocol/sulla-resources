@@ -1,0 +1,18 @@
+# brevo.v3-auth.yaml
+# Authentication for Brevo (Sendinblue) API v3
+# Uses API key via api-key header
+
+api:
+  name: brevo-v3
+  version: v3
+  provider: brevo
+  base_url: https://api.brevo.com/v3
+
+auth:
+  type: apiKey
+  client_secret: "${BREVO_API_KEY}"
+  # Get from: Brevo -> Settings -> SMTP & API -> API Keys
+
+  header_name: api-key
+  token_storage: local
+  refresh_automatically: false

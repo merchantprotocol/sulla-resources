@@ -1,0 +1,18 @@
+# zapier.v1-auth.yaml
+# Authentication for Zapier Natural Language Actions (NLA) API v1
+# Uses Bearer token
+
+api:
+  name: zapier-nla-v1
+  version: v1
+  provider: zapier
+  base_url: https://nla.zapier.com/api/v1
+
+auth:
+  type: bearer
+  client_secret: "${ZAPIER_NLA_API_KEY}"
+  # Get from: https://nla.zapier.com/credentials/
+  # Enable actions at: https://nla.zapier.com/demo/
+
+  token_storage: local
+  refresh_automatically: false

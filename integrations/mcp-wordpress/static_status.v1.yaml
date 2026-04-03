@@ -1,0 +1,8 @@
+endpoint:
+  name: static_status
+  description: Check the status of a Simply Static site export. Returns whether
+    the export is running, paused, or complete, along with progress messages.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp

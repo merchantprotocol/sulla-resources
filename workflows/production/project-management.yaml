@@ -1,0 +1,537 @@
+id: workflow-1772933603457
+name: Project Management
+description: >
+  Creates a new project with a goal-aware PRD. Gathers identity, goals, active projects,
+  idea history, and past conversation context in parallel, then feeds it all to the PRD
+  Manager. The initial PRD is then refined through 6 sequential critic rounds loaded from
+  the prd-perspectives skill. Finally, a risk planner assesses the refined PRD.
+version: 3
+createdAt: 2026-03-08T01:33:23.457Z
+updatedAt: 2026-03-18T00:00:00.000Z
+
+nodes:
+  # ── Trigger ──────────────────────────────────────────────────────────
+  - id: node-trigger
+    type: workflow
+    position:
+      x: 400
+      y: 0
+    data:
+      subtype: workbench
+      category: trigger
+      label: Workbench Trigger
+      config:
+        triggerType: workbench
+        triggerDescription: "User describes the project they want to create"
+
+  # ── Load Skills ──────────────────────────────────────────────────────
+  - id: node-load-skill
+    type: workflow
+    position:
+      x: 400
+      y: 120
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Load Skills
+      config:
+        prompt: >
+          Load the prd-perspectives skill using the load_skill tool.
+          Also load the project-management skill.
+          Do NOT execute them — just load them and wait for further instructions.
+
+  # ── Parallel Fork: Context Gathering ─────────────────────────────────
+  - id: node-context-fork
+    type: workflow
+    position:
+      x: 400
+      y: 250
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Gather Context
+      config: {}
+
+  # ── Worker 1: Identity Files ─────────────────────────────────────────
+  - id: node-read-identity
+    type: workflow
+    position:
+      x: 50
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Read Identity Files
+      config:
+        agentId: thinker-worker
+        agentName: Identity Reader
+        additionalPrompt: ""
+        orchestratorInstructions: >
+          Read ALL identity files and produce a compressed snapshot for use by the
+          PRD Manager. Read them in this order — identity first, then journals:
+
+          1. ~/sulla/identity/human/identity.md — the human's identity, personality, skills,
+             background, communication style, and preferences.
+          2. ~/sulla/identity/business/identity.md — the business identity, mission, products,
+             revenue model, market position, and strategic direction.
+          3. ~/sulla/identity/world/identity.md — world context, market trends, competitive
+             landscape, and external factors.
+          4. ~/sulla/identity/agent/identity.md — the agent's own identity, capabilities, and
+             relationship to the human.
+
+          For each file, extract a compressed snapshot (under 300 words each) covering:
+          - Who/what this entity is (core identity)
+          - Current state and priorities
+          - Key constraints, preferences, or values that should influence project planning
+          - Any domain expertise or gaps relevant to project scoping
+
+          If any file doesn't exist, note that and move on.
+
+          Output a single structured report with sections for each identity file.
+          Total output should be under 1200 words.
+        successCriteria: Compressed identity snapshots for all available identity files
+        completionContract: Exit when all identity files have been read and summarized
+
+  # ── Worker 2: Goals Files ────────────────────────────────────────────
+  - id: node-read-goals
+    type: workflow
+    position:
+      x: 250
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Read Goals
+      config:
+        agentId: thinker-worker
+        agentName: Goals Reader
+        additionalPrompt: ""
+        orchestratorInstructions: >
+          Read the goal files and produce a compressed snapshot of the human's and
+          business's current objectives. Read identity files first for context, then
+          the goal-specific files.
+
+          Files to read:
+          1. ~/sulla/identity/human/identity.md — scan for goals, vision, and aspirations sections
+          2. ~/sulla/identity/business/identity.md — scan for goals, OKRs, and strategic objectives
+          3. ~/sulla/identity/human/goals.md — if it exists, extract:
+             - 2-year vision summary
+             - 13-week arc critical drivers and milestone status
+             - Current weekly objectives
+             - Daily focus goals
+          4. ~/sulla/identity/business/goals.md — if it exists, extract:
+             - 2-year vision summary
+             - 13-week arc critical drivers and milestone status
+             - Current weekly objectives
+             - Active revenue streams and financial pressures
+          5. ~/sulla/identity/agent/goals.md — if it exists, extract agent's own goals
+
+          Also check the daily thinking logs for today's goals context:
+          - ~/sulla/daily-logs/{{YYYY-MM-DD}}/human/thinking/goals.md
+          - ~/sulla/daily-logs/{{YYYY-MM-DD}}/human/thinking/financial.md
+
+          If goals files don't exist, extract what you can from the identity files
+          and note that formal goal-setting hasn't been done yet.
+
+          Output a structured report covering:
+          - Human goals (short-term, medium-term, long-term)
+          - Business goals (short-term, medium-term, long-term)
+          - Key pain points and obstacles
+          - What success looks like for the human right now
+
+          Total output under 800 words.
+        successCriteria: Compressed goals snapshot covering human and business objectives
+        completionContract: Exit when all goal files have been read and summarized
+
+  # ── Worker 3: Active Projects & Ideas ────────────────────────────────
+  - id: node-read-projects
+    type: workflow
+    position:
+      x: 500
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Read Projects & Ideas
+      config:
+        agentId: thinker-worker
+        agentName: Projects Reader
+        additionalPrompt: ""
+        orchestratorInstructions: >
+          Read the current project landscape and idea registry to help the PRD Manager
+          understand what's already in flight and avoid duplication.
+
+          **Step 1: Active Projects**
+          Read ~/sulla/projects/ACTIVE_PROJECTS.md if it exists.
+          Then scan ~/sulla/projects/ for any PROJECT.md files. For each project found:
+          - slug, title, status, priority
+          - Brief summary of what it does
+          - Whether it's progressing, blocked, stale, or nearly complete
+          - Any overlap with the incoming project request (you'll see the trigger
+            input from the previous node)
+
+          **Step 2: Project Ideas Registry**
+          Read ~/sulla/projects/PROJECT_IDEAS.md if it exists. Extract:
+          - Ideas with status "pending" or "accepted"
+          - Any ideas that relate to the incoming project request
+          - Summary stats (total ideas, accepted, rejected, retired)
+
+          **Step 3: Duplication Check**
+          Compare the incoming project request against:
+          - Active projects — is this already being worked on?
+          - Project ideas — was this already proposed?
+          - Completed/archived projects — was this already done?
+
+          Output a structured report covering:
+          - Active project inventory (brief)
+          - Related existing projects or ideas (if any)
+          - Duplication risk assessment
+          - Portfolio capacity assessment (is the plate full or is there room?)
+
+          Total output under 600 words.
+        successCriteria: Project landscape report with duplication check
+        completionContract: Exit when all project files have been scanned and reported
+
+  # ── Worker 4: Past Conversations & Observations ──────────────────────
+  - id: node-read-conversations
+    type: workflow
+    position:
+      x: 750
+      y: 420
+    data:
+      subtype: agent
+      category: agent
+      label: Read Past Context
+      config:
+        agentId: thinker-worker
+        agentName: Conversation History Reader
+        additionalPrompt: ""
+        orchestratorInstructions: >
+          Search through past conversation logs, observations, and thinking files
+          to find anything relevant to the incoming project request. The goal is to
+          surface prior discussions, decisions, preferences, or insights that could
+          inform the PRD.
+
+          **Sources to search (most recent first):**
+
+          1. **Daily observation logs** — scan the last 7 days of daily logs:
+             - ~/sulla/daily-logs/*/agent/observations/
+             - ~/sulla/daily-logs/*/world/observations/
+             - ~/sulla/daily-logs/*/business/observations/
+             Look for observations that relate to the project topic.
+
+          2. **Thinking files** — scan recent thinking outputs:
+             - ~/sulla/daily-logs/*/human/thinking/patterns.md
+             - ~/sulla/daily-logs/*/human/thinking/pains.md
+             - ~/sulla/daily-logs/*/human/thinking/goals.md
+             - ~/sulla/daily-logs/*/human/thinking/transformations.md
+             - ~/sulla/daily-logs/*/human/thinking/entities.md
+             Look for patterns, pain points, or insights related to the project.
+
+          3. **Project planning logs** — check for any prior planning responses:
+             - ~/sulla/daily-logs/*/project-planning-log.md
+             - ~/sulla/daily-logs/*/project-planning-response.md
+             Look for prior proposals or decisions about this topic.
+
+          **What to extract:**
+          - Any prior discussion or mention of this project topic
+          - Relevant decisions the human made about related work
+          - Pain points or frustrations that this project might address
+          - Any preferences the human expressed about how to approach this kind of work
+          - Relevant patterns or insights from the thinking files
+
+          If nothing relevant is found, say so — that's useful information too (means
+          this is a fresh idea with no prior context).
+
+          Output under 500 words. Focus on what's directly relevant, not everything.
+        successCriteria: Relevant historical context extracted from conversation logs
+        completionContract: Exit when all log sources have been searched
+
+  # ── Merge: All Context Gathered ──────────────────────────────────────
+  - id: node-context-merge
+    type: workflow
+    position:
+      x: 400
+      y: 620
+    data:
+      subtype: merge
+      category: flow-control
+      label: Context Gathered
+      config:
+        strategy: wait-all
+
+  # ── PRD Manager: Create the PRD ──────────────────────────────────────
+  - id: node-prd-manager
+    type: workflow
+    position:
+      x: 400
+      y: 760
+    data:
+      subtype: agent
+      category: agent
+      label: PRD Manager
+      config:
+        agentId: project-resource-document
+        agentName: PRD Manager
+        additionalPrompt: ""
+        userMessage: ""
+        beforePrompt: ""
+        successCriteria: "PROJECT.md created with goal-aligned PRD, workspace set up, ACTIVE_PROJECTS.md updated"
+        completionContract: "Exit when the PRD is written and the project is registered"
+        orchestratorInstructions: >
+          You are receiving the user's project request along with rich context from
+          four parallel research workers:
+
+          1. **Identity Context** — who the human is, what the business does, world
+             context, and the agent's relationship to the human.
+          2. **Goals Context** — the human's and business's short/medium/long-term
+             goals, pain points, and definition of success.
+          3. **Project Landscape** — what's already in flight, what ideas exist,
+             and whether this project duplicates or overlaps existing work.
+          4. **Conversation History** — any prior discussions, decisions, or insights
+             related to this project topic.
+
+          **Use this context to write a deeply informed PRD.** Specifically:
+
+          - Align the project's "Ultimate Project Goal" with the human's actual goals
+          - Write user stories that reflect the human's real pain points and needs
+          - Set Must Haves / Should Haves / Nice-to-Haves informed by what matters
+            most to the human right now
+          - Note any overlap with existing projects and how this one relates
+          - Reference relevant prior decisions or preferences in the architecture
+          - Size the project appropriately given the human's current capacity
+
+          **If you still need more information to write a solid PRD**, you can launch
+          your own sub-workers to gather additional details. For example:
+          - Research a specific technology or integration
+          - Look up existing code patterns in a repository
+          - Search for templates or prior art
+          - Investigate credential availability for integrations
+
+          Do not hesitate to delegate research to sub-workers rather than guessing
+          or leaving gaps in the PRD.
+
+          Follow your standard project-management skill for the actual PRD creation
+          process (create_workspace, write PROJECT.md, update ACTIVE_PROJECTS.md).
+
+  # ── Critic Loop: Refine the PRD ──────────────────────────────────────
+  - id: node-critic-loop
+    type: workflow
+    position:
+      x: 400
+      y: 920
+    data:
+      subtype: loop
+      category: flow-control
+      label: PRD Critic Rounds
+      config:
+        loopMode: for-each
+        maxIterations: 6
+        condition: ""
+        conditionMode: template
+
+  - id: node-critic-inject
+    type: workflow
+    position:
+      x: 400
+      y: 1060
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Inject Critic Prompt
+      config:
+        prompt: |-
+          You are reviewing and improving a Project Resource Document (PRD). Here is the current version of the PRD:
+
+          {{loop.currentItem.result}}
+
+          You also have access to the identity, goals, project landscape, and conversation
+          history context that was gathered earlier in this workflow. Use it to ground your
+          critique — don't just critique in the abstract, critique against the human's
+          actual situation.
+
+          Apply the following critique methodology to this PRD. Be specific, constructive,
+          and thorough. After your critique, rewrite the ENTIRE PRD with improvements
+          incorporated. The rewritten PRD must be a complete, standalone document — not
+          a diff or a list of changes.
+
+          {{loop.currentItem.label}}
+
+  - id: node-critic-agent
+    type: workflow
+    position:
+      x: 400
+      y: 1200
+    data:
+      subtype: agent
+      category: agent
+      label: PRD Critic
+      config:
+        agentId: project-resource-document
+        agentName: PRD Critic
+        additionalPrompt: ""
+        orchestratorInstructions: ""
+        successCriteria: A rewritten PRD that addresses the specific critique
+        completionContract: Exit when the revised PRD is complete — output the full rewritten PRD
+
+  # ── Write Refined PRD Back to File ───────────────────────────────────
+  - id: node-write-prd
+    type: workflow
+    position:
+      x: 400
+      y: 1380
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Refined PRD
+      config:
+        prompt: >
+          The PRD has been through 6 rounds of critique and refinement. Take the final
+          refined version from the last critic round and write it back to the project's
+          PROJECT.md file, replacing the initial draft. The refined PRD is the definitive
+          version. Read the current PROJECT.md to find the file path, then overwrite it
+          with the refined content.
+
+  # ── One Risk Planner (placeholder — prompt TBD) ─────────────────────
+  - id: node-risk-planner
+    type: workflow
+    position:
+      x: 400
+      y: 1520
+    data:
+      subtype: agent
+      category: agent
+      label: One Risk Planner
+      config:
+        agentId: project-resource-document
+        agentName: One Risk Planner
+        additionalPrompt: ""
+        userMessage: ""
+        orchestratorInstructions: >
+          PLACEHOLDER — This node will receive the completed PRD and perform risk
+          analysis. Prompt to be provided by the user.
+
+  # ── Done ─────────────────────────────────────────────────────────────
+  - id: node-done
+    type: workflow
+    position:
+      x: 400
+      y: 1660
+    data:
+      subtype: response
+      category: io
+      label: Done
+      config:
+        responseTemplate: >
+          Project created with refined PRD (6 critic rounds) and risk analysis complete.
+
+edges:
+  # Trigger → Load Skills
+  - id: e-trigger-skill
+    source: node-trigger
+    target: node-load-skill
+    animated: true
+
+  # Load Skills → Parallel Fork
+  - id: e-skill-fork
+    source: node-load-skill
+    target: node-context-fork
+    animated: true
+
+  # Fork → 4 parallel workers
+  - id: e-fork-identity
+    source: node-context-fork
+    target: node-read-identity
+    animated: true
+  - id: e-fork-goals
+    source: node-context-fork
+    target: node-read-goals
+    animated: true
+  - id: e-fork-projects
+    source: node-context-fork
+    target: node-read-projects
+    animated: true
+  - id: e-fork-conversations
+    source: node-context-fork
+    target: node-read-conversations
+    animated: true
+
+  # 4 workers → Merge
+  - id: e-identity-merge
+    source: node-read-identity
+    target: node-context-merge
+    animated: true
+  - id: e-goals-merge
+    source: node-read-goals
+    target: node-context-merge
+    animated: true
+  - id: e-projects-merge
+    source: node-read-projects
+    target: node-context-merge
+    animated: true
+  - id: e-conversations-merge
+    source: node-read-conversations
+    target: node-context-merge
+    animated: true
+
+  # Merge → PRD Manager
+  - id: e-merge-prd
+    source: node-context-merge
+    target: node-prd-manager
+    animated: true
+
+  # PRD Manager → Critic Loop entry
+  - id: e-prd-loop
+    source: node-prd-manager
+    target: node-critic-loop
+    sourceHandle: null
+    targetHandle: loop-entry
+    animated: true
+
+  # Loop start → Inject Critic Prompt
+  - id: e-loop-inject
+    source: node-critic-loop
+    target: node-critic-inject
+    sourceHandle: loop-start
+    targetHandle: null
+    animated: true
+
+  # Inject → Critic Agent
+  - id: e-inject-critic
+    source: node-critic-inject
+    target: node-critic-agent
+    animated: true
+
+  # Critic → Loop back
+  - id: e-critic-loopback
+    source: node-critic-agent
+    target: node-critic-loop
+    sourceHandle: null
+    targetHandle: loop-back
+    animated: true
+
+  # Loop exit → Write Refined PRD
+  - id: e-loop-write
+    source: node-critic-loop
+    target: node-write-prd
+    sourceHandle: loop-exit
+    targetHandle: null
+    animated: true
+
+  # Write PRD → One Risk Planner
+  - id: e-write-risk
+    source: node-write-prd
+    target: node-risk-planner
+    animated: true
+
+  # One Risk Planner → Done
+  - id: e-risk-done
+    source: node-risk-planner
+    target: node-done
+    animated: true
+
+_status: production
+viewport:
+  x: 0
+  y: 0
+  zoom: 0.5

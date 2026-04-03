@@ -1,0 +1,19 @@
+# play-ht.v2-auth.yaml
+# Authentication for PlayHT API v2
+# Uses Bearer token + X-USER-ID header
+
+api:
+  name: play-ht-v2
+  version: v2
+  provider: play-ht
+  base_url: https://api.play.ht/api/v2
+
+auth:
+  type: bearer
+  client_secret: "${PLAYHT_API_KEY}"
+  headers:
+    X-USER-ID: "${PLAYHT_USER_ID}"
+  # Get from: https://play.ht/studio/api-access
+
+  token_storage: local
+  refresh_automatically: false

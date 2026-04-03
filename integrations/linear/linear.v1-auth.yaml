@@ -1,0 +1,17 @@
+# linear.v1-auth.yaml
+# Authentication for Linear API (GraphQL)
+# Uses Bearer token (personal API key)
+
+api:
+  name: linear-v1
+  version: v1
+  provider: linear
+  base_url: https://api.linear.app
+
+auth:
+  type: bearer
+  client_secret: "${LINEAR_API_KEY}"
+  # Get from: Linear → Settings → Account → API → Personal API keys → Create key
+
+  token_storage: local
+  refresh_automatically: false

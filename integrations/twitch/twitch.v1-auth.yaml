@@ -1,0 +1,35 @@
+# twitch.v1-auth.yaml
+# Authentication configuration for Twitch Helix API
+# OAuth 2.0 (Client Credentials or Authorization Code)
+
+api:
+  name: twitch-helix
+  version: v1
+  provider: amazon
+  base_url: https://api.twitch.tv/helix
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${TWITCH_CLIENT_ID}"
+  client_secret: "${TWITCH_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://id.twitch.tv/oauth2/authorize
+  token_url: https://id.twitch.tv/oauth2/token
+
+  scopes:
+    - user:read:email
+    - channel:read:stream_key
+    - clips:edit
+    # - channel:manage:broadcast
+    # - moderator:manage:chat_messages
+
+  # Twitch requires Client-ID header on all requests
+  headers:
+    Client-ID: "${TWITCH_CLIENT_ID}"
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

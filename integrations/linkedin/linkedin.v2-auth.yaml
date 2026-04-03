@@ -1,0 +1,31 @@
+# linkedin.v2-auth.yaml
+# Authentication configuration for LinkedIn API v2
+# OAuth 2.0 (3-legged)
+
+api:
+  name: linkedin-v2
+  version: v2
+  provider: microsoft
+  base_url: https://api.linkedin.com/v2
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${LINKEDIN_CLIENT_ID}"
+  client_secret: "${LINKEDIN_CLIENT_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://www.linkedin.com/oauth/v2/authorization
+  token_url: https://www.linkedin.com/oauth/v2/accessToken
+
+  scopes:
+    - openid
+    - profile
+    - w_member_social     # post on behalf of user
+    # - r_organization_social  # read company page posts
+    # - w_organization_social  # post to company pages
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300

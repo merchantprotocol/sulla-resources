@@ -1,0 +1,40 @@
+# amazon-seller.sp-api-auth.yaml
+# Authentication configuration for Amazon Selling Partner API (SP-API)
+# Uses OAuth 2.0 + AWS Signature Version 4
+
+api:
+  name: amazon-seller
+  version: "sp-api"
+  provider: amazon
+  base_url: https://sellingpartnerapi-na.amazon.com
+
+auth:
+  type: oauth2
+  client_id: "${AMAZON_SP_CLIENT_ID}"
+  client_secret: "${AMAZON_SP_CLIENT_SECRET}"
+
+  # LWA (Login with Amazon) OAuth 2.0
+  authorization_url: https://sellercentral.amazon.com/apps/authorize/consent
+  token_url: https://api.amazon.com/auth/o2/token
+  refresh_token: "${AMAZON_SP_REFRESH_TOKEN}"
+
+  # AWS Signature V4 (required for all requests)
+  aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
+  aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+  aws_region: "us-east-1"
+  aws_service: "execute-api"
+
+  # STS role assumption (if using IAM role)
+  role_arn: "${AMAZON_SP_ROLE_ARN}"
+
+  scopes: []
+  # SP-API uses role-based authorization, not scopes
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry: 3600  # 1 hour
+
+  regional_endpoints:
+    na: https://sellingpartnerapi-na.amazon.com
+    eu: https://sellingpartnerapi-eu.amazon.com
+    fe: https://sellingpartnerapi-fe.amazon.com

@@ -1,0 +1,23 @@
+# bluesky.v1-auth.yaml
+# Authentication configuration for Bluesky AT Protocol API
+# App password auth (creates session)
+
+api:
+  name: bluesky-atproto
+  version: v1
+  provider: bluesky
+  base_url: https://bsky.social/xrpc
+
+auth:
+  type: bearer
+  client_secret: "${BLUESKY_APP_PASSWORD}"
+
+  # Bluesky uses session-based auth:
+  # POST /xrpc/com.atproto.server.createSession with identifier + password
+  # Returns accessJwt (short-lived) and refreshJwt
+  session_url: https://bsky.social/xrpc/com.atproto.server.createSession
+  session_identifier: "${BLUESKY_HANDLE}"  # e.g., user.bsky.social
+
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"

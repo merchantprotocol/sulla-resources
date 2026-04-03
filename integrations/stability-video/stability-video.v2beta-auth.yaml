@@ -1,0 +1,17 @@
+# stability-video.v2beta-auth.yaml
+# Authentication for Stability AI Video API v2beta
+# Uses Bearer token (API key)
+
+api:
+  name: stability-video-v2beta
+  version: v2beta
+  provider: stability-ai
+  base_url: https://api.stability.ai
+
+auth:
+  type: bearer
+  client_secret: "${STABILITY_API_KEY}"
+  # Get from: https://platform.stability.ai/account/keys
+
+  token_storage: local
+  refresh_automatically: false

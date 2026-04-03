@@ -1,0 +1,13 @@
+endpoint:
+  name: get_post
+  description: Get a single WordPress post by ID. Returns full post data including
+    content, categories, and tags.
+  path: /tools/call
+  method: POST
+  auth: required
+  transport: mcp
+body_params:
+  id:
+    type: integer
+    required: true
+    description: The post ID.

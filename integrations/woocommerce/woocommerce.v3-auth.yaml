@@ -1,0 +1,19 @@
+# woocommerce.v3-auth.yaml
+# Authentication for WooCommerce REST API v3
+# Uses consumer key/secret (Basic Auth over HTTPS)
+
+api:
+  name: woocommerce-v3
+  version: v3
+  provider: woocommerce
+  base_url: https://${WOOCOMMERCE_STORE}/wp-json/wc/v3
+
+auth:
+  type: apiKey
+  header: Authorization
+  client_id: "${WOOCOMMERCE_CONSUMER_KEY}"
+  client_secret: "${WOOCOMMERCE_CONSUMER_SECRET}"
+  # WooCommerce uses Basic Auth: base64(consumer_key:consumer_secret)
+  # Store the full "Basic base64encoded" value as the credential
+
+  token_storage: local

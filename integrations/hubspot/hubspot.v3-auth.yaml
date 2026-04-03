@@ -1,0 +1,18 @@
+# hubspot.v3-auth.yaml
+# Authentication for HubSpot CRM API v3
+# Uses Bearer token (private app access token)
+
+api:
+  name: hubspot-v3
+  version: v3
+  provider: hubspot
+  base_url: https://api.hubapi.com
+
+auth:
+  type: bearer
+  client_secret: "${HUBSPOT_ACCESS_TOKEN}"
+  # Get from: HubSpot → Settings → Integrations → Private Apps → Create
+  # Or use OAuth 2.0 for production apps
+
+  token_storage: local
+  refresh_automatically: false

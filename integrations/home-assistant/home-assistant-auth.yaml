@@ -1,0 +1,26 @@
+# home-assistant-auth.yaml
+# Authentication for Home Assistant REST API (local Docker)
+
+api:
+  name: home-assistant-rest
+  version: "2025.3"
+  provider: home-assistant
+  base_url: http://localhost:30215/api
+
+auth:
+  type: bearer_token
+  token: "${HOME_ASSISTANT_TOKEN}"
+  header: Authorization
+  format: "Bearer ${HOME_ASSISTANT_TOKEN}"
+  notes: |
+    Generate a Long-Lived Access Token from:
+    Profile -> Security -> Long-Lived Access Tokens
+    Token is sent as: Authorization: Bearer <token>
+
+  headers:
+    Content-Type: application/json
+
+docker:
+  container_name: home-assistant
+  host_port: 30215
+  internal_port: 8123

@@ -1,0 +1,22 @@
+# postmark.v1-auth.yaml
+# Authentication for Postmark API v1
+# Uses API key header (X-Postmark-Server-Token)
+
+api:
+  name: postmark-v1
+  version: v1
+  provider: postmark
+  base_url: https://api.postmarkapp.com
+
+auth:
+  type: apiKey
+  client_secret: "${POSTMARK_SERVER_TOKEN}"
+  # Get from: Postmark -> Servers -> Your Server -> API Tokens
+
+  token_storage: local
+  refresh_automatically: false
+
+  headers:
+    X-Postmark-Server-Token: "${POSTMARK_SERVER_TOKEN}"
+    Accept: "application/json"
+    Content-Type: "application/json"

@@ -1,0 +1,17 @@
+# todoist.v2-auth.yaml
+# Authentication for Todoist REST API v2
+# Uses Bearer token
+
+api:
+  name: todoist-v2
+  version: v2
+  provider: todoist
+  base_url: https://api.todoist.com/rest/v2
+
+auth:
+  type: bearer
+  client_secret: "${TODOIST_API_TOKEN}"
+  # Get from: Todoist → Settings → Integrations → Developer → API token
+
+  token_storage: local
+  refresh_automatically: false

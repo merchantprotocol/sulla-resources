@@ -1,0 +1,17 @@
+# udio.v1-auth.yaml
+# Authentication for Udio API v1
+# Uses Bearer token (API key)
+
+api:
+  name: udio-v1
+  version: v1
+  provider: udio
+  base_url: https://api.udio.com/v1
+
+auth:
+  type: bearer
+  client_secret: "${UDIO_API_KEY}"
+  # Get from: https://udio.com (API settings)
+
+  token_storage: local
+  refresh_automatically: false

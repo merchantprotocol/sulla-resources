@@ -1,0 +1,17 @@
+# synthesia.v2-auth.yaml
+# Authentication for Synthesia API v2
+# Uses Bearer token (API key)
+
+api:
+  name: synthesia-v2
+  version: v2
+  provider: synthesia
+  base_url: https://api.synthesia.io/v2
+
+auth:
+  type: bearer
+  client_secret: "${SYNTHESIA_API_KEY}"
+  # Get from: https://www.synthesia.io/
+
+  token_storage: local
+  refresh_automatically: false

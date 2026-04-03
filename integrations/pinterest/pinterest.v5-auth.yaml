@@ -1,0 +1,30 @@
+# pinterest.v5-auth.yaml
+# Authentication configuration for Pinterest API v5
+# OAuth 2.0
+
+api:
+  name: pinterest-v5
+  version: v5
+  provider: pinterest
+  base_url: https://api.pinterest.com/v5
+
+auth:
+  type: oauth2
+  flow: authorization_code
+  client_id: "${PINTEREST_APP_ID}"
+  client_secret: "${PINTEREST_APP_SECRET}"
+  redirect_uris:
+    - "http://localhost:3000/auth/callback"
+
+  authorization_url: https://www.pinterest.com/oauth/
+  token_url: https://api.pinterest.com/v5/oauth/token
+
+  scopes:
+    - boards:read
+    - pins:read
+    - pins:write
+    - user_accounts:read
+
+  token_storage: local
+  refresh_automatically: true
+  token_expiry_buffer_seconds: 300
