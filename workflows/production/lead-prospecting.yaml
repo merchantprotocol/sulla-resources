@@ -1,7 +1,7 @@
 id: workflow-lead-prospecting
 name: Lead Prospecting Pipeline
-description: Multi-source business discovery with strict tab management. Daily dated folders with source subdirectories. Dynamic source expansion, file-based scoring and dedup. Exits early on bot blocking.
-version: 6
+description: Continuous single-business discovery with CRM dedup, tagging, and auto-tagging. Supports configurable business types, multiple problem tags, and auto-detection of issues.
+version: 8
 enabled: true
 nodes:
   - id: node-1750000000001
@@ -15,7 +15,7 @@ nodes:
       label: Lead Prospecting Trigger
       config:
         triggerType: chat-app
-        triggerDescription: "Lead prospecting - discover businesses from multiple sources"
+        triggerDescription: "Lead prospecting - discover ONE business, check CRM, add if new with tags"
 
   - id: node-1750000000002
     type: workflow
@@ -25,13 +25,41 @@ nodes:
     data:
       subtype: agent
       category: agent
-      label: Load ICP Config + Set Date
+      label: Load ICP + Tag Config + CRM History
       config:
         agentId: icp-loader
-        agentName: ICP Config Loader
-        additionalPrompt: ""
-        orchestratorInstructions: "Load ICP criteria, geographic focus, target industries. Get current date as YYYY-MM-DD. Output config: icp_criteria, geo_focus, target_industries, available_sources, today_date."
-        successCriteria: Config loaded with date
+        agentName: ICP + Tag Config + CRM Loader
+        additionalPrompt: |
+          Load ICP criteria, tag configuration, and CRM/existing leads to avoid duplicates.
+          
+          FILES TO READ:
+          1. ~/sulla/skills/lead-prospecting/SKILL.md - ICP criteria, geo focus, target industries
+          2. ~/sulla/skills/lead-prospecting/tags.yaml - Tag definitions (business types, problem tags, auto-tagging rules)
+          3. ~/sulla/projects/leads/search-history.md - Search log, pending searches, completed businesses
+          4. ~/sulla/projects/leads/target-business-types.md - User-defined business types to target (if exists)
+          5. ~/sulla/projects/leads/custom-problem-tags.md - User-defined problem tags (if exists)
+          
+          OUTPUT:
+          - icp_criteria: Must-have requirements (B2B, 2-200 employees, website required, etc.)
+          - geo_focus: Primary locations (Coeur d'Alene ID, Spokane WA, etc.)
+          - target_industries: List of industries to target
+          - available_sources: Which sources to use (Google Maps, Yelp, Crunchbase, GitHub)
+          
+          # TAG CONFIGURATION
+          - tag_config: Full loaded tag configuration from tags.yaml
+          - business_type_tags: List of available business type tags
+          - problem_tags: List of available problem tags
+          - auto_tag_rules: List of auto-tagging rules to apply during research
+          - user_business_types: From target-business-types.md (or default from tags.yaml)
+          - user_problem_tags: From custom-problem-tags.md (or default from tags.yaml)
+          - auto_tagging_enabled: true/false from config
+          
+          - pending_searches: List from search-history.md "Pending Searches" section
+          - completed_businesses: List from "Completed Businesses (in CRM)" section
+          
+          Exit with this config object.
+        orchestratorInstructions: "Load ICP config, tag configuration, and CRM history. Output pending searches and completed list with tag config."
+        successCriteria: Config loaded with ICP, tags, pending searches, and completed list
         completionContract: Exit when config ready
 
   - id: node-1750000000003
@@ -40,338 +68,89 @@ nodes:
       x: 400
       y: 340
     data:
-      subtype: parallel
-      category: flow-control
-      label: Parallel Source Discovery
-      config: {}
+      subtype: agent
+      category: agent
+      label: Select Next Search Query
+      config:
+        agentId: search-selector
+        agentName: Search Query Selector
+        additionalPrompt: |
+          Select the NEXT search to execute from pending searches.
+          
+          INPUT:
+          - pending_searches: List from previous node
+          - completed_businesses: List to avoid duplicates
+          - user_business_types: Business types the user wants to find
+          
+          TASK:
+          1. Parse pending_searches (format: "- [ ] Source: Query")
+          2. Pick the FIRST pending search
+          3. Extract: source_name, search_query
+          4. Validate: Is this query still relevant? (not completed, not currently researching)
+          5. If user_business_types is set, prioritize searches matching those types
+          
+          OUTPUT:
+          - source_name: e.g., "Google Maps", "Yelp", "Crunchbase", "GitHub"
+          - search_query: e.g., "Spokane professional services"
+          - expected_results: Estimated number of results (10-50)
+          
+          If NO pending searches remain:
+          - Set has_pending: false
+          - Exit early with message "No pending searches - add more to search-history.md"
+        orchestratorInstructions: "Select first pending search from list. Extract source and query, considering target business types."
+        successCriteria: Search query selected
+        completionContract: Exit with source_name, search_query, or has_pending=false
 
   - id: node-1750000000004
     type: workflow
     position:
-      x: 50
+      x: 400
       y: 460
     data:
       subtype: agent
       category: agent
-      label: Google Maps Scraper
+      label: Find ONE Business + Check CRM
       config:
-        agentId: google-maps-scraper
-        agentName: Google Maps Scraper
+        agentId: business-finder
+        agentName: Business Finder + CRM Checker
         additionalPrompt: |
-          You are scraping Google Maps ONLY. Do not use any other source.
+          Find ONE business from search and check if already in CRM.
           
-          DATE: {today_date}
+          INPUT:
+          - source_name: e.g., "Google Maps", "Yelp", "Crunchbase", "GitHub"
+          - search_query: e.g., "Spokane professional services"
+          - completed_businesses: List of business names/websites already processed
           
-          DIRECTORY STRUCTURE:
-          - Base: ~/sulla/projects/leads/{today_date}/
-          - Your directory: ~/sulla/projects/leads/{today_date}/google-maps/
-          
-          TAB MANAGEMENT RULES:
-          - You may have only ONE browser tab open at a time
-          - Before opening a new tab, CLOSE the current tab
-          - Never have multiple tabs open simultaneously
+          TAB MANAGEMENT:
+          - Only ONE browser tab at a time
+          - Close tab before opening new source
           
           BOT PREVENTION:
-          - If you encounter CAPTCHA, Cloudflare, "suspicious activity" messages, or any blocking:
-            - Stop immediately
-            - Return partial results collected so far
-            - Do NOT try to work around it
-            - Exit early with what you have
+          - If blocked (CAPTCHA, Cloudflare, rate limit): Exit early with was_blocked=true
           
           TASK:
-          1. Create directories:
-             - mkdir -p ~/sulla/projects/leads/{today_date}/google-maps/
-          2. Open Google Maps in a single browser tab
-          3. Search for: "{industry} in {location}"
-          4. Scroll through results, collect businesses matching ICP
-          5. For each business extract:
-             - business_name, address, phone, website
-             - rating, review_count, category
-             - place_id, hours, status
-          6. Apply 5-second delay between searches
-          7. Max 20 results per search term
-          
-          SAVE LEADS:
-          - For each lead, create markdown file:
-            - Filename: {business-name-slug}.md
-            - Location: ~/sulla/projects/leads/{today_date}/google-maps/
-          
-          MARKDOWN TEMPLATE:
-          ```markdown
-          # {business_name}
-          
-          **Source:** Google Maps
-          **Discovered:** {today_date}
-          **Category:** {category}
-          
-          ## Contact
-          - **Website:** {website}
-          - **Phone:** {phone}
-          - **Address:** {address}
-          
-          ## Business Info
-          - **Rating:** {rating}/5 ({review_count} reviews)
-          - **Status:** {status}
-          - **Hours:** {hours}
-          
-          ## Raw Data
-          {raw_data_json}
-          ```
+          1. Open browser to {source_name}
+          2. Search for: {search_query}
+          3. Get ONE result: first business from results
+          4. Extract: name, website, phone, address, rating, category
+          5. Check if this business is in completed_businesses list
+          6. If duplicate: Exit with is_duplicate: true
           
           OUTPUT:
-          - Report: number of leads saved, file paths, was_blocked (true/false)
-          
-          When done, close your browser tab and exit.
-        orchestratorInstructions: "Search Google Maps for businesses matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/google-maps/."
-        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/google-maps/
-        completionContract: Exit when saves complete or blocked. Close all tabs.
+          - business_name: Business name
+          - website: Website URL
+          - phone: Phone number
+          - address: Full address
+          - rating: Rating if available
+          - category: Business category
+          - source: Where found (Google Maps, Yelp, etc.)
+          - is_duplicate: true/false
+          - was_blocked: true/false
+        orchestratorInstructions: "Search {source_name} for {search_query}. Get first result, check for duplicates in completed list."
+        successCriteria: One business found, duplicate check done
+        completionContract: Exit with business details and is_duplicate status
 
   - id: node-1750000000005
-    type: workflow
-    position:
-      x: 200
-      y: 460
-    data:
-      subtype: agent
-      category: agent
-      label: Yelp Scraper
-      config:
-        agentId: yelp-scraper
-        agentName: Yelp Scraper
-        additionalPrompt: |
-          You are scraping Yelp ONLY. Do not use any other source.
-          
-          DATE: {today_date}
-          
-          DIRECTORY STRUCTURE:
-          - Base: ~/sulla/projects/leads/{today_date}/
-          - Your directory: ~/sulla/projects/leads/{today_date}/yelp/
-          
-          TAB MANAGEMENT RULES:
-          - You may have only ONE browser tab open at a time
-          - Before opening a new tab, CLOSE the current tab
-          - Never have multiple tabs open simultaneously
-          
-          BOT PREVENTION:
-          - If you encounter CAPTCHA, Cloudflare, "suspicious activity" messages, or any blocking:
-            - Stop immediately
-            - Return partial results collected so far
-            - Do NOT try to work around it
-            - Exit early with what you have
-          
-          TASK:
-          1. Create directories:
-             - mkdir -p ~/sulla/projects/leads/{today_date}/yelp/
-          2. Open Yelp in a single browser tab
-          3. Search for: "{industry} in {location}"
-          4. Scroll through results, collect businesses matching ICP
-          5. For each business extract:
-             - business_name, address, phone, website
-             - rating, review_count, category
-             - years_in_business (if available)
-          6. Apply 3-second delay between searches
-          6. Max 50 results
-          
-          SAVE LEADS:
-          - For each lead, create markdown file:
-            - Filename: {business-name-slug}.md
-            - Location: ~/sulla/projects/leads/{today_date}/yelp/
-          
-          MARKDOWN TEMPLATE:
-          ```markdown
-          # {business_name}
-          
-          **Source:** Yelp
-          **Discovered:** {today_date}
-          **Category:** {category}
-          
-          ## Contact
-          - **Website:** {website}
-          - **Phone:** {phone}
-          - **Address:** {address}
-          
-          ## Business Info
-          - **Rating:** {rating}/5 ({review_count} reviews)
-          - **Years in Business:** {years}
-          
-          ## Raw Data
-          {raw_data_json}
-          ```
-          
-          OUTPUT:
-          - Report: number of leads saved, file paths, was_blocked (true/false)
-          
-          When done, close your browser tab and exit.
-        orchestratorInstructions: "Search Yelp for businesses matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/yelp/."
-        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/yelp/
-        completionContract: Exit when saves complete or blocked. Close all tabs.
-
-  - id: node-1750000000006
-    type: workflow
-    position:
-      x: 350
-      y: 460
-    data:
-      subtype: agent
-      category: agent
-      label: Crunchbase Scraper
-      config:
-        agentId: crunchbase-scraper
-        agentName: Crunchbase Scraper
-        additionalPrompt: |
-          You are scraping Crunchbase ONLY. Do not use any other source.
-          
-          DATE: {today_date}
-          
-          DIRECTORY STRUCTURE:
-          - Base: ~/sulla/projects/leads/{today_date}/
-          - Your directory: ~/sulla/projects/leads/{today_date}/crunchbase/
-          
-          TAB MANAGEMENT RULES:
-          - You may have only ONE browser tab open at a time
-          - Before opening a new tab, CLOSE the current tab
-          - Never have multiple tabs open simultaneously
-          
-          BOT PREVENTION:
-          - If you encounter CAPTCHA, Cloudflare, login walls, or any blocking:
-            - Stop immediately
-            - Return partial results collected so far
-            - Do NOT try to work around it
-            - Exit early with what you have
-          
-          TASK:
-          1. Create directories:
-             - mkdir -p ~/sulla/projects/leads/{today_date}/crunchbase/
-          2. Open Crunchbase in a single browser tab
-          3. Search for startups in target industries with 2-200 employees
-          4. Filter by location: Idaho, Eastern Washington
-          5. For each company extract:
-             - company_name, domain, industry
-             - funding_stage, funding_amount
-             - employee_count, location
-             - description, founded_year
-          6. Apply 10-second delay between requests
-          7. Max 30 results
-          
-          SAVE LEADS:
-          - For each lead, create markdown file:
-            - Filename: {company-name-slug}.md
-            - Location: ~/sulla/projects/leads/{today_date}/crunchbase/
-          
-          MARKDOWN TEMPLATE:
-          ```markdown
-          # {company_name}
-          
-          **Source:** Crunchbase
-          **Discovered:** {today_date}
-          **Industry:** {industry}
-          
-          ## Contact
-          - **Website:** {website}
-          - **Location:** {location}
-          
-          ## Company Info
-          - **Employees:** {employee_count}
-          - **Funding Stage:** {funding_stage}
-          - **Funding Amount:** {funding_amount}
-          - **Founded:** {founded_year}
-          - **Description:** {description}
-          
-          ## Raw Data
-          {raw_data_json}
-          ```
-          
-          OUTPUT:
-          - Report: number of leads saved, file paths, was_blocked (true/false)
-          
-          When done, close your browser tab and exit.
-        orchestratorInstructions: "Search Crunchbase for startups matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/crunchbase/."
-        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/crunchbase/
-        completionContract: Exit when saves complete or blocked. Close all tabs.
-
-  - id: node-1750000000007
-    type: workflow
-    position:
-      x: 500
-      y: 460
-    data:
-      subtype: agent
-      category: agent
-      label: GitHub Scraper
-      config:
-        agentId: github-scraper
-        agentName: GitHub Scraper
-        additionalPrompt: |
-          You are scraping GitHub ONLY. Do not use any other source.
-          
-          DATE: {today_date}
-          
-          DIRECTORY STRUCTURE:
-          - Base: ~/sulla/projects/leads/{today_date}/
-          - Your directory: ~/sulla/projects/leads/{today_date}/github/
-          
-          TAB MANAGEMENT RULES:
-          - You may have only ONE browser tab open at a time
-          - Before opening a new tab, CLOSE the current tab
-          - Never have multiple tabs open simultaneously
-          
-          BOT PREVENTION:
-          - If you encounter rate limiting, CAPTCHA, or any blocking:
-            - Stop immediately
-            - Return partial results collected so far
-            - Do NOT try to work around it
-            - Exit early with what you have
-          
-          TASK:
-          1. Create directories:
-             - mkdir -p ~/sulla/projects/leads/{today_date}/github/
-          2. Open GitHub in a single browser tab
-          3. Search for organizations in target industries
-          4. Filter by location: Coeur d'Alene, Spokane, Idaho in bio/location
-          5. For each org extract:
-             - org_name, domain (from README or profile)
-             - description, location
-             - repo_count, member_count
-             - primary_language, last_activity
-          6. Apply 3-second delay between requests
-          7. Max 40 results
-          
-          SAVE LEADS:
-          - For each lead, create markdown file:
-            - Filename: {org-name-slug}.md
-            - Location: ~/sulla/projects/leads/{today_date}/github/
-          
-          MARKDOWN TEMPLATE:
-          ```markdown
-          # {org_name}
-          
-          **Source:** GitHub
-          **Discovered:** {today_date}
-          **Tech Stack:** {primary_language}
-          
-          ## Contact
-          - **Website:** {website}
-          - **Location:** {location}
-          
-          ## Organization Info
-          - **Description:** {description}
-          - **Repositories:** {repo_count}
-          - **Members:** {member_count}
-          - **Last Activity:** {last_activity}
-          
-          ## Raw Data
-          {raw_data_json}
-          ```
-          
-          OUTPUT:
-          - Report: number of leads saved, file paths, was_blocked (true/false)
-          
-          When done, close your browser tab and exit.
-        orchestratorInstructions: "Search GitHub for organizations matching ICP. Save each lead as markdown to ~/sulla/projects/leads/{today_date}/github/."
-        successCriteria: Leads saved to ~/sulla/projects/leads/{today_date}/github/
-        completionContract: Exit when saves complete or blocked. Close all tabs.
-
-  - id: node-1750000000008
     type: workflow
     position:
       x: 400
@@ -379,58 +158,84 @@ nodes:
     data:
       subtype: agent
       category: agent
-      label: Evaluate Additional Sources
+      label: Research Business + Apply Tags
       config:
-        agentId: source-evaluator
-        agentName: Source Expansion Evaluator
+        agentId: business-researcher
+        agentName: Business Detail Researcher + Tagger
         additionalPrompt: |
-          You are evaluating whether to scrape additional sources beyond the initial parallel batch.
+          Research ONE business in depth, apply business type tags, and auto-tag problems.
+          
+          INPUT:
+          - business_name, website, phone, address, rating, category, source
+          - tag_config: Full tag configuration from tags.yaml
+          - user_business_types: Business types to match against
+          - user_problem_tags: Problem tags to look for
+          - auto_tagging_enabled: true/false
+          - auto_tag_rules: List of auto-tagging rules
           
           DATE: {today_date}
-          
-          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
-          
-          AVAILABLE SOURCES (from ICP config):
-          - google_maps (completed?)
-          - yelp (completed?)
-          - crunchbase (completed?)
-          - github (completed?)
-          - merchant_circle (available?)
-          - yellowpages (available?)
-          - angellist (available?)
-          - linkedin (available?)
-          - industry_specific (available?)
+          TEMP FILE: ~/sulla/projects/leads/{today_date}/researching/{business-name-slug}.md
           
           TASK:
-          1. Check which sources were scraped in the parallel batch:
-             - Look for directories: ~/sulla/projects/leads/{today_date}/{source}/
-             - Check if each has .md files
+          1. Create directory: mkdir -p ~/sulla/projects/leads/{today_date}/researching/
+          2. Create markdown file with business details
+          3. If website exists: Open it, extract description, services, contact info
+          4. Search for additional info: owner names, reviews, social media
+          5. **APPLY BUSINESS TYPE TAGS**: Match business to categories from user_business_types
+             - Compare business name, category, description against tag keywords
+             - Apply matching business type tags
+          6. **AUTO-TAG PROBLEMS**: Use auto_tag_rules to detect issues
+             - Check for no website → tag "no_website"
+             - Check for outdated website → tag "outdated_website"  
+             - Check for no social media → tag "no_social_media"
+             - Check reviews for complaints → tag relevant problems
+             - Check for no CRM, no automation, etc.
+          7. Update file with all research findings AND tags applied
           
-          2. For each source NOT yet scraped:
-             - Evaluate: Is this source valuable for the ICP?
-             - Check: Was the source blocked in previous attempts (check logs)?
-             - Decide: Should we scrape it now?
+          MARKDOWN TEMPLATE:
+          ```markdown
+          # {business_name}
           
-          3. For sources to scrape:
-             - Spawn a sub-agent for each new source
-             - Pass: industry, location, ICP criteria, today_date, source-specific instructions
-             - Sub-agent creates: ~/sulla/projects/leads/{today_date}/{source}/
-             - Sub-agent saves leads to that directory
+          **Source:** {source}
+          **Discovered:** {today_date}
+          **Status:** Researching
           
-          4. Wait for all sub-agents to complete
+          ## Contact
+          - **Website:** {website}
+          - **Phone:** {phone}
+          - **Address:** {address}
+          
+          ## Business Info
+          - **Rating:** {rating}
+          - **Category:** {category}
+          
+          ## Tags Applied
+          ### Business Type Tags
+          {list of matched business type tags}
+          
+          ### Problem Tags (Auto-detected)
+          {list of detected problems with severity}
+          
+          ## Research Findings
+          - **Description:** {description from website}
+          - **Services:** {services list}
+          - **Owner:** {owner name if found}
+          - **Social Media:** {links found}
+          
+          ## Notes
+          {additional notes}
+          ```
           
           OUTPUT:
-          - Report: sources_evaluated, sources_added, new_leads_count
-          - List of all source directories with lead counts
-          
-          DECISION CRITERIA:
-          - Add source if: ICP-relevant, not previously blocked, likely to have quality leads
-          - Skip source if: already scraped, known to be blocked, not relevant to ICP
-        orchestratorInstructions: "Evaluate which sources were scraped, identify gaps, spawn sub-agents for additional valuable sources. Wait for completion before proceeding."
-        successCriteria: Additional sources scraped (or decision made to skip)
-        completionContract: Exit when evaluation complete and any additional scrapers finished
+          - research_file_path: Full path to created file
+          - business_type_tags: Array of applied business type tags
+          - problem_tags: Array of applied problem tags (with severity)
+          - research_complete: true
+        orchestratorInstructions: "Research {business_name} in depth. Apply business type tags based on category/industry. Auto-tag detected problems. Save to ~/sulla/projects/leads/{today_date}/researching/."
+        successCriteria: Research file created with business details and tags applied
+        completionContract: Exit when research file complete with all tags applied
 
-  - id: node-1750000000009
+  - id: node-1750000000006
     type: workflow
     position:
       x: 400
@@ -438,45 +243,74 @@ nodes:
     data:
       subtype: agent
       category: agent
-      label: Score Leads (File-Based)
+      label: Score + Import to Twenty CRM with Tags
       config:
-        agentId: lead-scorer
-        agentName: Lead Scorer
+        agentId: crm-importer
+        agentName: Twenty CRM Importer + Tag Handler
         additionalPrompt: |
-          You are scoring leads by updating files directly. Do NOT load all files into memory.
+          Score the researched business and add to Twenty CRM with all tags.
           
-          DATE: {today_date}
-          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          INPUT:
+          - research_file_path: Path to business research file
+          - business_type_tags: Array of business type tags from research
+          - problem_tags: Array of problem tags from research
           
           SCORING CRITERIA (0-100):
           - Has website: +20
+          - Has phone: +10
           - Rating > 4.0: +15
           - Review count > 10: +10
-          - Employee count 10-200: +15
-          - Recent activity (GitHub): +10
-          - Funding raised (Crunchbase): +15
-          - Complete contact info: +15
+          - Employee count 2-200: +15
+          - Complete contact info (email or form): +15
+          - B2B industry match: +15
+          
+          BONUS POINTS FOR TAGS:
+          - Has problem tags (indicates pain points we can solve): +10
+          - Multiple problem tags: +5 per additional tag (max +20)
           
           TASK:
-          1. Find all source directories: ~/sulla/projects/leads/{today_date}/*/
-          2. For EACH source directory, iterate through .md files:
-             a. Read the file
-             b. Extract: website, rating, review_count, employee_count, funding, contact info
-             c. Calculate score based on criteria above
-             d. Update the file: add "**Lead Score:** {score}/100" after the title
-             e. Write the file back
+          1. Read research file at {research_file_path}
+          2. Calculate lead score (including tag bonus)
+          3. Update file with score: "**Lead Score:** {score}/100"
+          4. Move file from researching/ to imported/ directory
           
-          3. Track: files_processed, average_score, high_score_count (>=70)
+          ADD TO TWENTY CRM WITH CUSTOM FIELDS:
+          Run this command using exec tool to add company to Twenty with tags:
+          
+          ```
+          exec cmd="sulla local_merchant_protocol/twenty '{\"method\":\"POST\",\"path\":\"/rest/companies\",\"body\":{\"name\":\"{business_name}\",\"domainName\":{\"primaryLinkUrl\":\"{website}\"},\"phone\":\"{phone}\",\"address\":\"{address}\",\"custom\":{\"businessTypeTags\":\"{business_type_tags_json}\",\"problemTags\":\"{problem_tags_json}\",\"leadScore\":\"{score}\"}}}'"
+          ```
+          
+          Extract from research file:
+          - business_name
+          - website (ensure URL format, e.g., "https://example.com")
+          - phone
+          - address
+          - business_type_tags (JSON array string)
+          - problem_tags (JSON array with tag + severity)
+          
+          NOTE: Twenty CRM custom fields should be set up in the admin panel:
+          - businessTypeTags (multiple select or text)
+          - problemTags (multiple select or text) 
+          - leadScore (number)
+          
+          If Twenty API returns success, capture the company ID from response.
+          
+          DIRECTORIES:
+          - Source: ~/sulla/projects/leads/{today_date}/researching/
+          - Destination: ~/sulla/projects/leads/{today_date}/imported/
           
           OUTPUT:
-          - Report: total files scored, score distribution by source
-          
-          WORK FILE-BY-FILE. Never load all files at once.
-        orchestratorInstructions: "Score each lead file individually in ~/sulla/projects/leads/{today_date}/. Read, calculate score, update file in place. Process all source directories."
-        successCriteria: All lead files scored and updated
-        completionContract: Exit when all files processed
+          - lead_score
+          - file_path (new location in imported/)
+          - crm_added: true
+          - tags_applied: { count of business type + problem tags }
+          - twenty_company_id: (from Twenty API response)
+        orchestratorInstructions: "Score business (with tag bonuses), update file with score, move to imported/, add company to Twenty CRM with business_type_tags and problem_tags in custom fields."
+        successCriteria: Business scored with tags, added to Twenty CRM with custom fields, file moved to imported/
+        completionContract: Exit when import complete and twenty_company_id returned
 
-  - id: node-1750000000010
+  - id: node-1750000000007
     type: workflow
     position:
       x: 400
@@ -484,46 +318,35 @@ nodes:
     data:
       subtype: agent
       category: agent
-      label: Deduplicate Leads (File-Based)
+      label: Update Search History
       config:
-        agentId: lead-deduplicator
-        agentName: Lead Deduplicator
+        agentId: history-updater
+        agentName: Search History Updater
         additionalPrompt: |
-          You are removing duplicate leads by deleting files. Do NOT load all files into memory.
+          Update search-history.md to mark business as completed.
           
-          DATE: {today_date}
-          BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
+          INPUT:
+          - business_name: Name of business just imported
+          - search_query: The query that found this business
+          - business_type_tags: Tags applied to this business
+          - problem_tags: Problem tags applied to this business
           
-          DEDUPLICATION LOGIC:
-          - Duplicate = same business_name OR same website domain
-          - When duplicates found: KEEP the file with highest lead score, DELETE the others
+          FILE: ~/sulla/projects/leads/search-history.md
           
           TASK:
-          1. Build an index by reading files one at a time:
-             - Find all .md files in ~/sulla/projects/leads/{today_date}/*/
-             - Extract: business_name, website, lead_score, file_path
-             - Store in memory: {normalized_key: {score, path}}
-          
-          2. Normalize keys:
-             - business_name: lowercase, remove punctuation
-             - website: extract domain, lowercase, remove www
-          
-          3. When duplicate detected:
-             - Compare lead scores
-             - DELETE the file with lower score: rm {file_path}
-             - Keep the higher-scored file
-          
-          4. Track: duplicates_found, files_deleted, files_kept
+          1. Read search-history.md
+          2. Find "Completed Businesses (in CRM)" section
+          3. Add business to list with tags: "- [x] {business_name} (found via {search_query}) | Types: {business_type_tags} | Problems: {problem_tags}"
+          4. If this was the only pending search for this source/query, mark it done
+          5. Write updated file
           
           OUTPUT:
-          - Report: duplicates removed, files remaining per source
-          
-          WORK FILE-BY-FILE. Only store index in memory, not file contents.
-        orchestratorInstructions: "Scan all lead files in ~/sulla/projects/leads/{today_date}/, identify duplicates by name/website, delete lower-scored duplicates. Keep highest score."
-        successCriteria: Duplicates removed, only unique leads remain
-        completionContract: Exit when deduplication complete
+          - history_updated: true
+        orchestratorInstructions: "Update search-history.md - add business to completed list with tags, mark search as done if exhausted."
+        successCriteria: Search history updated
+        completionContract: Exit when history written
 
-  - id: node-1750000000011
+  - id: node-1750000000008
     type: workflow
     position:
       x: 400
@@ -531,26 +354,30 @@ nodes:
     data:
       subtype: agent
       category: agent
-      label: Generate Summary
+      label: Generate Run Summary
       config:
         agentId: summary-generator
-        agentName: Summary Generator
+        agentName: Run Summary Generator
         additionalPrompt: |
-          Generate a concise summary of the lead prospecting run.
+          Generate a summary of this discovery run including tags applied.
           
           DATE: {today_date}
           BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
           
-          Include:
-          - Source directories and lead counts (count .md files in each)
-          - Average lead score
-          - Duplicates removed
-          - Final unique lead count
-          - Top 5 leads by score (read top files)
-          - Directory path for user reference
+          REPORT:
+          - Businesses researched this run
+          - Businesses imported to CRM
+          - Lead scores achieved
+          - Tags breakdown:
+            - Business types found
+            - Problem tags detected (with severity)
+            - Most common problems across leads
+          - Any blocks or issues
+          - Where to find imported leads: ~/sulla/projects/leads/{today_date}/imported/
           
-          Output as formatted markdown for the user.
-        orchestratorInstructions: "Count files in each source directory under ~/sulla/projects/leads/{today_date}/, calculate stats, report top leads."
+          OUTPUT:
+          - Summary markdown for user
+        orchestratorInstructions: "Count imported leads, generate summary with tag breakdown for user."
         successCriteria: Summary generated
         completionContract: Exit when summary complete
 
@@ -565,32 +392,17 @@ edges:
     source: node-1750000000003
     target: node-1750000000004
   - id: edge-004
-    source: node-1750000000003
+    source: node-1750000000004
     target: node-1750000000005
   - id: edge-005
-    source: node-1750000000003
+    source: node-1750000000005
     target: node-1750000000006
   - id: edge-006
-    source: node-1750000000003
+    source: node-1750000000006
     target: node-1750000000007
   - id: edge-007
-    source: node-1750000000004
-    target: node-1750000000008
-  - id: edge-008
-    source: node-1750000000005
-    target: node-1750000000008
-  - id: edge-009
-    source: node-1750000000006
-    target: node-1750000000008
-  - id: edge-010
     source: node-1750000000007
     target: node-1750000000008
-  - id: edge-011
+  - id: edge-loop
     source: node-1750000000008
-    target: node-1750000000009
-  - id: edge-012
-    source: node-1750000000009
-    target: node-1750000000010
-  - id: edge-013
-    source: node-1750000000010
-    target: node-1750000000011
+    target: node-1750000000003
