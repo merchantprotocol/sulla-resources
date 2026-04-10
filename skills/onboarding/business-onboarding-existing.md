@@ -32,26 +32,13 @@ If the router skill already collected a website URL, skip this step.
 
 Otherwise:
 
-> "Do you have a website for your business? Drop the URL here and I'll research it to get up to speed. If you don't have one, just say so — we'll work from what you tell me."
+> "Do you have a website for your business? Drop the URL here and I'll use it to learn about your business. If you don't have one, just say so — we'll work from what you tell me."
 
-- **URL provided** → spawn website research sub-agent (async) in Step 2
-- **No website** → continue to Step 2
-
----
-
-### Step 2: Spawn Website Research (if URL provided)
-
-Spawn a sub-agent **asynchronously** to run:
-
-```
-~/sulla/resources/skills/onboarding/business-website-research.md
-```
-
-Pass the URL. Do not wait — continue the conversation immediately.
+Record the URL (or note "none"). It gets saved in the onboarding document. The heartbeat agent will pick it up later and run website research in the background — you do NOT need to spawn a sub-agent here.
 
 ---
 
-### Step 3: Empathy Map Interview
+### Step 2: Empathy Map Interview
 
 Walk through the following topics conversationally. You do NOT need to ask every sub-question — use them as probes when the lead question doesn't surface enough. Group related topics when natural. Adapt to what they've already told you.
 
@@ -59,7 +46,7 @@ Walk through the following topics conversationally. You do NOT need to ask every
 
 ---
 
-#### 3a: Target Audience
+#### 2a: Target Audience
 
 > "Tell me about the kind of customer you're targeting. Walk me through the different types of buyers you serve."
 
@@ -72,7 +59,7 @@ Probes:
 
 ---
 
-#### 3b: Desire
+#### 2b: Desire
 
 > "What transformation does your ideal customer want most? What's the big outcome they're chasing?"
 
@@ -84,7 +71,7 @@ Probes:
 
 ---
 
-#### 3c: The Offer
+#### 2c: The Offer
 
 > "What is it that you're offering this audience? What do people get when they work with you, and how does it work?"
 
@@ -96,7 +83,7 @@ Probes (only if needed):
 
 ---
 
-#### 3d: Prevailing Knowledge (The Big Mistake)
+#### 2d: Prevailing Knowledge (The Big Mistake)
 
 The prevailing knowledge is what most people in the industry believe to be the first steps to getting the outcome they want.
 
@@ -113,7 +100,7 @@ Probes:
 
 ---
 
-#### 3e: External Problems
+#### 2e: External Problems
 
 > "What's the main problem standing between them and that outcome? What are they struggling with before they find you?"
 
@@ -125,7 +112,7 @@ Probes:
 
 ---
 
-#### 3f: Emotional Pains
+#### 2f: Emotional Pains
 
 > "How does that problem make them feel? When they're stuck in it — what's the emotional weight?"
 
@@ -137,7 +124,7 @@ Probes:
 
 ---
 
-#### 3g: Fears and Worries
+#### 2g: Fears and Worries
 
 > "What's the worst-case scenario they're afraid of? What keeps them up at night about this?"
 
@@ -149,7 +136,7 @@ Probes:
 
 ---
 
-#### 3h: The Cost of Inaction
+#### 2h: The Cost of Inaction
 
 > "If they do nothing — if they just stay where they are — what does that cost them? How bad does it get?"
 
@@ -157,7 +144,7 @@ Probes:
 
 ---
 
-#### 3i: Urgent Crisis
+#### 2i: Urgent Crisis
 
 > "What's the most urgent thing they need solved right now? The thing that can't wait?"
 
@@ -165,7 +152,7 @@ Probes:
 
 ---
 
-#### 3J: Market Gap
+#### 2j: Market Gap
 
 We asked about the prevailing knowledge and the big mistake. We now understand what problems people face and why they
 continue to fail to get the transformation they want.
@@ -180,7 +167,7 @@ Probes:
 
 ---
 
-#### 3K: Unique Selling Proposition
+#### 2k: Unique Selling Proposition
 
 > "So what's your approach? What do you do differently that actually gets results?"
 
@@ -192,7 +179,7 @@ Probes:
 
 ---
 
-#### 3L: Authority
+#### 2l: Authority
 
 > "What gives you the credibility to say that? Experience, certifications, track record — what proves your method works?"
 
@@ -200,7 +187,7 @@ Probes:
 
 ---
 
-#### 3M: Empathy
+#### 2m: Empathy
 
 > "Have you been through this problem yourself, or what made you decide to solve it for others?"
 
@@ -212,7 +199,7 @@ Probes:
 
 ---
 
-#### 3N: Objections
+#### 2n: Objections
 
 > "When you pitch what you do, what pushback do you get? What do people say when they hesitate?"
 
@@ -224,13 +211,41 @@ Probes:
 
 ---
 
-### Step 4: Confirm and Write
+### Step 3: Confirm and Write
 
 Summarize the key points:
 
 > "Here's what I'm hearing about your business and your audience — [brief summary]. Did I get that right?"
 
 Let them correct anything. Then write/update the empathy map file.
+
+---
+
+### Step 4: Activate the Playbook
+
+After writing both output files, activate the business onboarding project so the heartbeat agent picks up the remaining work:
+
+1. **Create the project directory:** `~/sulla/projects/onboarding/`
+2. **Copy the playbook template** from `~/sulla/resources/skills/onboarding/playbook.md` to `~/sulla/projects/onboarding/playbook.md`
+3. **Update the project copy** — mark the Phase 1 human tasks as `[x]` with today's date
+4. **Append to `~/sulla/projects/ACTIVE_PROJECTS.md`:**
+
+```markdown
+---
+
+## Business Onboarding
+
+| Field | Value |
+|-------|-------|
+| Status | ACTIVE |
+| Project | onboarding |
+| Priority | Business |
+| Current State | Phase 1 human tasks complete — empathy map done, heartbeat tasks ready |
+| Next Action | Heartbeat: run website research and customer empathy map |
+| Blocker | None |
+```
+
+The heartbeat agent will now pick up the project on its next cycle and begin running Phase 1 heartbeat tasks (website research, customer perspective empathy map), then continue through Phase 2+.
 
 ---
 
@@ -389,10 +404,11 @@ website: [URL or "none"]
 ## Rules
 
 1. **Always write both output files** when the conversation completes.
-2. **Categorize, don't parrot.** The owner's answers will bleed across sections — it's your job to put each piece of information in the right place in the empathy map.
-3. **Don't force answers.** If they don't know, skip that section. An honest gap is better than a fabricated answer.
-4. **Spawn sub-agents async.** Launch website research and continue — don't block.
-5. **Don't read section headers aloud.** The user should feel like they're having a strategy conversation, not filling out a form.
-6. **Always speak like a human.** Warm, conversational, natural. No system text, no meta-commentary.
-7. **Omit empty sections from the empathy map.** Only include what the owner actually provided.
-8. **Quote them.** Their exact words are more valuable than your paraphrase. Capture direct quotes throughout.
+2. **Always activate the playbook** (Step 4) after writing files — this is what triggers the heartbeat to continue the work.
+3. **Categorize, don't parrot.** The owner's answers will bleed across sections — it's your job to put each piece of information in the right place in the empathy map.
+4. **Don't force answers.** If they don't know, skip that section. An honest gap is better than a fabricated answer.
+5. **Don't spawn sub-agents.** Website research and customer empathy map are heartbeat tasks — the heartbeat handles them after activation.
+6. **Don't read section headers aloud.** The user should feel like they're having a strategy conversation, not filling out a form.
+7. **Always speak like a human.** Warm, conversational, natural. No system text, no meta-commentary.
+8. **Omit empty sections from the empathy map.** Only include what the owner actually provided.
+9. **Quote them.** Their exact words are more valuable than your paraphrase. Capture direct quotes throughout.
