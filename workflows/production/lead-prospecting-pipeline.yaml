@@ -15,8 +15,7 @@ nodes:
       label: Lead Prospecting Trigger
       config:
         triggerType: chat-app
-        triggerDescription: "Lead prospecting - discover ONE business, check CRM, add if new with tags"
-
+        triggerDescription: Lead prospecting - discover ONE business, check CRM, add if new with tags
   - id: node-1750000000002
     type: workflow
     position:
@@ -31,20 +30,20 @@ nodes:
         agentName: ICP + Tag Config + CRM Loader
         additionalPrompt: |
           Load ICP criteria, tag configuration, and CRM/existing leads to avoid duplicates.
-          
+
           FILES TO READ:
           1. ~/sulla/skills/lead-prospecting/SKILL.md - ICP criteria, geo focus, target industries
           2. ~/sulla/skills/lead-prospecting/tags.yaml - Tag definitions (business types, problem tags, auto-tagging rules)
           3. ~/sulla/projects/leads/search-history.md - Search log, pending searches, completed businesses
           4. ~/sulla/projects/leads/target-business-types.md - User-defined business types to target (if exists)
           5. ~/sulla/projects/leads/custom-problem-tags.md - User-defined problem tags (if exists)
-          
+
           OUTPUT:
           - icp_criteria: Must-have requirements (B2B, 2-200 employees, website required, etc.)
           - geo_focus: Primary locations (Coeur d'Alene ID, Spokane WA, etc.)
           - target_industries: List of industries to target
           - available_sources: Which sources to use (Google Maps, Yelp, Crunchbase, GitHub)
-          
+
           # TAG CONFIGURATION
           - tag_config: Full loaded tag configuration from tags.yaml
           - business_type_tags: List of available business type tags
@@ -53,15 +52,14 @@ nodes:
           - user_business_types: From target-business-types.md (or default from tags.yaml)
           - user_problem_tags: From custom-problem-tags.md (or default from tags.yaml)
           - auto_tagging_enabled: true/false from config
-          
+
           - pending_searches: List from search-history.md "Pending Searches" section
           - completed_businesses: List from "Completed Businesses (in CRM)" section
-          
+
           Exit with this config object.
-        orchestratorInstructions: "Load ICP config, tag configuration, and CRM history. Output pending searches and completed list with tag config."
+        orchestratorInstructions: Load ICP config, tag configuration, and CRM history. Output pending searches and completed list with tag config.
         successCriteria: Config loaded with ICP, tags, pending searches, and completed list
         completionContract: Exit when config ready
-
   - id: node-1750000000003
     type: workflow
     position:
@@ -76,31 +74,30 @@ nodes:
         agentName: Search Query Selector
         additionalPrompt: |
           Select the NEXT search to execute from pending searches.
-          
+
           INPUT:
           - pending_searches: List from previous node
           - completed_businesses: List to avoid duplicates
           - user_business_types: Business types the user wants to find
-          
+
           TASK:
           1. Parse pending_searches (format: "- [ ] Source: Query")
           2. Pick the FIRST pending search
           3. Extract: source_name, search_query
           4. Validate: Is this query still relevant? (not completed, not currently researching)
           5. If user_business_types is set, prioritize searches matching those types
-          
+
           OUTPUT:
           - source_name: e.g., "Google Maps", "Yelp", "Crunchbase", "GitHub"
           - search_query: e.g., "Spokane professional services"
           - expected_results: Estimated number of results (10-50)
-          
+
           If NO pending searches remain:
           - Set has_pending: false
           - Exit early with message "No pending searches - add more to search-history.md"
-        orchestratorInstructions: "Select first pending search from list. Extract source and query, considering target business types."
+        orchestratorInstructions: Select first pending search from list. Extract source and query, considering target business types.
         successCriteria: Search query selected
         completionContract: Exit with source_name, search_query, or has_pending=false
-
   - id: node-1750000000004
     type: workflow
     position:
@@ -115,19 +112,19 @@ nodes:
         agentName: Business Finder + CRM Checker
         additionalPrompt: |
           Find ONE business from search and check if already in CRM.
-          
+
           INPUT:
           - source_name: e.g., "Google Maps", "Yelp", "Crunchbase", "GitHub"
           - search_query: e.g., "Spokane professional services"
           - completed_businesses: List of business names/websites already processed
-          
+
           TAB MANAGEMENT:
           - Only ONE browser tab at a time
           - Close tab before opening new source
-          
+
           BOT PREVENTION:
           - If blocked (CAPTCHA, Cloudflare, rate limit): Exit early with was_blocked=true
-          
+
           TASK:
           1. Open browser to {source_name}
           2. Search for: {search_query}
@@ -135,7 +132,7 @@ nodes:
           4. Extract: name, website, phone, address, rating, category
           5. Check if this business is in completed_businesses list
           6. If duplicate: Exit with is_duplicate: true
-          
+
           OUTPUT:
           - business_name: Business name
           - website: Website URL
@@ -146,10 +143,9 @@ nodes:
           - source: Where found (Google Maps, Yelp, etc.)
           - is_duplicate: true/false
           - was_blocked: true/false
-        orchestratorInstructions: "Search {source_name} for {search_query}. Get first result, check for duplicates in completed list."
+        orchestratorInstructions: Search {source_name} for {search_query}. Get first result, check for duplicates in completed list.
         successCriteria: One business found, duplicate check done
         completionContract: Exit with business details and is_duplicate status
-
   - id: node-1750000000005
     type: workflow
     position:
@@ -164,7 +160,7 @@ nodes:
         agentName: Business Detail Researcher + Tagger
         additionalPrompt: |
           Research ONE business in depth, apply business type tags, and auto-tag problems.
-          
+
           INPUT:
           - business_name, website, phone, address, rating, category, source
           - tag_config: Full tag configuration from tags.yaml
@@ -172,10 +168,10 @@ nodes:
           - user_problem_tags: Problem tags to look for
           - auto_tagging_enabled: true/false
           - auto_tag_rules: List of auto-tagging rules
-          
+
           DATE: {today_date}
           TEMP FILE: ~/sulla/projects/leads/{today_date}/researching/{business-name-slug}.md
-          
+
           TASK:
           1. Create directory: mkdir -p ~/sulla/projects/leads/{today_date}/researching/
           2. Create markdown file with business details
@@ -191,50 +187,49 @@ nodes:
              - Check reviews for complaints → tag relevant problems
              - Check for no CRM, no automation, etc.
           7. Update file with all research findings AND tags applied
-          
+
           MARKDOWN TEMPLATE:
           ```markdown
           # {business_name}
-          
+
           **Source:** {source}
           **Discovered:** {today_date}
           **Status:** Researching
-          
+
           ## Contact
           - **Website:** {website}
           - **Phone:** {phone}
           - **Address:** {address}
-          
+
           ## Business Info
           - **Rating:** {rating}
           - **Category:** {category}
-          
+
           ## Tags Applied
           ### Business Type Tags
           {list of matched business type tags}
-          
+
           ### Problem Tags (Auto-detected)
           {list of detected problems with severity}
-          
+
           ## Research Findings
           - **Description:** {description from website}
           - **Services:** {services list}
           - **Owner:** {owner name if found}
           - **Social Media:** {links found}
-          
+
           ## Notes
           {additional notes}
           ```
-          
+
           OUTPUT:
           - research_file_path: Full path to created file
           - business_type_tags: Array of applied business type tags
           - problem_tags: Array of applied problem tags (with severity)
           - research_complete: true
-        orchestratorInstructions: "Research {business_name} in depth. Apply business type tags based on category/industry. Auto-tag detected problems. Save to ~/sulla/projects/leads/{today_date}/researching/."
+        orchestratorInstructions: Research {business_name} in depth. Apply business type tags based on category/industry. Auto-tag detected problems. Save to ~/sulla/projects/leads/{today_date}/researching/.
         successCriteria: Research file created with business details and tags applied
         completionContract: Exit when research file complete with all tags applied
-
   - id: node-1750000000006
     type: workflow
     position:
@@ -249,12 +244,12 @@ nodes:
         agentName: Twenty CRM Importer + Tag Handler
         additionalPrompt: |
           Score the researched business and add to Twenty CRM with all tags.
-          
+
           INPUT:
           - research_file_path: Path to business research file
           - business_type_tags: Array of business type tags from research
           - problem_tags: Array of problem tags from research
-          
+
           SCORING CRITERIA (0-100):
           - Has website: +20
           - Has phone: +10
@@ -263,24 +258,24 @@ nodes:
           - Employee count 2-200: +15
           - Complete contact info (email or form): +15
           - B2B industry match: +15
-          
+
           BONUS POINTS FOR TAGS:
           - Has problem tags (indicates pain points we can solve): +10
           - Multiple problem tags: +5 per additional tag (max +20)
-          
+
           TASK:
           1. Read research file at {research_file_path}
           2. Calculate lead score (including tag bonus)
           3. Update file with score: "**Lead Score:** {score}/100"
           4. Move file from researching/ to imported/ directory
-          
+
           ADD TO TWENTY CRM WITH CUSTOM FIELDS:
           Run this command using exec tool to add company to Twenty with tags:
-          
+
           ```
           exec cmd="sulla local_merchant_protocol/twenty '{\"method\":\"POST\",\"path\":\"/rest/companies\",\"body\":{\"name\":\"{business_name}\",\"domainName\":{\"primaryLinkUrl\":\"{website}\"},\"phone\":\"{phone}\",\"address\":\"{address}\",\"custom\":{\"businessTypeTags\":\"{business_type_tags_json}\",\"problemTags\":\"{problem_tags_json}\",\"leadScore\":\"{score}\"}}}'"
           ```
-          
+
           Extract from research file:
           - business_name
           - website (ensure URL format, e.g., "https://example.com")
@@ -288,28 +283,27 @@ nodes:
           - address
           - business_type_tags (JSON array string)
           - problem_tags (JSON array with tag + severity)
-          
+
           NOTE: Twenty CRM custom fields should be set up in the admin panel:
           - businessTypeTags (multiple select or text)
           - problemTags (multiple select or text) 
           - leadScore (number)
-          
+
           If Twenty API returns success, capture the company ID from response.
-          
+
           DIRECTORIES:
           - Source: ~/sulla/projects/leads/{today_date}/researching/
           - Destination: ~/sulla/projects/leads/{today_date}/imported/
-          
+
           OUTPUT:
           - lead_score
           - file_path (new location in imported/)
           - crm_added: true
           - tags_applied: { count of business type + problem tags }
           - twenty_company_id: (from Twenty API response)
-        orchestratorInstructions: "Score business (with tag bonuses), update file with score, move to imported/, add company to Twenty CRM with business_type_tags and problem_tags in custom fields."
+        orchestratorInstructions: Score business (with tag bonuses), update file with score, move to imported/, add company to Twenty CRM with business_type_tags and problem_tags in custom fields.
         successCriteria: Business scored with tags, added to Twenty CRM with custom fields, file moved to imported/
         completionContract: Exit when import complete and twenty_company_id returned
-
   - id: node-1750000000007
     type: workflow
     position:
@@ -324,28 +318,27 @@ nodes:
         agentName: Search History Updater
         additionalPrompt: |
           Update search-history.md to mark business as completed.
-          
+
           INPUT:
           - business_name: Name of business just imported
           - search_query: The query that found this business
           - business_type_tags: Tags applied to this business
           - problem_tags: Problem tags applied to this business
-          
+
           FILE: ~/sulla/projects/leads/search-history.md
-          
+
           TASK:
           1. Read search-history.md
           2. Find "Completed Businesses (in CRM)" section
           3. Add business to list with tags: "- [x] {business_name} (found via {search_query}) | Types: {business_type_tags} | Problems: {problem_tags}"
           4. If this was the only pending search for this source/query, mark it done
           5. Write updated file
-          
+
           OUTPUT:
           - history_updated: true
-        orchestratorInstructions: "Update search-history.md - add business to completed list with tags, mark search as done if exhausted."
+        orchestratorInstructions: Update search-history.md - add business to completed list with tags, mark search as done if exhausted.
         successCriteria: Search history updated
         completionContract: Exit when history written
-
   - id: node-1750000000008
     type: workflow
     position:
@@ -360,10 +353,10 @@ nodes:
         agentName: Run Summary Generator
         additionalPrompt: |
           Generate a summary of this discovery run including tags applied.
-          
+
           DATE: {today_date}
           BASE DIRECTORY: ~/sulla/projects/leads/{today_date}/
-          
+
           REPORT:
           - Businesses researched this run
           - Businesses imported to CRM
@@ -374,35 +367,49 @@ nodes:
             - Most common problems across leads
           - Any blocks or issues
           - Where to find imported leads: ~/sulla/projects/leads/{today_date}/imported/
-          
+
           OUTPUT:
           - Summary markdown for user
-        orchestratorInstructions: "Count imported leads, generate summary with tag breakdown for user."
+        orchestratorInstructions: Count imported leads, generate summary with tag breakdown for user.
         successCriteria: Summary generated
         completionContract: Exit when summary complete
-
 edges:
   - id: edge-001
     source: node-1750000000001
     target: node-1750000000002
+    animated: true
   - id: edge-002
     source: node-1750000000002
     target: node-1750000000003
+    animated: true
   - id: edge-003
     source: node-1750000000003
     target: node-1750000000004
+    animated: true
   - id: edge-004
     source: node-1750000000004
     target: node-1750000000005
+    animated: true
   - id: edge-005
     source: node-1750000000005
     target: node-1750000000006
+    animated: true
   - id: edge-006
     source: node-1750000000006
     target: node-1750000000007
+    animated: true
   - id: edge-007
     source: node-1750000000007
     target: node-1750000000008
+    animated: true
   - id: edge-loop
     source: node-1750000000008
     target: node-1750000000003
+    animated: true
+_status: production
+viewport:
+  x: -54.72429945903997
+  y: -129.23027672870842
+  zoom: 0.8432311102501142
+updatedAt: 2026-04-10T03:37:48.544Z
+createdAt: 2026-04-10T03:37:48.544Z
