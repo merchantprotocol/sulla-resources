@@ -125,15 +125,15 @@ sulla vault/list_accounts '{"account_type":"slack"}'
 sulla vault/set_credential '{"account_type":"twenty","property":"bearer_token","value":"sk-xxx"}'
 
 # Browser
-sulla playwright/browser_tab '{"action":"upsert","url":"https://example.com"}'
-sulla playwright/get_page_text '{"assetId":"browser_123"}'
+sulla browser/tab '{"action":"upsert","url":"https://example.com"}'
+sulla browser/text '{"assetId":"browser_123"}'
 
 # Database
 sulla pg/query '{"query":"SELECT * FROM users LIMIT 10"}'
 sulla redis/get '{"key":"mykey"}'
 
 # Notifications
-sulla chrome/notify_user '{"title":"Done","message":"Build complete"}'
+sulla notify/notify_user '{"title":"Done","message":"Build complete"}'
 
 # Memory
 sulla meta/add_observational_memory '{"priority":"🟡","content":"User prefers dark mode"}'

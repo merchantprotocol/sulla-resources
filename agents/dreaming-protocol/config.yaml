@@ -109,13 +109,13 @@ tools:
   - update_workflow
   - validate_workflow
   - validate_workflow_payload
-  - click_element
-  - get_form_values
-  - get_page_snapshot
-  - get_page_text
-  - scroll_to_element
-  - set_field
-  - wait_for_element
+  - click
+  - form
+  - snapshot
+  - text
+  - scroll
+  - fill
+  - wait
   - load_project
   - create_skill
   - slack_connection_health

@@ -55,10 +55,10 @@ tools:
   - list_workflow_executions
   - search_templates
   - validate_workflow
-  - get_form_values
-  - get_page_snapshot
-  - get_page_text
-  - wait_for_element
+  - form
+  - snapshot
+  - text
+  - wait
   - load_project
   - slack_connection_health
   - slack_search_users

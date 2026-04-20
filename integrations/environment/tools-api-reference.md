@@ -25,7 +25,7 @@ sulla <tool_name> '<json>'
 | `vault`        | list, list_accounts, read_secrets, set_credential, autofill |
 | `docker`       | ps, run, exec, logs, stop, rm, images, pull, build |
 | `github`       | git_status, git_commit, git_push, create_issue, create_pr |
-| `playwright`   | browser_tab, click_element, set_field, get_page_text |
+| `playwright`   | tab, click, fill, text |
 | `chrome`       | notify_user, search_history, agent_storage, manage_cookies |
 | `slack`        | send_message, search_users, user, thread |
 | `redis`        | get, set, del, hget, hset, incr, expire |
@@ -59,8 +59,8 @@ sulla vault/list '{}'
 sulla vault/list_accounts '{"account_type":"twenty"}'
 
 # Browser
-sulla playwright/browser_tab '{"action":"upsert","url":"https://example.com"}'
-sulla playwright/get_page_text '{"assetId":"browser_123"}'
+sulla browser/tab '{"action":"upsert","url":"https://example.com"}'
+sulla browser/text '{"assetId":"browser_123"}'
 
 # Proxy (Twenty CRM)
 sulla local_merchant_protocol/twenty '{"method":"GET","path":"/rest/companies"}'
@@ -73,7 +73,7 @@ sulla redis/set '{"key":"test","value":"hello"}'
 sulla redis/get '{"key":"test"}'
 
 # Notifications
-sulla chrome/notify_user '{"title":"Done","message":"Build complete"}'
+sulla notify/notify_user '{"title":"Done","message":"Build complete"}'
 
 # Memory
 sulla meta/add_observational_memory '{"priority":"🟡","content":"User prefers dark mode"}'

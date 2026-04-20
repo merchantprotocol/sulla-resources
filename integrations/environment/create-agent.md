@@ -69,7 +69,7 @@ version: 1.0.0
 allowed_tools:
   - file_search      # Read-only search
   - read             # Read existing files
-  - browser_tab      # Browse websites
+  - tab      # Browse websites
   # Add more tools as needed
 
 # Skills this agent can use (empty = none)
@@ -125,12 +125,12 @@ Example workflow spawn:
 ## Common Patterns
 
 ### Observer Agent (observe-only)
-- allowed_tools: [file_search, read, browser_tab]
+- allowed_tools: [file_search, read, tab]
 - allowed_skills: []
 - No exec, no memory tools, no inter-agent comms
 
 ### Researcher Agent (observe + synthesize)
-- allowed_tools: [file_search, read, browser_tab, playwright tools]
+- allowed_tools: [file_search, read, tab, playwright tools]
 - allowed_skills: [topic-research-sop]
 
 ### Review Agent (evaluate + report)

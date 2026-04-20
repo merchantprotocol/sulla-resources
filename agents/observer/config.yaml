@@ -7,7 +7,7 @@ version: 1.2.0
 allowed_tools:
   - file_search
   - read
-  - browser_tab
+  - tab
   - browse_tools
   - add_observational_memory
   - docker

@@ -32,10 +32,10 @@ tools:
   - integration_list
   - list_integration_accounts
   - kubectl_describe
-  - get_form_values
-  - get_page_snapshot
-  - get_page_text
-  - wait_for_element
+  - form
+  - snapshot
+  - text
+  - wait
   - slack_connection_health
   - slack_search_users
   - slack_send_message
