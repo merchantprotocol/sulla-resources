@@ -20,7 +20,7 @@ Sulla Desktop is an Electron app running on macOS. It manages:
 | `sulla` CLI | Lima VM (PATH at `/usr/local/bin/sulla`) | Via `exec` tool |
 | sulla-daemon (socat relay) | Lima VM | Automatic — keeps TCP connection warm |
 | Vault, IntegrationService, database | Host (Electron process) | `sulla vault/*` tools |
-| Browser (Playwright) | Host macOS | `sulla playwright/*` and `sulla chrome/*` tools |
+| Browser automation + state | Host macOS | `sulla browser/*` (page tools, cookies, history, alarms, agent storage) |
 
 ### Communication Flow
 
@@ -114,7 +114,7 @@ sulla <category>/<tool_name> '{"param":"value"}'
 sulla <account_id>/mcp/<tool_name> '{"param":"value"}'
 ```
 
-Tool categories: `meta`, `docker`, `github`, `playwright`, `chrome`, `rdctl`, `redis`, `pg`, `n8n`, `slack`, `kubectl`, `lima`, `calendar`, `extensions`, `vault`, `agents`, `bridge`, `skills`, `workflow`, `computer-use`
+Tool categories: `meta`, `docker`, `github`, `browser`, `applescript`, `rdctl`, `redis`, `pg`, `n8n`, `slack`, `kubectl`, `lima`, `calendar`, `extensions`, `vault`, `agents`, `bridge`, `notify`, `workflow`
 
 ## Finding Things
 
