@@ -3,7 +3,7 @@ name: Daily Cleanup
 description: Investigates file provenance by searching conversation logs, then soft-deletes stale files to archive. Only permanently removes from archive after 30+ days. Appends to a persistent changelog.
 version: 3
 createdAt: 2026-03-18T18:00:00.000Z
-updatedAt: 2026-03-23T22:08:10.142Z
+updatedAt: 2026-04-19T15:27:14.108Z
 nodes:
   - id: node-cleanup-trigger
     type: workflow
@@ -184,6 +184,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: 175.50459981600733
-  y: 43
-  zoom: 0.8068077276908924
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

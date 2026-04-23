@@ -3,7 +3,7 @@ name: Observe
 description: Universal observation workflow — reads domain-specific observe skill topics and dispatches parallel observer agents
 version: 4
 createdAt: 2026-03-18T04:00:00.000Z
-updatedAt: 2026-03-19T21:07:38.429Z
+updatedAt: 2026-04-19T15:27:50.056Z
 nodes:
   - id: node-2000000000001
     type: workflow
@@ -91,6 +91,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: -78.90790279492325
-  y: 23.700974571603012
-  zoom: 0.9753655299287737
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

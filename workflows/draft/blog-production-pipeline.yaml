@@ -4,7 +4,7 @@ description: End-to-end automated blog production with 21 specialized agent stag
 version: 1
 enabled: true
 createdAt: 2026-03-15T00:00:00.000Z
-updatedAt: 2026-04-10T03:36:05.349Z
+updatedAt: 2026-04-19T15:27:03.474Z
 nodes:
   - id: node-1741000000001
     type: workflow

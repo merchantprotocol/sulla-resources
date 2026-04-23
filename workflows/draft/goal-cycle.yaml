@@ -3,7 +3,7 @@ name: Goal Cycle
 description: Reusable goal-setting sub-workflow — runs 7 perspective lenses in parallel, synthesizes a harmonic goal, writes to goals file, then validates through timeline & relevance audit and financial reality audit
 version: 2
 createdAt: 2026-03-18T06:00:00.000Z
-updatedAt: 2026-03-19T23:40:00.000Z
+updatedAt: 2026-04-19T15:27:35.492Z
 nodes:
   - id: node-3000000000001
     type: workflow
@@ -17,7 +17,6 @@ nodes:
       config:
         triggerType: chat-app
         triggerDescription: Receives time horizon, domain, compressed inputs, and constraints from parent planner workflow
-
   - id: node-3000000000002
     type: workflow
     position:
@@ -35,7 +34,6 @@ nodes:
           Step 1: Call your file_search tool with query "goals-perspectives" to find the goals-perspectives skill file.
           Step 2: Use exec to read the full contents of the SKILL.md file found in step 1.
           Step 3: Return the complete skill content as your output. Do NOT summarize — return the full text.
-
   - id: node-3000000000003
     type: workflow
     position:
@@ -46,8 +44,6 @@ nodes:
       category: flow-control
       label: Launch Perspectives
       config: {}
-
-  # 7 Perspective Lens Agents
   - id: node-3000000000010
     type: workflow
     position:
@@ -64,7 +60,6 @@ nodes:
         orchestratorInstructions: "You are the Financial perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were financial security and growth, what would the plan look like for the requested time horizon? Follow Lens 1 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the financial angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000011
     type: workflow
     position:
@@ -81,7 +76,6 @@ nodes:
         orchestratorInstructions: "You are the Health perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were physical and mental health, what would the plan look like for the requested time horizon? Follow Lens 2 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the health angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000012
     type: workflow
     position:
@@ -98,7 +92,6 @@ nodes:
         orchestratorInstructions: "You are the Family perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were family relationships and household stability, what would the plan look like for the requested time horizon? Follow Lens 3 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the family angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000013
     type: workflow
     position:
@@ -115,7 +108,6 @@ nodes:
         orchestratorInstructions: "You are the Relationships perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were broader social connections and community, what would the plan look like for the requested time horizon? Follow Lens 4 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the relationships angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000014
     type: workflow
     position:
@@ -132,7 +124,6 @@ nodes:
         orchestratorInstructions: "You are the Business perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were business growth and professional advancement, what would the plan look like for the requested time horizon? Follow Lens 5 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the business angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000015
     type: workflow
     position:
@@ -149,7 +140,6 @@ nodes:
         orchestratorInstructions: "You are the Purpose perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were meaning, legacy, and fulfillment, what would the plan look like for the requested time horizon? Follow Lens 6 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the purpose angle
         completionContract: Exit when the perspective plan is written
-
   - id: node-3000000000016
     type: workflow
     position:
@@ -166,8 +156,6 @@ nodes:
         orchestratorInstructions: "You are the Growth perspective lens. Using the identity file and think outputs provided in the trigger context, answer: If the ONLY goal were personal development and capability building, what would the plan look like for the requested time horizon? Follow Lens 7 from the goals-perspectives skill. Produce a single-perspective plan."
         successCriteria: A complete single-perspective plan from the growth angle
         completionContract: Exit when the perspective plan is written
-
-  # Merge all perspectives
   - id: node-3000000000020
     type: workflow
     position:
@@ -179,8 +167,6 @@ nodes:
       label: Merge Perspectives
       config:
         strategy: wait-all
-
-  # Synthesis agent
   - id: node-3000000000021
     type: workflow
     position:
@@ -197,8 +183,6 @@ nodes:
         orchestratorInstructions: "You have received 7 perspective plans from the merge. Follow all three Synthesis prompts from the goals-perspectives skill in order: (1) Find Alignment, (2) Find Conflicts, (3) The Cohesive Goal. Produce a single unified plan for this time horizon built around the cohesive goal that serves the maximum number of perspectives."
         successCriteria: A unified plan with cohesive goal, alignment map, and resolved conflicts
         completionContract: Exit when the synthesized plan is complete
-
-  # Write goals to file BEFORE critic rounds
   - id: node-3000000000025
     type: workflow
     position:
@@ -224,8 +208,6 @@ nodes:
           7. Confirm what you wrote and to which file path.
         successCriteria: Goals file written with the synthesized plan for this time horizon
         completionContract: Exit when the file is saved and confirmed
-
-  # Single critic — Timeline & Relevance Audit
   - id: node-3000000000032
     type: workflow
     position:
@@ -260,8 +242,6 @@ nodes:
           Use exec to save the updated file. Confirm what you changed and why.
         successCriteria: Goals file rewritten with timeline-validated, source-vetted goals only
         completionContract: Exit when the updated file is saved
-
-  # Second critic — Financial Reality Audit
   - id: node-3000000000035
     type: workflow
     position:
@@ -369,8 +349,6 @@ nodes:
           Use exec to save the updated file. Confirm what you changed and provide a summary of: (1) total lifestyle cost found, (2) income gap if any, (3) key adjustments made.
         successCriteria: Goals file rewritten with financially grounded targets, real cost data, and gap analysis
         completionContract: Exit when the updated file is saved with financial reality annotations
-
-  # Response
   - id: node-3000000000040
     type: workflow
     position:
@@ -382,21 +360,15 @@ nodes:
       label: Refined Plan
       config:
         responseTemplate: Goal cycle complete for this time horizon. The goals file has been written and refined through timeline & relevance audit and financial reality audit.
-
 edges:
-  # Trigger -> Load Skill
   - id: e-trigger-skill
     source: node-3000000000001
     target: node-3000000000002
     animated: true
-
-  # Load Skill -> Parallel
   - id: e-skill-parallel
     source: node-3000000000002
     target: node-3000000000003
     animated: true
-
-  # Parallel -> 7 lenses
   - id: e-parallel-financial
     source: node-3000000000003
     target: node-3000000000010
@@ -425,8 +397,6 @@ edges:
     source: node-3000000000003
     target: node-3000000000016
     animated: true
-
-  # 7 lenses -> Merge
   - id: e-financial-merge
     source: node-3000000000010
     target: node-3000000000020
@@ -455,38 +425,28 @@ edges:
     source: node-3000000000016
     target: node-3000000000020
     animated: true
-
-  # Merge -> Synthesis
   - id: e-merge-synthesis
     source: node-3000000000020
     target: node-3000000000021
     animated: true
-
-  # Synthesis -> Write Goals to File
   - id: e-synthesis-write
     source: node-3000000000021
     target: node-3000000000025
     animated: true
-
-  # Write Goals -> Timeline Critic
   - id: e-write-critic
     source: node-3000000000025
     target: node-3000000000032
     animated: true
-
-  # Timeline Critic -> Financial Reality Critic
   - id: e-timeline-financial
     source: node-3000000000032
     target: node-3000000000035
     animated: true
-
-  # Financial Reality Critic -> Response
   - id: e-financial-response
     source: node-3000000000035
     target: node-3000000000040
     animated: true
 _status: production
 viewport:
-  x: -709.3429626840475
-  y: -481.12812725292224
-  zoom: 1.824703875770942
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

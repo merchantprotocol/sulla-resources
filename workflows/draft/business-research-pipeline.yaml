@@ -4,7 +4,6 @@ description: Deep research on businesses in Twenty CRM. Gathers website data, Go
 version: 1
 enabled: true
 nodes:
-  # === TRIGGER ===
   - id: node-1760000000001
     type: workflow
     position:
@@ -16,9 +15,7 @@ nodes:
       label: Business Research Trigger
       config:
         triggerType: chat-app
-        triggerDescription: "Research a specific business from Twenty CRM queue"
-
-  # === LOAD COMPANY FROM CRM ===
+        triggerDescription: Research a specific business from Twenty CRM queue
   - id: node-1760000000002
     type: workflow
     position:
@@ -35,8 +32,6 @@ nodes:
         orchestratorInstructions: "Query Twenty CRM for companies where researchStatus='queued_for_research' OR researchStatus='discovered'. Order by icpScore DESC. Take the top company. Return full company record including: id, name, domainName, address, employees, linkedinLink, xLink, icpScore, icpReasoning, dataSources."
         successCriteria: Company record fetched
         completionContract: Exit when company is fetched
-
-  # === CHECK IF COMPANY HAS WEBSITE ===
   - id: node-1760000000003
     type: workflow
     position:
@@ -47,16 +42,14 @@ nodes:
       category: routing
       label: Has Website?
       config:
-        classificationPrompt: "Determine if the fetched company has a valid website (domainName or website URL exists and is not empty). If yes route to website research. If no route to skip website research."
+        classificationPrompt: Determine if the fetched company has a valid website (domainName or website URL exists and is not empty). If yes route to website research. If no route to skip website research.
         routes:
           - id: route-website
-            label: "Yes - Research Website"
-            description: "Company has website - research it"
+            label: Yes - Research Website
+            description: Company has website - research it
           - id: route-no-website
-            label: "No Website - Skip"
-            description: "No website - skip that step"
-
-  # === WEBSITE RESEARCH ===
+            label: No Website - Skip
+            description: No website - skip that step
   - id: node-1760000000004
     type: workflow
     position:
@@ -73,8 +66,6 @@ nodes:
         orchestratorInstructions: "Visit the company's website. Collect: about page content, team/leadership page, services/products offered, contact information (email, phone), location(s), founding year, team size indicators, blog content (topics), technology stack (from page source or tech mentions), social media links. Summarize in structured format."
         successCriteria: Website data collected
         completionContract: Exit when website research complete
-
-  # === GOOGLE SEARCH RESEARCH ===
   - id: node-1760000000005
     type: workflow
     position:
@@ -91,8 +82,6 @@ nodes:
         orchestratorInstructions: "Perform Google search for: '[company name] reviews', '[company name] LinkedIn', '[company name] news', '[company name] team', '[company name] CEO', '[company name] founder'. Also search for the domain to find business directories they're listed on. Collect all relevant results."
         successCriteria: Google search results collected
         completionContract: Exit when search complete
-
-  # === SOCIAL PROFILES RESEARCH ===
   - id: node-1760000000006
     type: workflow
     position:
@@ -109,8 +98,6 @@ nodes:
         orchestratorInstructions: "Search for the company's presence on: LinkedIn (company page), Twitter/X, Facebook, Instagram. Collect: follower counts, recent posts, company description, industry tags, employee showcases. Look for any employee lists or team pages."
         successCriteria: Social profiles collected
         completionContract: Exit when social research complete
-
-  # === UPDATE COMPANY RECORD ===
   - id: node-1760000000007
     type: workflow
     position:
@@ -127,8 +114,6 @@ nodes:
         orchestratorInstructions: "Update the company in Twenty CRM with all research findings: researchStatus='researched', researchDate=today, add website data (from node-4), add Google search findings (from node-5), add social profiles (from node-6), add services_description, add team_insights, add technology_stack if found. Also update: number of employees (if found on site), founding year, any other enriched data."
         successCriteria: Company updated in Twenty CRM
         completionContract: Exit when company updated
-
-  # === IDENTIFY DECISION MAKERS ===
   - id: node-1760000000008
     type: workflow
     position:
@@ -145,8 +130,6 @@ nodes:
         orchestratorInstructions: "Analyze all research data to identify potential decision makers. Look for: CEO/founder names (from website, LinkedIn), CTO/technical lead (for tech decisions), marketing head, operations manager, key team members mentioned. For each person: name, likely role, LinkedIn profile URL, Twitter if available. Prioritize: owner, executive, manager levels. Output: decision_makers array with: name, likely_title, linkedin_url, twitter_url, decision_level (owner/executive/manager/ic), confidence (1-10)."
         successCriteria: Decision makers identified
         completionContract: Exit when decision makers identified
-
-  # === ROUTER: ANY DECISION MAKERS? ===
   - id: node-1760000000009
     type: workflow
     position:
@@ -157,16 +140,14 @@ nodes:
       category: routing
       label: Decision Makers Found?
       config:
-        classificationPrompt: "Determine if any decision makers were identified (decision_makers array has length > 0). If yes route to create people. If no route to completion."
+        classificationPrompt: Determine if any decision makers were identified (decision_makers array has length > 0). If yes route to create people. If no route to completion.
         routes:
           - id: route-create-people
-            label: "Yes - Create People"
-            description: "Decision makers found - create in Twenty CRM"
+            label: Yes - Create People
+            description: Decision makers found - create in Twenty CRM
           - id: route-no-people
-            label: "No - Complete"
-            description: "No decision makers found - complete"
-
-  # === CREATE PEOPLE RECORDS ===
+            label: No - Complete
+            description: No decision makers found - complete
   - id: node-1760000000010
     type: workflow
     position:
@@ -183,8 +164,6 @@ nodes:
         orchestratorInstructions: "For each decision maker identified: 1) Create person record in Twenty CRM with: firstName, lastName (parse from full name), jobTitle (likely_title), linkedinLink (url + label), xLink (if twitter found), company (link to parent company), isDecisionMaker=true, decisionLevel (from findings), contactConfidence=5 (initial, will improve with individual research), verificationDate=null, researchStatus='discovered'. 2) Link person to the company. Log all creates."
         successCriteria: People created in Twenty CRM
         completionContract: Exit when all people created
-
-  # === TRIGGER INDIVIDUAL RESEARCH (per person) ===
   - id: node-1760000000011
     type: workflow
     position:
@@ -197,8 +176,6 @@ nodes:
       config:
         workflowId: individual-research
         awaitResponse: false
-
-  # === COMPLETION ===
   - id: node-1760000000012
     type: workflow
     position:
@@ -215,47 +192,67 @@ nodes:
         orchestratorInstructions: "Report business research results: company_name, website_found (yes/no), google_results_count, social_profiles_found, decision_makers_identified, people_created. Log to ~/sulla/daily-logs/{date}/lead-prospecting/business-research.md"
         successCriteria: Completion report generated
         completionContract: Exit when report generated
-
 edges:
   - id: edge-1
     source: node-1760000000001
     target: node-1760000000002
+    animated: true
   - id: edge-2
     source: node-1760000000002
     target: node-1760000000003
+    animated: true
   - id: edge-3
     source: node-1760000000003
     target: node-1760000000004
+    animated: true
   - id: edge-4
     source: node-1760000000003
     target: node-1760000000005
+    animated: true
   - id: edge-5
     source: node-1760000000003
     target: node-1760000000006
+    animated: true
   - id: edge-6
     source: node-1760000000004
     target: node-1760000000007
+    animated: true
   - id: edge-7
     source: node-1760000000005
     target: node-1760000000007
+    animated: true
   - id: edge-8
     source: node-1760000000006
     target: node-1760000000007
+    animated: true
   - id: edge-9
     source: node-1760000000007
     target: node-1760000000008
+    animated: true
   - id: edge-10
     source: node-1760000000008
     target: node-1760000000009
+    animated: true
   - id: edge-11
     source: node-1760000000009
     target: node-1760000000010
+    animated: true
   - id: edge-12
     source: node-1760000000009
     target: node-1760000000012
+    animated: true
   - id: edge-13
     source: node-1760000000010
     target: node-1760000000011
+    animated: true
   - id: edge-14
     source: node-1760000000011
     target: node-1760000000012
+    animated: true
+_status: production
+viewport:
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5
+updatedAt: 2026-04-19T15:27:09.556Z
+createdAt: 2026-04-19T15:27:08.814Z

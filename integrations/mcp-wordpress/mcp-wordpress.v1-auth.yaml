@@ -2,11 +2,11 @@ api:
   name: mcp-wordpress
   version: v1
   provider: mcp
-  base_url: https://localhost/mcp
+  base_url: https://localhost/mcp/
   transport: mcp
 mcp:
   account_id: wordpress
-  synced_at: 2026-04-02T09:24:09.885Z
+  synced_at: 2026-04-21T01:31:22.113Z
 auth:
   type: bearer
   client_secret: ${MCP_AUTH_TOKEN}

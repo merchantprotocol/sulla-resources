@@ -1,7 +1,7 @@
 ---
 slug: create-workflow
-title: Create Workflow
-tags: [skill, workflow, automation]
+title: Create Workflow or Routine
+tags: [skill, workflow, routine, automation]
 triggers:
   - "create a workflow"
   - "build a workflow"
@@ -14,17 +14,45 @@ triggers:
   - "fix workflow"
   - "update a workflow"
   - "edit a workflow"
+  - "create a routine"
+  - "build a routine"
+  - "new routine"
+  - "make a routine"
+  - "design a routine"
+  - "routine template"
+  - "fix a routine"
+  - "update a routine"
+  - "edit a routine"
 category: workflow
 section: Standard Operating Procedures
 locked: true
 author: seed
 ---
 
-# Create Workflow
+# Create Workflow or Routine
 
-You create workflows by planning them as a project PRD, writing the YAML, validating it renders in the editor, then deploying it. This process ensures no broken workflows ever reach the workflows directory.
+You create workflows and routines by planning them as a project PRD, writing the YAML, validating it renders in the editor, then deploying it. This process ensures no broken definitions ever reach the workflows or routines directories.
 
 **Follow every gate in order. Do NOT skip gates. Do NOT combine gates. Complete one gate fully, verify it, then move to the next.**
+
+---
+
+## Routines vs Workflows — One Schema, Three Storage Locations
+
+Routines and workflows are **the same thing at execution time** — same DAG schema, same validator, same orchestrator. The only difference is where the definition lives and how it gets activated.
+
+| Storage | Path | Role | Who writes it |
+|---------|------|------|---------------|
+| **Routine template** | `~/sulla/routines/<slug>/routine.yaml` | Reusable blueprint shown in "My Templates". Cloned into the DB to create an active routine. | You (authoring) |
+| **Active routine** | Database row in `workflows` table | A live, instantiated routine shown in "My Routines". Edited via the Routines UI. | The app (when you instantiate a template) |
+| **Legacy workflow** | `~/sulla/workflows/<slug>.yaml` | Flat-file workflow loaded by `WorkflowRegistry`. Older path — prefer routine templates for new work. | You (authoring) |
+
+**Which one should you author?**
+- **Default — write a routine template** at `~/sulla/routines/<slug>/routine.yaml` unless the user explicitly asks for a legacy workflow. Templates support a folder of supporting files (prompts, skills, references), show up in the Templates library, and are the system Sulla Desktop is moving toward.
+- **Use `~/sulla/workflows/<slug>.yaml`** only when editing an existing flat-file workflow or when the user explicitly asks for one.
+- **Never hand-edit the DB.** Active routines are created by the app when the user clicks "Use template" — your job ends when the template YAML is valid.
+
+**One validator covers all three.** `validate_sulla_workflow` accepts a `filePath` pointing at either location (or inline `yaml` content) and applies the same rules. There is no separate routine validator.
 
 ---
 
@@ -138,6 +166,7 @@ config:                     # NOT A REAL FIELD at top level
   max_parallel: 4
 metadata:                   # NOT A REAL FIELD
   author: Sulla
+_status: draft              # NOT A REAL FIELD — this is editor runtime state
 
 # ✅ CORRECT — the ONLY top-level fields
 id: workflow-1742114600000
@@ -154,6 +183,60 @@ viewport:
   y: 0
   zoom: 1
 ```
+
+### NEVER copy runtime/display fields from an exported routine YAML
+
+If you open a routine exported from the Sulla Desktop editor, you will see fields that the editor writes for its own UI state. **These are not part of the schema and the validator treats them as errors or warnings.** Strip them before hand-authoring or validating.
+
+```yaml
+# ❌ WRONG — editor runtime fields on the edge
+edges:
+  - id: vueflow__edge-node-1-node-2
+    data: {}                 # EDITOR RUNTIME — strip it
+    type: routine            # EDITOR RUNTIME — strip it (edges have no "type")
+    source: node-1
+    target: node-2
+
+# ❌ WRONG — editor display metadata on the node data
+- id: node-1
+  type: workflow
+  position: { x: 400, y: 250 }
+  data:
+    subtype: agent
+    category: agent
+    label: Keyword Research Agent
+    role: Performs work in the flow.    # EDITOR DISPLAY — strip
+    state: idle                          # EDITOR RUNTIME — strip
+    avatar:                              # EDITOR DISPLAY — strip
+      type: agent
+      initials: KR
+    kicker: Agent                        # EDITOR DISPLAY — strip
+    nodeCode: A-18                       # EDITOR DISPLAY — strip
+    outputExcerpt: "..."                 # EDITOR RUNTIME — strip
+    config: { ... }
+
+# ✅ CORRECT — only schema fields
+edges:
+  - id: vueflow__edge-node-1-node-2
+    source: node-1
+    target: node-2
+    sourceHandle: null
+    targetHandle: null
+    label: ""
+    animated: true
+
+- id: node-1
+  type: workflow
+  position: { x: 400, y: 250 }
+  data:
+    subtype: agent
+    category: agent
+    label: Keyword Research Agent
+    config: { ... }
+```
+
+**Valid node `data` keys:** `subtype`, `category`, `label`, `config`. Nothing else.
+**Valid edge keys:** `id`, `source`, `target`, `sourceHandle`, `targetHandle`, `label`, `animated`. Nothing else.
 
 ---
 
@@ -306,13 +389,46 @@ Translate the PRD design table into the exact node/edge plan. Output this plan i
 
 **STOP. You must have completed Gate 2 before doing this.**
 
-Write the complete workflow YAML file directly to: `~/sulla/workflows/{slug}.yaml`
+### Pick the storage location
+
+| You are creating... | Write to | ID prefix |
+|---------------------|----------|-----------|
+| A **routine template** (default for new work) | `~/sulla/routines/{slug}/routine.yaml` | `routine-{slug}-{timestamp}` |
+| A **legacy workflow** (only when explicitly asked) | `~/sulla/workflows/{slug}.yaml` | `workflow-{timestamp}` |
+
+### Routine template folder layout
+
+When writing a routine template, create the folder first and populate it with the required manifest plus any optional support files. Only `routine.yaml` and `README.md` are required; the rest are optional enrichments the editor will pick up when present.
+
+```
+~/sulla/routines/{slug}/
+├── routine.yaml          # REQUIRED — the DAG definition (same schema as workflows)
+├── README.md             # REQUIRED — short description for the Templates library card
+├── AGENT.md              # OPTIONAL — agent-facing context bundled with the template
+├── skills/               # OPTIONAL — skill markdown files the routine references
+├── prompts/              # OPTIONAL — prompt files for agent nodes
+├── references/           # OPTIONAL — reference docs / SOPs
+└── assets/               # OPTIONAL — images, sample data, fixtures
+```
+
+A minimal `README.md`:
+
+```markdown
+# {Human-Readable Routine Name}
+
+{One-paragraph description of what this routine does and when to use it.}
+
+Add supporting docs (AGENT.md, skills/, prompts/, references/, assets/) before
+re-zipping to share a richer template.
+```
+
+### Write the YAML
 
 Use:
 - The exact node configs from the Node Reference below (include ALL fields)
 - The edge handles from the Handle Reference below
 - The node IDs and positions from your Gate 2 plan
-- Workflow ID: `workflow-{timestamp}` using current timestamp
+- ID: `routine-{slug}-{timestamp}` for routines, `workflow-{timestamp}` for legacy workflows
 
 ### GATE 3 CHECKPOINT
 
@@ -340,12 +456,16 @@ Read the file back after writing it and verify:
 
 **STOP. You must have completed Gate 3 before doing this.**
 
-The workflow file is already in `~/sulla/workflows/`. Now validate it using the `validate_sulla_workflow` tool. **Do NOT skip this step. Do NOT self-validate manually — use the tool.**
+The YAML file now exists on disk. Validate it using the `validate_sulla_workflow` tool. **Do NOT skip this step. Do NOT self-validate manually — use the tool.** The same validator covers routine templates and legacy workflows.
 
 ### Steps
 
-1. **Run the validator tool:**
+1. **Run the validator tool** (pass the path to wherever you wrote the file in Gate 3):
    ```
+   # Routine template
+   validate_sulla_workflow(filePath: "~/sulla/routines/{slug}/routine.yaml")
+
+   # Legacy workflow
    validate_sulla_workflow(filePath: "~/sulla/workflows/{slug}.yaml")
    ```
    This checks ALL of the following automatically:
@@ -376,11 +496,13 @@ The workflow file is already in `~/sulla/workflows/`. Now validate it using the 
 **STOP. You must have completed Gate 4 before doing this.**
 
 1. **Update PROJECT.md** — change status to `active`, check off the completed items
-2. **Tell the human** the workflow is ready:
-   - Workflow name and file location
+2. **Tell the human** the workflow or routine is ready:
+   - Name and file location (routine template path or workflow file path)
    - Number of nodes and edges
    - What triggers it
-   - How to open it in the editor (click the workflow name in the Workflows pane)
+   - How to open it in the editor:
+     - **Routine template:** click it in the Templates library, then "Use template" to instantiate
+     - **Legacy workflow:** click the workflow name in the Workflows pane
 
 ### GATE 5 CHECKPOINT (FINAL)
 
@@ -1026,9 +1148,12 @@ viewport: { x: 0, y: 0, zoom: 1 }
 |------|------|-------|
 | Create project folder | `fs_mkdir` | `~/sulla/projects/{slug}/` |
 | Write PROJECT.md | `fs_write_file` | PRD document |
-| Check existing workflows | `fs_list_dir` | `~/sulla/workflows/` |
-| Read existing workflow | `fs_read_file` | For reference or modification |
-| Write workflow file | `fs_write_file` | `~/sulla/workflows/{slug}.yaml` |
-| Validate workflow file | `validate_sulla_workflow` | Pass filePath, fix all errors, re-validate until valid |
+| Check existing routine templates | `fs_list_dir` | `~/sulla/routines/` |
+| Check existing legacy workflows | `fs_list_dir` | `~/sulla/workflows/` |
+| Read existing definition | `fs_read_file` | For reference or modification |
+| Create routine template folder | `fs_mkdir` | `~/sulla/routines/{slug}/` |
+| Write routine template | `fs_write_file` | `~/sulla/routines/{slug}/routine.yaml` + `README.md` |
+| Write legacy workflow | `fs_write_file` | `~/sulla/workflows/{slug}.yaml` |
+| Validate definition | `validate_sulla_workflow` | Pass `filePath` to either location, fix all errors, re-validate until valid |
 | List available agents | `fs_list_dir` | `~/sulla/agents/` |
 | Update PROJECT.md | `fs_write_file` | Mark status active after validation |

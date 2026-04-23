@@ -3,7 +3,7 @@ name: Daily Project Planning
 description: Goal-driven project ideation using parallel lenses, persistent idea tracking in PROJECT_IDEAS.md, and async human approval via prompt injection into human-facing agents.
 version: 2
 createdAt: 2026-03-18T22:00:00.000Z
-updatedAt: 2026-04-02T06:58:45.772Z
+updatedAt: 2026-04-19T15:27:27.007Z
 nodes:
   - id: node-pp-trigger
     type: workflow
@@ -428,6 +428,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: -0.5228716645489158
-  y: -1118.4358322744597
-  zoom: 1.1143583227445997
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

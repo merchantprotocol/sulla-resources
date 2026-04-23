@@ -4,7 +4,7 @@ description: Nightly workflow that reviews conversation history, extracts learni
 version: 1
 enabled: true
 createdAt: 2026-03-16T01:00:00.000Z
-updatedAt: 2026-03-27T18:01:52.181Z
+updatedAt: 2026-04-19T15:27:18.457Z
 nodes:
   - id: node-1741000000001
     type: workflow
@@ -399,6 +399,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: -171.50236842596246
-  y: -1528.4014604510514
-  zoom: 1.4408404692184689
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

@@ -1,0 +1,381 @@
+id: workflow-seo-blog-auto-publisher
+name: Auto-Generate SEO Blog Posts
+description: Weekly automated SEO blog pipeline — researches trending startup topics via Perplexity, generates 1000–1500 word HTML article via GPT, creates a cinematic featured image via Leonardo AI, publishes to WordPress with SEO meta, and logs the record to Google Sheets. Runs every Monday at 6:00 AM.
+version: 1
+enabled: true
+createdAt: 2026-04-20T00:00:00.000Z
+updatedAt: 2026-04-21T07:00:08.268Z
+nodes:
+  - id: node-1745107200001
+    type: workflow
+    position:
+      x: 500
+      y: 0
+    data:
+      subtype: calendar
+      category: trigger
+      label: Weekly Schedule Trigger
+      config:
+        triggerType: calendar
+        triggerDescription: Fires every Monday at 6:00 AM to kick off the weekly SEO blog post generation pipeline
+  - id: node-1745107200002
+    type: workflow
+    position:
+      x: 462.19950548711824
+      y: 140.5478332538099
+    data:
+      subtype: agent
+      category: agent
+      label: Research Trending Topics (Perplexity)
+      config:
+        agentId: null
+        agentName: Perplexity Research Agent
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          You are a research assistant specializing in startup trends and SEO content strategy.
+
+          Make an HTTP POST request to the Perplexity API:
+            URL: https://api.perplexity.ai/chat/completions
+            Authorization: Bearer — retrieve key PERPLEXITY_API_KEY from the password vault
+            Content-Type: application/json
+            Body:
+              {
+                "model": "sonar-pro",
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are an expert startup trend analyst. Return only structured JSON."
+                  },
+                  {
+                    "role": "user",
+                    "content": "What are the top 3 trending startup topics this week? For each, provide: title, one-paragraph summary, primary search keyword, target audience, and main reader pain point. Return as a JSON array."
+                  }
+                ]
+              }
+
+          Parse the response and pick the single best topic based on search volume potential and relevance.
+          Output JSON: { "topic_title": "...", "summary": "...", "primary_keyword": "...", "target_audience": "...", "pain_point": "...", "image_style_hint": "cinematic, professional" }
+        successCriteria: Topic JSON object with all required fields produced
+        completionContract: Exit when topic JSON is output
+  - id: node-1745107200003
+    type: workflow
+    position:
+      x: 500
+      y: 280
+    data:
+      subtype: agent
+      category: agent
+      label: Generate SEO Blog Post (GPT)
+      config:
+        agentId: null
+        agentName: SEO Content Writer
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          You are an expert SEO content writer. Using the topic research from the previous step, write a complete, publication-ready blog post.
+
+          Requirements:
+          - Length: 1000–1500 words
+          - Format: Valid HTML using h1, h2, h3, p, ul, ol, strong, em tags
+          - Natural keyword integration — no keyword stuffing
+          - Structure: engaging intro → 3–5 body sections → actionable conclusion → CTA
+          - Tone: conversational, human, no AI-sounding phrases
+          - Include story opener and concrete examples
+
+          Output ONLY this JSON (no markdown wrapper):
+          {
+            "title": "SEO-optimized article title (include primary keyword)",
+            "slug": "url-friendly-slug-with-keyword",
+            "meta_description": "155–160 char meta description with primary keyword",
+            "primary_keyword": "...",
+            "html_content": "<full article HTML here>",
+            "word_count": 1200,
+            "image_prompt": "Cinematic, wide-format blog featured image prompt for Leonardo AI — describe scene, mood, subject related to article topic. No text in image."
+          }
+        successCriteria: Complete blog post JSON with all 7 fields produced
+        completionContract: Exit when valid JSON output is produced
+  - id: node-1745107200004
+    type: workflow
+    position:
+      x: 515.3393311066766
+      y: 415.6173339695209
+    data:
+      subtype: agent
+      category: agent
+      label: Request Featured Image (Leonardo AI)
+      config:
+        agentId: null
+        agentName: Leonardo Image Requester
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Submit an image generation request to Leonardo AI using the image_prompt from the content generation step.
+
+          Make an HTTP POST request:
+            URL: https://cloud.leonardo.ai/api/rest/v1/generations
+            Authorization: Bearer — retrieve LEONARDO_API_KEY from the password vault
+            Content-Type: application/json
+            Body:
+              {
+                "prompt": "<image_prompt from previous step> — cinematic, professional photography, wide format, blog hero image",
+                "modelId": "b24e16ff-06e3-43eb-8d33-4416c2d75876",
+                "width": 1792,
+                "height": 1024,
+                "num_images": 1,
+                "public": false
+              }
+
+          The API returns a generationId. Output ONLY:
+          { "generation_id": "<id from response>" }
+        successCriteria: generation_id returned from Leonardo API
+        completionContract: Exit when generation_id is captured
+  - id: node-1745107200005
+    type: workflow
+    position:
+      x: 484.1128356395135
+      y: 561.0956665076199
+    data:
+      subtype: wait
+      category: flow-control
+      label: Wait for Image Generation
+      config:
+        delayAmount: 45
+        delayUnit: seconds
+  - id: node-1745107200006
+    type: workflow
+    position:
+      x: 500
+      y: 700
+    data:
+      subtype: agent
+      category: agent
+      label: Retrieve Generated Image (Leonardo AI)
+      config:
+        agentId: null
+        agentName: Leonardo Image Retriever
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Check if the Leonardo AI image generation has completed and retrieve the image URL.
+
+          Make an HTTP GET request:
+            URL: https://cloud.leonardo.ai/api/rest/v1/generations/<generation_id from previous step>
+            Authorization: Bearer — retrieve LEONARDO_API_KEY from the password vault
+
+          If status is COMPLETE, extract the first image URL from generatedImages[0].url.
+          If status is PENDING or PROCESSING, report status as "pending".
+          If status is FAILED, report status as "failed".
+
+          Output:
+          { "status": "complete|pending|failed", "image_url": "<url or null>" }
+        successCriteria: Image status determined and image_url captured if complete
+        completionContract: Exit when status and image_url are output
+  - id: node-1745107200007
+    type: workflow
+    position:
+      x: 500
+      y: 840
+    data:
+      subtype: condition
+      category: routing
+      label: Image Ready?
+      config:
+        rules:
+          - field: status
+            operator: equals
+            value: complete
+        combinator: and
+  - id: node-1745107200008
+    type: workflow
+    position:
+      x: 700
+      y: 980
+    data:
+      subtype: wait
+      category: flow-control
+      label: Wait & Retry (30s)
+      config:
+        delayAmount: 30
+        delayUnit: seconds
+  - id: node-1745107200009
+    type: workflow
+    position:
+      x: 300
+      y: 980
+    data:
+      subtype: agent
+      category: agent
+      label: Upload Image to WordPress
+      config:
+        agentId: wordpress-publisher-agent
+        agentName: WordPress Media Uploader
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Download the image from the Leonardo URL and upload it to the WordPress Media Library using the WordPress MCP tool.
+
+          - Download the image from the image_url produced by the image retrieval step
+          - Upload to WordPress media library
+          - Set filename: <slug from content step>-featured.jpg
+          - Set alt_text: <primary_keyword from content step> — featured blog image
+          - Set title: <article title from content step>
+
+          Output:
+          { "media_id": <WordPress attachment ID>, "media_url": "<WordPress hosted image URL>" }
+        successCriteria: WordPress media_id and media_url returned
+        completionContract: Exit when upload is confirmed
+  - id: node-1745107200010
+    type: workflow
+    position:
+      x: 326.7303863644777
+      y: 1119.0453433441257
+    data:
+      subtype: agent
+      category: agent
+      label: Publish Post to WordPress
+      config:
+        agentId: wordpress-publisher-agent
+        agentName: WordPress Publisher
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Publish the blog post to WordPress using the WordPress MCP tool.
+
+          Use the create_post endpoint with:
+          - title: <title from content step>
+          - slug: <slug from content step>
+          - content: <html_content from content step>
+          - excerpt: <meta_description from content step>
+          - status: publish
+          - featured_media: <media_id from upload step>
+          - categories: assign to the most relevant existing category
+
+          Also configure Yoast SEO meta if available:
+          - yoast_title: <title from content step>
+          - yoast_meta_desc: <meta_description from content step>
+
+          Post as one of the available WordPress users (not anonymous).
+
+          Output: { "post_id": <id>, "post_url": "<published URL>" }
+        successCriteria: Post published with post_id and post_url confirmed
+        completionContract: Exit when post is live and URL is captured
+  - id: node-1745107200011
+    type: workflow
+    position:
+      x: 300
+      y: 1260
+    data:
+      subtype: agent
+      category: agent
+      label: Log to Google Sheets
+      config:
+        agentId: null
+        agentName: Sheets Logger
+        additionalPrompt: ""
+        orchestratorInstructions: |
+          Append a publication record row to the Google Sheets blog tracking spreadsheet.
+
+          Retrieve GOOGLE_OAUTH_TOKEN and GSHEETS_SPREADSHEET_ID from the password vault.
+          Sheet tab name: Blog Posts
+
+          Make an HTTP POST request:
+            URL: https://sheets.googleapis.com/v4/spreadsheets/<GSHEETS_SPREADSHEET_ID>/values/Blog Posts!A:F:append?valueInputOption=USER_ENTERED
+            Authorization: Bearer <GOOGLE_OAUTH_TOKEN>
+            Content-Type: application/json
+            Body:
+              {
+                "values": [[
+                  "<today's date ISO 8601>",
+                  "<post title>",
+                  "<post_url>",
+                  "<primary_keyword>",
+                  "<word_count>",
+                  "Published"
+                ]]
+              }
+        successCriteria: Row successfully appended to Google Sheets
+        completionContract: Exit when sheet update is confirmed
+  - id: node-1745107200012
+    type: workflow
+    position:
+      x: 275.1789269472707
+      y: 1395.2267167206292
+    data:
+      subtype: response
+      category: io
+      label: Pipeline Complete
+      config:
+        responseTemplate: SEO blog post published. Post URL logged to Google Sheets.
+edges:
+  - id: vueflow__edge-node-1745107200001-node-1745107200002
+    source: node-1745107200001
+    target: node-1745107200002
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200002-node-1745107200003
+    source: node-1745107200002
+    target: node-1745107200003
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200003-node-1745107200004
+    source: node-1745107200003
+    target: node-1745107200004
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200004-node-1745107200005
+    source: node-1745107200004
+    target: node-1745107200005
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200005-node-1745107200006
+    source: node-1745107200005
+    target: node-1745107200006
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200006-node-1745107200007
+    source: node-1745107200006
+    target: node-1745107200007
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200007condition-true-node-1745107200009
+    source: node-1745107200007
+    target: node-1745107200009
+    sourceHandle: condition-true
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200007condition-false-node-1745107200008
+    source: node-1745107200007
+    target: node-1745107200008
+    sourceHandle: condition-false
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200008-node-1745107200006
+    source: node-1745107200008
+    target: node-1745107200006
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200009-node-1745107200010
+    source: node-1745107200009
+    target: node-1745107200010
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200010-node-1745107200011
+    source: node-1745107200010
+    target: node-1745107200011
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+  - id: vueflow__edge-node-1745107200011-node-1745107200012
+    source: node-1745107200011
+    target: node-1745107200012
+    sourceHandle: null
+    targetHandle: null
+    animated: true
+viewport:
+  x: 180.20526826318235
+  y: -175.0566791801573
+  zoom: 0.5
+_status: production

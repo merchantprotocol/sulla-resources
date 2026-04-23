@@ -3,7 +3,7 @@ name: Goal Setter
 description: Multi-horizon goal-setting workflow — compresses inputs, runs goal-cycle at 2yr/13wk/daily horizons, derives weekly goals, writes goals journal
 version: 1
 createdAt: 2026-03-18T06:00:00.000Z
-updatedAt: 2026-03-19T23:40:00.000Z
+updatedAt: 2026-04-19T15:27:43.457Z
 nodes:
   - id: node-4000000000001
     type: workflow
@@ -229,6 +229,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: -709.3429626840475
-  y: -481.12812725292224
-  zoom: 1.824703875770942
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

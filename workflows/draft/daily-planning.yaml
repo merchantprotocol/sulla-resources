@@ -3,7 +3,7 @@ name: Daily Planning
 description: Daily autonomous planning pipeline — observe, think, goal-set across human/business in parallel, then focused world-view forecasting, then self goal-setting
 version: 2
 createdAt: 2026-03-17T05:24:02.351Z
-updatedAt: 2026-04-02T06:58:25.852Z
+updatedAt: 2026-04-19T15:27:22.606Z
 nodes:
   - id: node-1773759817932
     type: workflow
@@ -384,6 +384,6 @@ edges:
     animated: false
 _status: production
 viewport:
-  x: 39.477128335451084
-  y: -36.43583227445981
-  zoom: 1.1143583227445997
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5

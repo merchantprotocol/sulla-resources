@@ -3,7 +3,7 @@ name: World View Forecaster
 description: World view forecasting workflow — receives topic lens from upstream, compresses world inputs, runs forecast-cycle at 2yr/13wk/daily horizons, derives weekly conditions, writes forecasting journal
 version: 1
 createdAt: 2026-03-18T18:00:00.000Z
-updatedAt: 2026-03-18T15:17:10.238Z
+updatedAt: 2026-04-19T15:28:04.208Z
 nodes:
   - id: node-6000000000001
     type: workflow
@@ -219,6 +219,6 @@ edges:
     animated: true
 _status: production
 viewport:
-  x: -324.45426755752436
-  y: -751.5124339840702
-  zoom: 1.0763936240992988
+  x: 316.80348416425903
+  y: -437.7463811734972
+  zoom: 0.5
