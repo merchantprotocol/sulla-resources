@@ -1,0 +1,10 @@
+id: grounding-regression
+name: Grounding Regression Mapper
+description: Builds the regression register — current features and flows through the affected areas that must not break
+type: worker
+provider: claude-code
+model: claude-sonnet-4-6
+injectObservations: false
+tools:
+  - exec
+  - file_search

@@ -1,0 +1,10 @@
+id: planner-gamma
+name: Planner Gamma
+description: Blind-panel planner — risk-first seat (Grok, cross-vendor diversity). Drafts and critiques implementation plans from grounding artifacts.
+type: worker
+provider: grok
+model: powerful
+injectObservations: false
+tools:
+  - exec
+  - file_search

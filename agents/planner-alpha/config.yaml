@@ -1,0 +1,10 @@
+id: planner-alpha
+name: Planner Alpha
+description: Blind-panel planner — deep-reasoning seat (Opus). Drafts and critiques implementation plans from grounding artifacts.
+type: worker
+provider: claude-code
+model: claude-opus-4-8
+injectObservations: false
+tools:
+  - exec
+  - file_search

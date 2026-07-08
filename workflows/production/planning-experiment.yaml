@@ -1,0 +1,92 @@
+id: planning-experiment
+name: Planning Mode — Experiment-First Route
+description: Light planning route for decisions best answered by trying candidate approaches. Produces a test matrix with evaluation criteria instead of a linear plan.
+version: 1
+createdAt: 2026-07-08T02:57:00.000Z
+updatedAt: 2026-07-08T02:57:00.000Z
+enabled: true
+
+nodes:
+  - id: node-pe-trigger
+    type: workflow
+    position: { x: 500, y: 0 }
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives an experiment-suited change request from triage
+
+  - id: node-pe-scope
+    type: workflow
+    position: { x: 500, y: 130 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Define Scope
+      config:
+        prompt: |-
+          Experiment-first planning for: {{trigger}}
+
+          Derive a kebab-case slug, create ~/sulla/projects/<slug>/planning/, state the question the experiments must answer, and list the relevant scope (paths/systems). Respond with SLUG, ARTIFACT_DIR, QUESTION, and SCOPE lines.
+
+  - id: node-pe-plan
+    type: workflow
+    position: { x: 500, y: 260 }
+    data:
+      subtype: agent
+      category: agent
+      label: Experiment Matrix
+      config:
+        agentId: planner-beta
+        agentName: Planner Beta
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Orchestrator's framing:
+          {{Define Scope}}
+
+          Investigate the scoped areas (read the code — cite findings), then produce an EXPERIMENT MATRIX: 2-5 candidate approaches, and for each — setup cost, what it proves/disproves, shared evaluation criteria to compare them on, and the decision rule for picking the winner. Include the smallest-first ordering so cheap experiments can eliminate candidates early.
+        successCriteria: A cited experiment matrix with shared evaluation criteria and an explicit decision rule
+        completionContract: Exit when the matrix is complete
+
+  - id: node-pe-write
+    type: workflow
+    position: { x: 500, y: 390 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Plan
+      config:
+        prompt: |-
+          Write the experiment matrix to <ARTIFACT_DIR>/03-plan.md (dir from Define Scope):
+
+          {{Experiment Matrix}}
+
+          Then respond with the artifact path and a 5-line summary: the question, the candidates, and the first experiment to run.
+
+  - id: node-pe-response
+    type: workflow
+    position: { x: 500, y: 520 }
+    data:
+      subtype: response
+      category: io
+      label: Deliver Plan
+      config:
+        responseTemplate: |-
+          Experiment-first planning complete.
+
+          {{Write Plan}}
+
+edges:
+  - { id: e-pe-01, source: node-pe-trigger, target: node-pe-scope,    sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pe-02, source: node-pe-scope,   target: node-pe-plan,     sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pe-03, source: node-pe-plan,    target: node-pe-write,    sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pe-04, source: node-pe-write,   target: node-pe-response, sourceHandle: null, targetHandle: null, animated: true }
+
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

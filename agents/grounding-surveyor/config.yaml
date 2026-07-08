@@ -1,0 +1,10 @@
+id: grounding-surveyor
+name: Grounding Surveyor
+description: As-is state surveyor — maps the architecture of systems affected by a proposed change, with file-level citations
+type: worker
+provider: claude-code
+model: claude-sonnet-4-6
+injectObservations: false
+tools:
+  - exec
+  - file_search

@@ -1,0 +1,116 @@
+id: planning-confidence
+name: Planning Mode — Confidence-First Route
+description: Light planning route for irreversible or production-critical changes. Grounding with a regression register, then a verification-heavy plan where every step must prove safety before the next.
+version: 1
+createdAt: 2026-07-08T02:57:00.000Z
+updatedAt: 2026-07-08T02:57:00.000Z
+enabled: true
+
+nodes:
+  - id: node-pc-trigger
+    type: workflow
+    position: { x: 500, y: 0 }
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives an irreversible/production-critical change request from triage
+
+  - id: node-pc-scope
+    type: workflow
+    position: { x: 500, y: 130 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Define Scope
+      config:
+        prompt: |-
+          Confidence-first planning for: {{trigger}}
+
+          Derive a kebab-case slug, create ~/sulla/projects/<slug>/planning/, state what makes this change irreversible or critical, and list the relevant scope (paths/systems). Respond with SLUG, ARTIFACT_DIR, WHY_CRITICAL, and SCOPE lines.
+
+  - id: node-pc-regression
+    type: workflow
+    position: { x: 500, y: 260 }
+    data:
+      subtype: agent
+      category: agent
+      label: Map Regressions
+      config:
+        agentId: grounding-regression
+        agentName: Regression Mapper
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Scope decision from the orchestrator:
+          {{Define Scope}}
+
+          Build the full Regression Register for the in-scope areas per your mandate. This change is irreversible/critical — err toward including flows, and flag every unguarded+exposed entry 🔴.
+        successCriteria: A complete risk-ordered regression register with citations and coverage status
+        completionContract: Exit when the register is complete
+
+  - id: node-pc-plan
+    type: workflow
+    position: { x: 500, y: 390 }
+    data:
+      subtype: agent
+      category: agent
+      label: Confidence Plan
+      config:
+        agentId: planner-alpha
+        agentName: Planner Alpha
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Orchestrator's framing: {{Define Scope}}
+
+          Regression register:
+          {{Map Regressions}}
+
+          Produce a CONFIDENCE-FIRST plan: every step must specify its verification gate (test, dry-run, staged rollout, or backup/rollback path) and may not proceed until the gate passes. Cover every 🔴 register entry with a guard before the step that exposes it. Include the rollback plan for the whole change. Per your mandate.
+        successCriteria: A verification-gated plan with rollback coverage and every red register entry guarded
+        completionContract: Exit when the plan is complete
+
+  - id: node-pc-write
+    type: workflow
+    position: { x: 500, y: 520 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Plan
+      config:
+        prompt: |-
+          Write the confidence-first plan to <ARTIFACT_DIR>/03-plan.md (dir from Define Scope), including the regression register as an appendix:
+
+          {{Confidence Plan}}
+
+          Then respond with the artifact path and a 5-line summary: the critical risk, the verification gates, and the rollback path.
+
+  - id: node-pc-response
+    type: workflow
+    position: { x: 500, y: 650 }
+    data:
+      subtype: response
+      category: io
+      label: Deliver Plan
+      config:
+        responseTemplate: |-
+          Confidence-first planning complete.
+
+          {{Write Plan}}
+
+edges:
+  - { id: e-pc-01, source: node-pc-trigger,    target: node-pc-scope,      sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pc-02, source: node-pc-scope,      target: node-pc-regression, sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pc-03, source: node-pc-regression, target: node-pc-plan,       sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pc-04, source: node-pc-plan,       target: node-pc-write,      sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-pc-05, source: node-pc-write,      target: node-pc-response,   sourceHandle: null, targetHandle: null, animated: true }
+
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

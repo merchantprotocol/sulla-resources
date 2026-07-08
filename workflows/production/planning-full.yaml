@@ -1,0 +1,535 @@
+id: planning-full
+name: Planning Mode — Full Panel
+description: Three-stage planning — (1) multi-model grounding of the as-is state with regression register and reuse inventory, (2) target-state definition with one consolidated user questionnaire, (3) blind multi-model planning panel with orchestrator synthesis and cross-review. Writes 01/02/03 artifacts to ~/sulla/projects/<slug>/planning/.
+version: 1
+createdAt: 2026-07-08T02:50:00.000Z
+updatedAt: 2026-07-08T02:50:00.000Z
+enabled: true
+
+nodes:
+  # ── Trigger ──
+  - id: node-pf-trigger
+    type: workflow
+    position: { x: 500, y: 0 }
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives the change request / feature description to plan
+
+  # ── Stage 1 — As-Is grounding ──
+  - id: node-pf-scope
+    type: workflow
+    position: { x: 500, y: 130 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Define Scope
+      config:
+        prompt: |-
+          A planning run is starting for this change request:
+
+          {{trigger}}
+
+          Do three things now:
+          1. Derive a short kebab-case project slug for this request.
+          2. Create the artifact directory: ~/sulla/projects/<slug>/planning/ (use your file tools).
+          3. Identify the RELEVANT scope: which subsystems, directories, and repos a plan for this change would touch. Be specific (paths, service names). Exclude everything irrelevant — the grounding agents survey only what you list.
+
+          Respond with exactly:
+          SLUG: <slug>
+          ARTIFACT_DIR: <absolute path>
+          SCOPE:
+          - <area 1: path + one-line why>
+          - <area 2: ...>
+
+  - id: node-pf-par-ground
+    type: workflow
+    position: { x: 500, y: 260 }
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Grounding
+      config: {}
+
+  - id: node-pf-ground-systems
+    type: workflow
+    position: { x: 200, y: 390 }
+    data:
+      subtype: agent
+      category: agent
+      label: Survey Systems
+      config:
+        agentId: grounding-surveyor
+        agentName: Grounding Surveyor
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Scope decision from the orchestrator:
+          {{Define Scope}}
+
+          Survey the CURRENT state of the in-scope areas per your mandate: affected systems, integration seams, constraints. Cite every claim (file:line). Return the full survey as markdown.
+        successCriteria: A cited survey of affected systems, integration seams, and constraints for every in-scope area
+        completionContract: Exit when the survey markdown is complete
+
+  - id: node-pf-ground-regression
+    type: workflow
+    position: { x: 500, y: 390 }
+    data:
+      subtype: agent
+      category: agent
+      label: Map Regressions
+      config:
+        agentId: grounding-regression
+        agentName: Regression Mapper
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Scope decision from the orchestrator:
+          {{Define Scope}}
+
+          Build the Regression Register per your mandate: every current feature whose flow passes through the in-scope areas — flow with citations, blast exposure, test coverage. Order by risk. Return the register as markdown.
+        successCriteria: A regression register covering all user-visible flows through the in-scope areas, risk-ordered, with citations and test-coverage status
+        completionContract: Exit when the register is complete
+
+  - id: node-pf-ground-reuse
+    type: workflow
+    position: { x: 800, y: 390 }
+    data:
+      subtype: agent
+      category: agent
+      label: Inventory Reuse
+      config:
+        agentId: grounding-reuse
+        agentName: Reuse Librarian
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Scope decision from the orchestrator:
+          {{Define Scope}}
+
+          Build the Reuse Inventory per your mandate: functions/services, models/schema, utilities/patterns, near-misses. Curated and cited. Return the inventory as markdown.
+        successCriteria: A curated, cited inventory of reusable code and conventions relevant to the change
+        completionContract: Exit when the inventory is complete
+
+  - id: node-pf-merge-ground
+    type: workflow
+    position: { x: 500, y: 520 }
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Grounding
+      config:
+        strategy: wait-all
+
+  - id: node-pf-write-current
+    type: workflow
+    position: { x: 500, y: 650 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Current State
+      config:
+        prompt: |-
+          The three grounding agents have reported. Unify their outputs into ONE coherent document and write it to <ARTIFACT_DIR>/01-current-state.md (the directory you created in Define Scope).
+
+          Grounding outputs:
+          {{Merge Grounding.result}}
+
+          Document structure:
+          # Current State — <slug>
+          ## 1. Affected Systems (from the survey)
+          ## 2. Regression Register (features that must keep working)
+          ## 3. Reuse Inventory (call this, don't duplicate it)
+          ## 4. Citations
+
+          Resolve contradictions between agents by checking the code yourself. Deduplicate. Keep all citations. After writing the file, respond with the artifact path and a 10-line executive summary.
+
+  # ── Stage 2 — To-Be target state ──
+  - id: node-pf-par-target
+    type: workflow
+    position: { x: 500, y: 780 }
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Target Drafts
+      config: {}
+
+  - id: node-pf-target-alpha
+    type: workflow
+    position: { x: 200, y: 910 }
+    data:
+      subtype: agent
+      category: agent
+      label: Target Draft Alpha
+      config:
+        agentId: planner-alpha
+        agentName: Planner Alpha
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Grounding is complete: {{Write Current State}}
+          Read the full 01-current-state.md at the artifact path before answering.
+
+          Draft the TARGET STATE through your lens: the outcome, measurable success criteria, and the architecture posture you'd recommend. Then list every CLARIFYING QUESTION the user must answer before the target state can be locked (ambiguities, posture choices like nimble-ad-hoc vs scalable-production-framework, regression tolerance, non-goals). Format questions as a numbered list under a "QUESTIONS:" heading.
+        successCriteria: A target-state draft plus a numbered QUESTIONS list
+        completionContract: Exit when draft and questions are complete
+  - id: node-pf-target-beta
+    type: workflow
+    position: { x: 500, y: 910 }
+    data:
+      subtype: agent
+      category: agent
+      label: Target Draft Beta
+      config:
+        agentId: planner-beta
+        agentName: Planner Beta
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Grounding is complete: {{Write Current State}}
+          Read the full 01-current-state.md at the artifact path before answering.
+
+          Draft the TARGET STATE through your lens: the outcome, measurable success criteria, and the architecture posture you'd recommend. Then list every CLARIFYING QUESTION the user must answer before the target state can be locked (ambiguities, posture choices like nimble-ad-hoc vs scalable-production-framework, regression tolerance, non-goals). Format questions as a numbered list under a "QUESTIONS:" heading.
+        successCriteria: A target-state draft plus a numbered QUESTIONS list
+        completionContract: Exit when draft and questions are complete
+
+  - id: node-pf-target-gamma
+    type: workflow
+    position: { x: 800, y: 910 }
+    data:
+      subtype: agent
+      category: agent
+      label: Target Draft Gamma
+      config:
+        agentId: planner-gamma
+        agentName: Planner Gamma
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Grounding is complete: {{Write Current State}}
+          Read the full 01-current-state.md at the artifact path before answering.
+
+          Draft the TARGET STATE through your lens: the outcome, measurable success criteria, and the architecture posture you'd recommend. Then list every CLARIFYING QUESTION the user must answer before the target state can be locked (ambiguities, posture choices like nimble-ad-hoc vs scalable-production-framework, regression tolerance, non-goals). Format questions as a numbered list under a "QUESTIONS:" heading.
+        successCriteria: A target-state draft plus a numbered QUESTIONS list
+        completionContract: Exit when draft and questions are complete
+
+  - id: node-pf-merge-target
+    type: workflow
+    position: { x: 500, y: 1040 }
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Target Drafts
+      config:
+        strategy: wait-all
+
+  - id: node-pf-questions
+    type: workflow
+    position: { x: 500, y: 1170 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Consolidate Questions
+      config:
+        prompt: |-
+          Three target-state drafts are in:
+          {{Merge Target Drafts.result}}
+
+          Extract every question from all three QUESTIONS lists. Deduplicate aggressively — merge overlapping questions into one well-phrased item. Where the drafts already imply a default answer, state it as "(default: X)" so the user can just confirm. Order by importance. Cap at 10 questions; drop anything the drafts themselves can answer.
+
+          Respond with ONLY the consolidated questionnaire, numbered, ready to show the user.
+
+  - id: node-pf-user-input
+    type: workflow
+    position: { x: 500, y: 1300 }
+    data:
+      subtype: user-input
+      category: io
+      label: Ask User
+      config:
+        promptText: |-
+          The planning panel needs your decisions before locking the target state:
+
+          {{Consolidate Questions}}
+
+          Answer by number (accept the defaults where offered by replying "default").
+
+  - id: node-pf-write-target
+    type: workflow
+    position: { x: 500, y: 1430 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Target State
+      config:
+        prompt: |-
+          The user answered the questionnaire:
+          {{Ask User}}
+
+          Combine the three target-state drafts ({{Merge Target Drafts.result}}) with the user's answers and write the definitive target state to <ARTIFACT_DIR>/02-target-state.md.
+
+          Document structure:
+          # Target State — <slug>
+          ## 1. Outcome (what exists when this is done)
+          ## 2. Success Criteria (measurable)
+          ## 3. Architecture Posture (the user's decision + implications)
+          ## 4. Non-Goals (explicitly out of scope)
+          ## 5. Regression Guarantees (register entries this change promises to preserve)
+
+          Where drafts conflict, the user's answers win; where they didn't answer, choose and note the choice. After writing the file, respond with the artifact path and a 10-line executive summary.
+
+  # ── Stage 3 — Blind panel plan → synthesis → cross-review ──
+  - id: node-pf-par-plan
+    type: workflow
+    position: { x: 500, y: 1560 }
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Blind Plans
+      config: {}
+
+  - id: node-pf-plan-alpha
+    type: workflow
+    position: { x: 200, y: 1690 }
+    data:
+      subtype: agent
+      category: agent
+      label: Plan Alpha
+      config:
+        agentId: planner-alpha
+        agentName: Planner Alpha
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Both planning artifacts are locked: {{Write Target State}}
+          Read 01-current-state.md and 02-target-state.md at the artifact path, then produce your full implementation plan per your mandate and lens. You are blind to the other planners — independent judgment only.
+        successCriteria: A complete ordered implementation plan with reuse references, regression checkpoints, and risk assessment per step
+        completionContract: Exit when the plan is complete
+
+  - id: node-pf-plan-beta
+    type: workflow
+    position: { x: 500, y: 1690 }
+    data:
+      subtype: agent
+      category: agent
+      label: Plan Beta
+      config:
+        agentId: planner-beta
+        agentName: Planner Beta
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Both planning artifacts are locked: {{Write Target State}}
+          Read 01-current-state.md and 02-target-state.md at the artifact path, then produce your full implementation plan per your mandate and lens. You are blind to the other planners — independent judgment only.
+        successCriteria: A complete ordered implementation plan with reuse references, regression checkpoints, and shippable increments per step
+        completionContract: Exit when the plan is complete
+
+  - id: node-pf-plan-gamma
+    type: workflow
+    position: { x: 800, y: 1690 }
+    data:
+      subtype: agent
+      category: agent
+      label: Plan Gamma
+      config:
+        agentId: planner-gamma
+        agentName: Planner Gamma
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Both planning artifacts are locked: {{Write Target State}}
+          Read 01-current-state.md and 02-target-state.md at the artifact path, then produce your full implementation plan per your mandate and lens. You are blind to the other planners — independent judgment only.
+        successCriteria: A complete ordered implementation plan with risk-retirement sequencing, kill criteria, reuse references, and regression checkpoints
+        completionContract: Exit when the plan is complete
+
+  - id: node-pf-merge-plan
+    type: workflow
+    position: { x: 500, y: 1820 }
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Plans
+      config:
+        strategy: wait-all
+
+  - id: node-pf-synthesize
+    type: workflow
+    position: { x: 500, y: 1950 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Synthesize Plan
+      config:
+        prompt: |-
+          Three blind plans are in:
+          {{Merge Plans.result}}
+
+          You are the project manager. Compare them: where they converge, treat it as settled; where they diverge, decide and record why. Take the strongest overall skeleton and graft in the best ideas from the other two. Preserve: reuse references, regression checkpoints on every step, and the risk-retirement ordering where it earned its place.
+
+          Respond with the complete UNIFIED PLAN (same per-step structure the planners used) plus a "Synthesis decisions" section listing each divergence and your ruling.
+
+  - id: node-pf-par-review
+    type: workflow
+    position: { x: 500, y: 2080 }
+    data:
+      subtype: parallel
+      category: flow-control
+      label: Launch Cross-Review
+      config: {}
+
+  - id: node-pf-review-alpha
+    type: workflow
+    position: { x: 200, y: 2210 }
+    data:
+      subtype: agent
+      category: agent
+      label: Review Alpha
+      config:
+        agentId: planner-alpha
+        agentName: Planner Alpha
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          The orchestrator synthesized a unified plan from the blind panel:
+
+          {{Synthesize Plan}}
+
+          Critique it per your mandate (architecture lens). Read the artifacts at the path referenced in the plan if you need grounding. End with your verdict line: APPROVED or NEEDS_REVISION: with numbered objections.
+        successCriteria: An honest critique ending in an APPROVED or NEEDS_REVISION verdict line
+        completionContract: Exit when the critique is complete
+
+  - id: node-pf-review-beta
+    type: workflow
+    position: { x: 500, y: 2210 }
+    data:
+      subtype: agent
+      category: agent
+      label: Review Beta
+      config:
+        agentId: planner-beta
+        agentName: Planner Beta
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          The orchestrator synthesized a unified plan from the blind panel:
+
+          {{Synthesize Plan}}
+
+          Critique it per your mandate (incremental-delivery lens). Read the artifacts at the path referenced in the plan if you need grounding. End with your verdict line: APPROVED or NEEDS_REVISION: with numbered objections.
+        successCriteria: An honest critique ending in an APPROVED or NEEDS_REVISION verdict line
+        completionContract: Exit when the critique is complete
+
+  - id: node-pf-review-gamma
+    type: workflow
+    position: { x: 800, y: 2210 }
+    data:
+      subtype: agent
+      category: agent
+      label: Review Gamma
+      config:
+        agentId: planner-gamma
+        agentName: Planner Gamma
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          The orchestrator synthesized a unified plan from the blind panel:
+
+          {{Synthesize Plan}}
+
+          Critique it per your mandate (risk lens). Read the artifacts at the path referenced in the plan if you need grounding. End with your verdict line: APPROVED or NEEDS_REVISION: with numbered objections.
+        successCriteria: An honest critique ending in an APPROVED or NEEDS_REVISION verdict line
+        completionContract: Exit when the critique is complete
+
+  - id: node-pf-merge-review
+    type: workflow
+    position: { x: 500, y: 2340 }
+    data:
+      subtype: merge
+      category: flow-control
+      label: Merge Reviews
+      config:
+        strategy: wait-all
+
+  - id: node-pf-finalize
+    type: workflow
+    position: { x: 500, y: 2470 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Finalize Plan
+      config:
+        prompt: |-
+          The cross-review verdicts are in:
+          {{Merge Reviews.result}}
+
+          Revise the unified plan to address every NEEDS_REVISION objection you agree with; for objections you reject, record the rejection and reason in a "Review dispositions" section. Then write the final document to <ARTIFACT_DIR>/03-plan.md with structure:
+
+          # Implementation Plan — <slug>
+          ## Executive summary
+          ## Plan steps (each with: what / reuses / regression checkpoint / risk)
+          ## Synthesis decisions
+          ## Review dispositions
+          ## Top risks and kill criteria
+
+          After writing the file, respond with the artifact path, the panel's verdict tally (how many APPROVED), and the 5-line summary of the plan.
+
+  - id: node-pf-response
+    type: workflow
+    position: { x: 500, y: 2600 }
+    data:
+      subtype: response
+      category: io
+      label: Deliver Plan
+      config:
+        responseTemplate: |-
+          Planning run complete.
+
+          {{Finalize Plan}}
+
+          Artifacts: 01-current-state.md, 02-target-state.md, 03-plan.md in the project planning directory.
+
+edges:
+  - { id: e-pf-01, source: node-pf-trigger,          target: node-pf-scope,            sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-02, source: node-pf-scope,            target: node-pf-par-ground,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-03, source: node-pf-par-ground,       target: node-pf-ground-systems,   sourceHandle: branch-0,  targetHandle: null, animated: true }
+  - { id: e-pf-04, source: node-pf-par-ground,       target: node-pf-ground-regression, sourceHandle: branch-1, targetHandle: null, animated: true }
+  - { id: e-pf-05, source: node-pf-par-ground,       target: node-pf-ground-reuse,     sourceHandle: branch-2,  targetHandle: null, animated: true }
+  - { id: e-pf-06, source: node-pf-ground-systems,   target: node-pf-merge-ground,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-07, source: node-pf-ground-regression, target: node-pf-merge-ground,    sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-08, source: node-pf-ground-reuse,     target: node-pf-merge-ground,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-09, source: node-pf-merge-ground,     target: node-pf-write-current,    sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-10, source: node-pf-write-current,    target: node-pf-par-target,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-11, source: node-pf-par-target,       target: node-pf-target-alpha,     sourceHandle: branch-0,  targetHandle: null, animated: true }
+  - { id: e-pf-12, source: node-pf-par-target,       target: node-pf-target-beta,      sourceHandle: branch-1,  targetHandle: null, animated: true }
+  - { id: e-pf-13, source: node-pf-par-target,       target: node-pf-target-gamma,     sourceHandle: branch-2,  targetHandle: null, animated: true }
+  - { id: e-pf-14, source: node-pf-target-alpha,     target: node-pf-merge-target,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-15, source: node-pf-target-beta,      target: node-pf-merge-target,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-16, source: node-pf-target-gamma,     target: node-pf-merge-target,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-17, source: node-pf-merge-target,     target: node-pf-questions,        sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-18, source: node-pf-questions,        target: node-pf-user-input,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-19, source: node-pf-user-input,       target: node-pf-write-target,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-20, source: node-pf-write-target,     target: node-pf-par-plan,         sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-21, source: node-pf-par-plan,         target: node-pf-plan-alpha,       sourceHandle: branch-0,  targetHandle: null, animated: true }
+  - { id: e-pf-22, source: node-pf-par-plan,         target: node-pf-plan-beta,        sourceHandle: branch-1,  targetHandle: null, animated: true }
+  - { id: e-pf-23, source: node-pf-par-plan,         target: node-pf-plan-gamma,       sourceHandle: branch-2,  targetHandle: null, animated: true }
+  - { id: e-pf-24, source: node-pf-plan-alpha,       target: node-pf-merge-plan,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-25, source: node-pf-plan-beta,        target: node-pf-merge-plan,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-26, source: node-pf-plan-gamma,       target: node-pf-merge-plan,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-27, source: node-pf-merge-plan,       target: node-pf-synthesize,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-28, source: node-pf-synthesize,       target: node-pf-par-review,       sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-29, source: node-pf-par-review,       target: node-pf-review-alpha,     sourceHandle: branch-0,  targetHandle: null, animated: true }
+  - { id: e-pf-30, source: node-pf-par-review,       target: node-pf-review-beta,      sourceHandle: branch-1,  targetHandle: null, animated: true }
+  - { id: e-pf-31, source: node-pf-par-review,       target: node-pf-review-gamma,     sourceHandle: branch-2,  targetHandle: null, animated: true }
+  - { id: e-pf-32, source: node-pf-review-alpha,     target: node-pf-merge-review,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-33, source: node-pf-review-beta,      target: node-pf-merge-review,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-34, source: node-pf-review-gamma,     target: node-pf-merge-review,     sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-35, source: node-pf-merge-review,     target: node-pf-finalize,         sourceHandle: null,      targetHandle: null, animated: true }
+  - { id: e-pf-36, source: node-pf-finalize,         target: node-pf-response,         sourceHandle: null,      targetHandle: null, animated: true }
+
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

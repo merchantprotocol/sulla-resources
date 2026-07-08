@@ -1,0 +1,92 @@
+id: planning-spike
+name: Planning Mode — Risk-First Spike Route
+description: Light planning route for decisions dominated by one big risk. Scoped grounding, then a risk-first plan of spikes with kill criteria.
+version: 1
+createdAt: 2026-07-08T02:57:00.000Z
+updatedAt: 2026-07-08T02:57:00.000Z
+enabled: true
+
+nodes:
+  - id: node-ps-trigger
+    type: workflow
+    position: { x: 500, y: 0 }
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives a risk-dominated change request from triage
+
+  - id: node-ps-scope
+    type: workflow
+    position: { x: 500, y: 130 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Define Scope
+      config:
+        prompt: |-
+          Risk-first planning for: {{trigger}}
+
+          Name the dominant risk in one sentence, derive a kebab-case slug, create ~/sulla/projects/<slug>/planning/, and list the minimal scope (paths/systems) needed to understand that risk. Respond with SLUG, ARTIFACT_DIR, DOMINANT_RISK, and SCOPE lines.
+
+  - id: node-ps-plan
+    type: workflow
+    position: { x: 500, y: 260 }
+    data:
+      subtype: agent
+      category: agent
+      label: Spike Plan
+      config:
+        agentId: planner-gamma
+        agentName: Planner Gamma
+        additionalPrompt: ""
+        orchestratorInstructions: |-
+          Change request: {{trigger}}
+
+          Orchestrator's risk framing:
+          {{Define Scope}}
+
+          Investigate the scoped areas (read the code — cite findings), then produce a RISK-FIRST plan: the ranked risks, a spike for each with explicit kill criteria, and the follow-on implementation steps that only run once the spikes pass. Per your mandate.
+        successCriteria: A risk-ranked spike plan with kill criteria per spike and cited grounding
+        completionContract: Exit when the spike plan is complete
+
+  - id: node-ps-write
+    type: workflow
+    position: { x: 500, y: 390 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: Write Plan
+      config:
+        prompt: |-
+          Write the spike plan to <ARTIFACT_DIR>/03-plan.md (dir from Define Scope):
+
+          {{Spike Plan}}
+
+          Then respond with the artifact path and a 5-line summary: the dominant risk, the first spike, and its kill criteria.
+
+  - id: node-ps-response
+    type: workflow
+    position: { x: 500, y: 520 }
+    data:
+      subtype: response
+      category: io
+      label: Deliver Plan
+      config:
+        responseTemplate: |-
+          Risk-first planning complete.
+
+          {{Write Plan}}
+
+edges:
+  - { id: e-ps-01, source: node-ps-trigger, target: node-ps-scope,    sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-ps-02, source: node-ps-scope,   target: node-ps-plan,     sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-ps-03, source: node-ps-plan,    target: node-ps-write,    sourceHandle: null, targetHandle: null, animated: true }
+  - { id: e-ps-04, source: node-ps-write,   target: node-ps-response, sourceHandle: null, targetHandle: null, animated: true }
+
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

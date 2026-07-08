@@ -1,0 +1,10 @@
+id: grounding-reuse
+name: Grounding Reuse Librarian
+description: Builds the reuse inventory — existing functions, models, and utilities the new work should call instead of duplicating
+type: worker
+provider: claude-code
+model: claude-haiku-4-5
+injectObservations: false
+tools:
+  - exec
+  - file_search

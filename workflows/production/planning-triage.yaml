@@ -1,0 +1,137 @@
+id: planning-triage
+name: Planning Mode — Triage
+description: Entry point for planning mode. A triage classification decides which decision-making process fits the request — trivial one-shot, risk-first spike, experiment-first, confidence-first, or the full multi-model panel — and dispatches to the matching sub-workflow.
+version: 1
+createdAt: 2026-07-08T02:55:00.000Z
+updatedAt: 2026-07-08T02:55:00.000Z
+enabled: true
+
+nodes:
+  - id: node-pt-trigger
+    type: workflow
+    position: { x: 500, y: 0 }
+    data:
+      subtype: chat-app
+      category: trigger
+      label: Trigger
+      config:
+        triggerType: chat-app
+        triggerDescription: Receives a change request / decision that may need planning
+
+  - id: node-pt-router
+    type: workflow
+    position: { x: 500, y: 150 }
+    data:
+      subtype: router
+      category: routing
+      label: Triage
+      config:
+        classificationPrompt: |-
+          Classify the planning need for this request: {{trigger}}
+
+          Consider: project size, reversibility, novelty, blast radius, and what the dominant unknown is.
+        routes:
+          - id: route-0
+            label: Trivial
+            description: Small, reversible, well-understood change — no planning process needed, a one-shot plan suffices
+          - id: route-1
+            label: Risk-first
+            description: One dominant risk or unproven assumption could sink the whole effort — spike and retire it before planning further
+          - id: route-2
+            label: Experiment-first
+            description: The right answer is unknowable by analysis — several candidate approaches should be tried and compared
+          - id: route-3
+            label: Confidence-first
+            description: Irreversible or production-critical — requires near-certainty and verification-heavy planning before any step executes
+          - id: route-4
+            label: Full-panel
+            description: Large, novel, or ambiguous — needs the complete three-stage process (grounding, target state, blind multi-model panel)
+
+  - id: node-pt-trivial
+    type: workflow
+    position: { x: 60, y: 320 }
+    data:
+      subtype: orchestrator-prompt
+      category: agent
+      label: One-Shot Plan
+      config:
+        prompt: |-
+          Triage classified this request as TRIVIAL: {{trigger}}
+
+          Produce a concise one-shot plan right now: ordered steps, files/systems touched, the one regression to watch, and how to verify. No sub-agents, no artifacts — just the plan.
+
+  - id: node-pt-sub-spike
+    type: workflow
+    position: { x: 280, y: 320 }
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Run Spike Route
+      config:
+        workflowId: planning-spike
+        awaitResponse: true
+        agentId: null
+
+  - id: node-pt-sub-experiment
+    type: workflow
+    position: { x: 500, y: 320 }
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Run Experiment Route
+      config:
+        workflowId: planning-experiment
+        awaitResponse: true
+        agentId: null
+
+  - id: node-pt-sub-confidence
+    type: workflow
+    position: { x: 720, y: 320 }
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Run Confidence Route
+      config:
+        workflowId: planning-confidence
+        awaitResponse: true
+        agentId: null
+
+  - id: node-pt-sub-full
+    type: workflow
+    position: { x: 940, y: 320 }
+    data:
+      subtype: sub-workflow
+      category: flow-control
+      label: Run Full Panel
+      config:
+        workflowId: planning-full
+        awaitResponse: true
+        agentId: null
+
+  - id: node-pt-response
+    type: workflow
+    position: { x: 500, y: 490 }
+    data:
+      subtype: response
+      category: io
+      label: Deliver Result
+      config:
+        responseTemplate: ""
+
+edges:
+  - { id: e-pt-01, source: node-pt-trigger,        target: node-pt-router,         sourceHandle: null,    targetHandle: null, animated: true }
+  - { id: e-pt-02, source: node-pt-router,         target: node-pt-trivial,        sourceHandle: route-0, targetHandle: null, animated: true }
+  - { id: e-pt-03, source: node-pt-router,         target: node-pt-sub-spike,      sourceHandle: route-1, targetHandle: null, animated: true }
+  - { id: e-pt-04, source: node-pt-router,         target: node-pt-sub-experiment, sourceHandle: route-2, targetHandle: null, animated: true }
+  - { id: e-pt-05, source: node-pt-router,         target: node-pt-sub-confidence, sourceHandle: route-3, targetHandle: null, animated: true }
+  - { id: e-pt-06, source: node-pt-router,         target: node-pt-sub-full,       sourceHandle: route-4, targetHandle: null, animated: true }
+  - { id: e-pt-07, source: node-pt-trivial,        target: node-pt-response,       sourceHandle: null,    targetHandle: null, animated: true }
+  - { id: e-pt-08, source: node-pt-sub-spike,      target: node-pt-response,       sourceHandle: null,    targetHandle: null, animated: true }
+  - { id: e-pt-09, source: node-pt-sub-experiment, target: node-pt-response,       sourceHandle: null,    targetHandle: null, animated: true }
+  - { id: e-pt-10, source: node-pt-sub-confidence, target: node-pt-response,       sourceHandle: null,    targetHandle: null, animated: true }
+  - { id: e-pt-11, source: node-pt-sub-full,       target: node-pt-response,       sourceHandle: null,    targetHandle: null, animated: true }
+
+viewport:
+  x: 0
+  y: 0
+  zoom: 1

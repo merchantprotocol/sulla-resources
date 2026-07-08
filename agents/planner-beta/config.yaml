@@ -1,0 +1,10 @@
+id: planner-beta
+name: Planner Beta
+description: Blind-panel planner — pragmatic/incremental seat (Sonnet). Drafts and critiques implementation plans from grounding artifacts.
+type: worker
+provider: claude-code
+model: claude-sonnet-4-6
+injectObservations: false
+tools:
+  - exec
+  - file_search
