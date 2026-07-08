@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: clickup
+name: ClickUp
+description: Manage tasks, docs, goals, and sprints. All-in-one project management automation.
+category: Project Management
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: ClickUp
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: clickup.svg

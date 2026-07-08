@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: vercel
+name: Vercel
+description: Deploy web applications, manage projects, and monitor deployments on Vercel.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Vercel
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: vercel.svg

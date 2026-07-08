@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: freshbooks
+name: FreshBooks
+description: Manage invoices, expenses, time tracking, and client billing.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: FreshBooks
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: freshbooks.svg

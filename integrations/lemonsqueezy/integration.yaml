@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: lemonsqueezy
+name: Lemon Squeezy
+description: Manage digital products, subscriptions, and checkout flows for software sales.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Lemon Squeezy
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: lemonsqueezy.svg

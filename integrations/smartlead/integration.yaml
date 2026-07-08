@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: smartlead
+name: Smartlead
+description: AI-powered cold email outreach. Manage campaigns, leads, mailboxes, and track deliverability.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Smartlead
+sort: 18
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: smartlead.svg

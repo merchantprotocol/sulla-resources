@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: dynamodb
+name: AWS DynamoDB
+description: Manage tables, items, and queries in Amazon DynamoDB.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Amazon
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: dynamodb.svg

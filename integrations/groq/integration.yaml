@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: groq
+name: Groq
+description: Run ultra-fast LLM inference on custom LPU hardware.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Groq
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: groq.svg

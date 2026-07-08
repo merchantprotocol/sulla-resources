@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: amplitude
+name: Amplitude
+description: Analyze user behavior, track retention, and build product analytics dashboards.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Amplitude
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: amplitude.svg

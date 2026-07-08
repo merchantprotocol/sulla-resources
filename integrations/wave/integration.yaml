@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: wave
+name: Wave
+description: Manage invoicing, accounting, and receipt scanning for small businesses.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Wave
+sort: 11
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: wave.svg

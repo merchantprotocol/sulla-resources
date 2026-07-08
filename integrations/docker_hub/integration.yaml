@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: docker_hub
+name: Docker Hub
+description: Manage repositories, images, and automated builds on Docker Hub.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Docker
+sort: 14
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: docker_hub.svg

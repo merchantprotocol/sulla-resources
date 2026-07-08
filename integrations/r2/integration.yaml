@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: r2
+name: Cloudflare R2
+description: Manage S3-compatible object storage with zero egress fees on Cloudflare.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Cloudflare
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: r2.svg

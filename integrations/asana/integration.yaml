@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: asana
+name: Asana
+description: Create tasks, manage projects, and coordinate team work with automated workflows.
+category: Project Management
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Asana
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: asana.svg

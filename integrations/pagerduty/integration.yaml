@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pagerduty
+name: PagerDuty
+description: Manage incidents, on-call schedules, and alerting workflows.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: PagerDuty
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pagerduty.svg

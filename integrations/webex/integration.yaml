@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: webex
+name: Webex
+description: Schedule meetings, send messages, and manage rooms in Cisco Webex.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Cisco
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: webex.svg

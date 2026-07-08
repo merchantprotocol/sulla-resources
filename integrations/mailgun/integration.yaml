@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: mailgun
+name: Mailgun
+description: Send, receive, and track email via powerful APIs for developers.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Sinch
+sort: 17
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: mailgun.svg

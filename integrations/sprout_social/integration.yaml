@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: sprout_social
+name: Sprout Social
+description: Schedule posts, monitor engagement, and analyze social performance.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Sprout Social
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: sprout_social.svg

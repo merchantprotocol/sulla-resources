@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: fly_io
+name: Fly.io
+description: Deploy and manage applications on Fly.io edge infrastructure.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Fly.io
+sort: 18
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: fly_io.svg

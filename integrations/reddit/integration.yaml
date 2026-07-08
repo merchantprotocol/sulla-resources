@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: reddit
+name: Reddit
+description: Post, comment, monitor subreddits, and automate Reddit engagement.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Reddit
+sort: 9
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: reddit.svg

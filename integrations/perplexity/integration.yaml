@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: perplexity
+name: Perplexity
+description: Query AI-powered search with citations and real-time web knowledge.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Perplexity AI
+sort: 16
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: perplexity.svg

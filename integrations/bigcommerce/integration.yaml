@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: bigcommerce
+name: BigCommerce
+description: Manage catalog, orders, and customers on the BigCommerce platform.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: BigCommerce
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: bigcommerce.svg

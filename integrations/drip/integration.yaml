@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: drip
+name: Drip
+description: Build e-commerce marketing automation with email campaigns and customer segmentation.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Drip
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: drip.svg

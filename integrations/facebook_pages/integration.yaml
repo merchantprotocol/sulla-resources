@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: facebook_pages
+name: Facebook Pages
+description: Manage page posts, comments, messages, and insights.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Meta
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: facebook_pages.svg

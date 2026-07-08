@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: teamwork
+name: Teamwork
+description: Manage projects, tasks, milestones, and time tracking for client work.
+category: Project Management
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Teamwork
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: teamwork.svg

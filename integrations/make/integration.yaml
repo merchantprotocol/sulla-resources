@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: make
+name: Make (Integromat)
+description: Build and trigger visual automation scenarios connecting hundreds of services.
+category: Automation
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Make
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: make.svg

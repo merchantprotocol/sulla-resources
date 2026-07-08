@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: google_cloud_storage
+name: Google Cloud Storage
+description: Upload, download, and manage objects in GCS buckets.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Google
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: google_cloud_storage.svg

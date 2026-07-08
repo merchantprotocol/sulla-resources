@@ -1,0 +1,49 @@
+apiVersion: sulla/v1
+kind: Integration
+id: smtp
+name: SMTP Email
+description: Generic SMTP server for transactional + notification email.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-04-21 00:00:00
+developer: Sulla
+sort: 19
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: smtp.svg
+authType: credentials
+installationGuide:
+  title: Configure SMTP
+  description: Point Sulla at any SMTP server to send email.
+  steps:
+    - title: Host + Port
+      content: Get the SMTP endpoint from your provider (e.g. smtp.postmarkapp.com:587).
+    - title: Credentials
+      content: Username and password for that endpoint. For API-based providers like Postmark, the username and password are both the server token.
+properties:
+  - key: host
+    title: SMTP Host
+    hint: ''
+    type: text
+    required: true
+    placeholder: smtp.postmarkapp.com
+  - key: port
+    title: SMTP Port
+    hint: ''
+    type: text
+    required: true
+    placeholder: '587'
+  - key: user
+    title: Username
+    hint: ''
+    type: text
+    required: true
+    placeholder: ''
+  - key: password
+    title: Password
+    hint: ''
+    type: password
+    required: true
+    placeholder: ''

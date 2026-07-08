@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: typeform
+name: Typeform
+description: Create forms, collect responses, and automate survey-driven workflows.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Typeform
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: typeform.svg

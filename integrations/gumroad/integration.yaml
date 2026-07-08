@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: gumroad
+name: Gumroad
+description: Manage digital products, sales, and customer data for creators.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Gumroad
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: gumroad.svg

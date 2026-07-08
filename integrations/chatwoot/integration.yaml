@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: chatwoot
+name: Chatwoot
+description: Open-source customer engagement with live chat, email, and social inboxes.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Chatwoot
+sort: 17
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: chatwoot.svg

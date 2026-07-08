@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: lucidchart
+name: Lucidchart
+description: Create and manage diagrams, flowcharts, and technical architecture docs.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Lucid Software
+sort: 16
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: lucidchart.svg

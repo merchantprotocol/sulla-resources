@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: copper
+name: Copper
+description: Manage contacts, leads, and deals in the Google Workspace-native CRM.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Copper
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: copper.svg

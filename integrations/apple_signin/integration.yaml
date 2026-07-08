@@ -1,0 +1,19 @@
+apiVersion: sulla/v1
+kind: Integration
+id: apple_signin
+name: Sign in with Apple
+description: Sign in to Sulla Cloud with your Apple ID — the same account used by the Sulla Mobile app. Opens a secure browser window to Apple, then stores your session locally in this vault.
+category: Security
+version: 1.0.0
+lastUpdated: 2026-04-19
+developer: Sulla
+sort: 0
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: apple.svg
+authType: oauth
+oauthProviderId: apple
+sullaManagedOAuth: true
+formGuide: No configuration required — click "Sign in with Apple" to start. Sulla manages the OAuth app registration on your behalf.

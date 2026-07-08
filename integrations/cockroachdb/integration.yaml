@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: cockroachdb
+name: CockroachDB
+description: Manage distributed SQL databases, clusters, and multi-region deployments.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Cockroach Labs
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: cockroachdb.svg

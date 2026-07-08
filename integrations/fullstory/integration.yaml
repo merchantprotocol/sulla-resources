@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: fullstory
+name: FullStory
+description: Track session replays, rage clicks, and digital experience analytics.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: FullStory
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: fullstory.svg

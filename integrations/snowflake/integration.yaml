@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: snowflake
+name: Snowflake
+description: Query data warehouse tables, manage warehouses, and run analytics workloads.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Snowflake
+sort: 16
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: snowflake.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: instagram
+name: Instagram
+description: Manage posts, stories, and comments. Track engagement and automate content publishing.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Meta
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: instagram.svg

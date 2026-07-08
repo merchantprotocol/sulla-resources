@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: workable
+name: Workable
+description: Post jobs, manage candidates, and automate hiring workflows.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Workable
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: workable.svg

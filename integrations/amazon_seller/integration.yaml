@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: amazon_seller
+name: Amazon Seller
+description: Manage product listings, orders, and inventory on Amazon Marketplace.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Amazon
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: amazon_seller.svg

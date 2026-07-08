@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: swell
+name: Swell
+description: Manage headless e-commerce with products, subscriptions, and storefronts.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Swell
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: swell.svg

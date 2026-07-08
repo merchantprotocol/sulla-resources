@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: onedrive
+name: OneDrive
+description: Manage files and folders in Microsoft OneDrive. Automate document storage workflows.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Microsoft
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: onedrive.svg

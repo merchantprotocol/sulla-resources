@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pinterest_ads
+name: Pinterest Ads
+description: Manage promoted pins, shopping ads, and campaign performance on Pinterest.
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Pinterest
+sort: 6
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pinterest_ads.svg

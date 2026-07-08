@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pinecone
+name: Pinecone
+description: Manage vector indexes, upsert embeddings, and perform similarity searches.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Pinecone
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pinecone.svg

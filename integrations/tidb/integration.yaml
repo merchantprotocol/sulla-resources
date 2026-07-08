@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: tidb
+name: TiDB
+description: Manage distributed MySQL-compatible databases with HTAP workloads.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: PingCAP
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: tidb.svg

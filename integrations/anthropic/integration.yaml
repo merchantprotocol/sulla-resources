@@ -1,0 +1,32 @@
+apiVersion: sulla/v1
+kind: Integration
+id: anthropic
+name: Anthropic
+description: Connect Anthropic Claude models for reasoning and assistant tasks.
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-02-28 11:42:00
+developer: Anthropic
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: anthropic.svg
+formGuide: Paste your Anthropic API key to enable Claude model access.
+properties:
+  - key: api_key
+    title: Anthropic API Key
+    hint: Generate this in your Anthropic Console.
+    type: password
+    required: true
+    placeholder: sk-ant-...
+  - key: model
+    title: Model
+    hint: Select a Claude model to use for completions.
+    type: select
+    required: true
+    placeholder: Select a model...
+    selectBoxId: anthropic_models
+    selectDependsOn:
+      - api_key

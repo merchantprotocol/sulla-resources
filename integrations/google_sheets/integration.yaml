@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: google_sheets
+name: Google Sheets
+description: Read, write, and manage spreadsheet data. Automate data entry, reporting, and analysis workflows.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Google
+sort: 2
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: google_sheets.svg

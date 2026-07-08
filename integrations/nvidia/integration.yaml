@@ -1,0 +1,32 @@
+apiVersion: sulla/v1
+kind: Integration
+id: nvidia
+name: NVIDIA
+description: Connect NVIDIA NIM and hosted inference endpoints for AI workloads.
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-02-28 11:42:00
+developer: NVIDIA
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: nvidia.svg
+formGuide: Paste your NVIDIA API key to enable NIM/inference endpoint access.
+properties:
+  - key: api_key
+    title: NVIDIA API Key
+    hint: Generate this in NVIDIA Build / NGC account settings.
+    type: password
+    required: true
+    placeholder: nvapi-...
+  - key: model
+    title: Model
+    hint: Select an NVIDIA model to use.
+    type: select
+    required: true
+    placeholder: Select a model...
+    selectBoxId: nvidia_models
+    selectDependsOn:
+      - api_key

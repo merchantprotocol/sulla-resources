@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: new_relic
+name: New Relic
+description: Query APM data, manage alerts, and monitor application performance.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: New Relic
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: new_relic.svg

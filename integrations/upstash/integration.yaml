@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: upstash
+name: Upstash
+description: Manage serverless Redis and Kafka instances. Execute commands and manage topics.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Upstash
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: upstash.svg

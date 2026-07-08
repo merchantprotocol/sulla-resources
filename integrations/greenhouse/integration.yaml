@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: greenhouse
+name: Greenhouse
+description: Manage job postings, candidates, and interview pipelines.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Greenhouse
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: greenhouse.svg

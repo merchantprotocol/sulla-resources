@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: personio
+name: Personio
+description: Manage employee data, absences, recruiting, and payroll for SMBs.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Personio
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: personio.svg

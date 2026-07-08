@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: linkedin
+name: LinkedIn
+description: Post updates, manage company pages, and automate professional networking workflows.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Microsoft
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: linkedin.svg

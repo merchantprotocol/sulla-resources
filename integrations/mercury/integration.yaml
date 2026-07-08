@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: mercury
+name: Mercury
+description: Manage startup banking, transactions, and treasury operations via API.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Mercury
+sort: 13
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: mercury.svg

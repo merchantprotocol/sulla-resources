@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: excalidraw
+name: Excalidraw
+description: Create and manage hand-drawn style diagrams and whiteboard sketches.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Excalidraw
+sort: 13
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: excalidraw.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: smartsheet
+name: Smartsheet
+description: Manage sheets, rows, and automations for enterprise work management.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Smartsheet
+sort: 17
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: smartsheet.svg

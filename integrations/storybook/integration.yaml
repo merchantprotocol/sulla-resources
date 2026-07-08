@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: storybook
+name: Storybook
+description: Browse, test, and document UI components in an isolated environment.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Open Source
+sort: 12
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: storybook.svg

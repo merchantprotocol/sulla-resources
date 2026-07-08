@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: neon
+name: Neon
+description: Manage serverless Postgres databases, branches, and connection pooling.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Neon
+sort: 6
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: neon.svg

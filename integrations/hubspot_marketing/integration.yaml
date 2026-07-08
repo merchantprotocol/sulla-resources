@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: hubspot_marketing
+name: HubSpot Marketing
+description: Manage email campaigns, landing pages, forms, and marketing automation.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: HubSpot
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: hubspot_marketing.svg

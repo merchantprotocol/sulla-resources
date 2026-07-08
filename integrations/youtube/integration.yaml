@@ -1,0 +1,23 @@
+apiVersion: sulla/v1
+kind: Integration
+id: youtube
+name: YouTube
+description: Search videos, manage playlists, retrieve channel info, and automate content workflows via the YouTube Data API v3.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-03-06
+developer: Google
+sort: 4
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: youtube.svg
+formGuide: Go to console.cloud.google.com → APIs & Services → Credentials → Create an API key. Then enable the "YouTube Data API v3" under APIs & Services → Library.
+properties:
+  - key: api_key
+    title: YouTube Data API Key
+    hint: From Google Cloud Console → Credentials. Enable "YouTube Data API v3" in the API Library.
+    type: password
+    required: true
+    placeholder: AIzaSy...

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: lever
+name: Lever
+description: Manage candidates, job postings, and recruiting pipelines.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Lever
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: lever.svg

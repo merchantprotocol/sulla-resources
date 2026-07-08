@@ -1,0 +1,33 @@
+apiVersion: sulla/v1
+kind: Integration
+id: custom
+name: Custom
+description: Connect a custom AI provider endpoint using your own base URL.
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-02-28 11:46:00
+developer: Custom
+sort: 10
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: custom.svg
+formGuide: Enter the base URL for your custom AI provider endpoint.
+properties:
+  - key: base_url
+    title: Base URL
+    hint: Required. Provide the API base URL for your custom AI provider.
+    type: url
+    required: true
+    placeholder: https://api.example.com/v1
+  - key: model
+    title: Model
+    hint: Select a model from your custom endpoint (fetched from /models).
+    type: select
+    required: false
+    placeholder: Select a model...
+    selectBoxId: custom_models
+    selectDependsOn:
+      - base_url
+      - api_key

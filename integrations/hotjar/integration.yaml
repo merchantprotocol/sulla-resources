@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: hotjar
+name: Hotjar
+description: Track heatmaps, session recordings, and user feedback surveys.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Hotjar
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: hotjar.svg

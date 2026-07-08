@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: hubspot
+name: HubSpot
+description: Manage contacts, deals, and pipelines. Automate CRM workflows and marketing campaigns.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: HubSpot
+sort: 1
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: hubspot.svg

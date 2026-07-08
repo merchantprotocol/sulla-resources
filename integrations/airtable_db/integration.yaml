@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: airtable_db
+name: Airtable
+description: Query bases, manage records, and automate structured data workflows.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Airtable
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: airtable_db.svg

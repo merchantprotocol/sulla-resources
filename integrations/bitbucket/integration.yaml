@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: bitbucket
+name: Bitbucket
+description: Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Atlassian
+sort: 7
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: bitbucket.svg

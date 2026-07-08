@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: convex
+name: Convex
+description: Manage reactive backend-as-a-service with real-time queries and mutations.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Convex
+sort: 13
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: convex.svg

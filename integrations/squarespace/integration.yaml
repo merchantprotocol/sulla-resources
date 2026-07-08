@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: squarespace
+name: Squarespace Commerce
+description: Manage products, orders, and inventory on Squarespace stores.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Squarespace
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: squarespace.svg

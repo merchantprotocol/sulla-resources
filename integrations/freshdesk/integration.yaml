@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: freshdesk
+name: Freshdesk
+description: Create and manage support tickets, automate agent workflows, and track customer satisfaction.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Freshworks
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: freshdesk.svg

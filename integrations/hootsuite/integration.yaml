@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: hootsuite
+name: Hootsuite
+description: Schedule posts, monitor mentions, and manage social accounts across networks.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Hootsuite
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: hootsuite.svg

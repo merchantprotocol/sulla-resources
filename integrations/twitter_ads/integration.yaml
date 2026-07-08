@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: twitter_ads
+name: X Ads
+description: Manage promoted tweets, ad campaigns, and audience targeting on X (Twitter).
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: X Corp
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: twitter_ads.svg

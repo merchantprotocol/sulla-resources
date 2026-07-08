@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: heap
+name: Heap
+description: Auto-capture user interactions and analyze product usage data.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Contentsquare
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: heap.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: figma
+name: Figma
+description: Access files, components, and design tokens. Export assets and automate design workflows.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Figma
+sort: 1
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: figma.svg

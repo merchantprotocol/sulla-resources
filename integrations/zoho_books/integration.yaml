@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: zoho_books
+name: Zoho Books
+description: Manage invoices, bills, banking, and accounting workflows.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Zoho
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: zoho_books.svg

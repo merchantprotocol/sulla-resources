@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: xata
+name: Xata
+description: Manage serverless Postgres with built-in search, analytics, and branching.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Xata
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: xata.svg

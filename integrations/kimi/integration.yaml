@@ -1,0 +1,32 @@
+apiVersion: sulla/v1
+kind: Integration
+id: kimi
+name: Kimi
+description: Connect Kimi models (Moonshot AI) for long-context generation tasks.
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-02-28 11:42:00
+developer: Moonshot AI
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: kimi.svg
+formGuide: Paste your Kimi API key to enable Moonshot model access.
+properties:
+  - key: api_key
+    title: Kimi API Key
+    hint: Generate this in your Moonshot/Kimi developer console.
+    type: password
+    required: true
+    placeholder: kimi-...
+  - key: model
+    title: Model
+    hint: Select a Kimi/Moonshot model to use.
+    type: select
+    required: true
+    placeholder: Select a model...
+    selectBoxId: kimi_models
+    selectDependsOn:
+      - api_key

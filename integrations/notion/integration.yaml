@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: notion
+name: Notion
+description: Create and manage pages, databases, and wikis. Query and update Notion workspaces programmatically.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Notion
+sort: 1
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: notion.svg

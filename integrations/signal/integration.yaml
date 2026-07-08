@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: signal
+name: Signal
+description: Send encrypted messages and automate secure messaging workflows.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Signal Foundation
+sort: 12
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: signal.svg

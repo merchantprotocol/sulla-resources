@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: windmill
+name: Windmill
+description: Build scripts, flows, and apps with a developer-first automation platform.
+category: Automation
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Windmill
+sort: 8
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: windmill.svg

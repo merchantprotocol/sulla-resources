@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: threads
+name: Threads
+description: Post text updates, manage followers, and track engagement on Meta Threads.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Meta
+sort: 13
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: threads.svg

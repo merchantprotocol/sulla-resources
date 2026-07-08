@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: printful
+name: Printful
+description: Manage print-on-demand products, orders, and fulfillment.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Printful
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: printful.svg

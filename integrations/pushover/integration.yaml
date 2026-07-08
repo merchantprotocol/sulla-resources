@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pushover
+name: Pushover
+description: Send real-time push notifications to mobile and desktop devices.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Pushover
+sort: 18
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pushover.svg

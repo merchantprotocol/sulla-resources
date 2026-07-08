@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: etsy
+name: Etsy
+description: Manage listings, orders, and shop data on the Etsy marketplace.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Etsy
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: etsy.svg

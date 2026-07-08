@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: attio
+name: Attio
+description: Build custom CRM workflows with flexible data models and real-time syncing.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Attio
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: attio.svg

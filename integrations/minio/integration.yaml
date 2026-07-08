@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: minio
+name: MinIO
+description: Manage self-hosted S3-compatible object storage buckets and objects.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: MinIO
+sort: 10
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: minio.svg

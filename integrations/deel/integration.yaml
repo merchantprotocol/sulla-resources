@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: deel
+name: Deel
+description: Manage international payroll, contractors, and compliance for global teams.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Deel
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: deel.svg

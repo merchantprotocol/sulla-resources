@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: penpot
+name: Penpot
+description: Open-source design and prototyping platform for cross-team collaboration.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Kaleidos
+sort: 14
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: penpot.svg

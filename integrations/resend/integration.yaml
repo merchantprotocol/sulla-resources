@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: resend
+name: Resend
+description: Send transactional and marketing emails with a developer-first API.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Resend
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: resend.svg

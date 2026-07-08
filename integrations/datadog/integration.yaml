@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: datadog
+name: Datadog
+description: Monitor infrastructure, applications, and logs. Query metrics and manage alerts.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Datadog
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: datadog.svg

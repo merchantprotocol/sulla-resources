@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: microsoft_dynamics
+name: Microsoft Dynamics 365
+description: Manage accounts, contacts, opportunities, and cases in Dynamics CRM.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Microsoft
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: microsoft_dynamics.svg

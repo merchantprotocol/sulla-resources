@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: snapchat_ads
+name: Snapchat Ads
+description: Manage Snap ad campaigns, creatives, and audience segments.
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Snap Inc
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: snapchat_ads.svg

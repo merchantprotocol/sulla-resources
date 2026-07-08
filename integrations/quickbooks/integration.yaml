@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: quickbooks
+name: QuickBooks
+description: Manage invoices, expenses, customers, and reports. Automate accounting workflows.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Intuit
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: quickbooks.svg

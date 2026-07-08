@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: toggl
+name: Toggl Track
+description: Track time entries, manage projects, and generate time reports.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Toggl
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: toggl.svg

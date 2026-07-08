@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: backblaze_b2
+name: Backblaze B2
+description: Manage cloud storage buckets and files with S3-compatible API access.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Backblaze
+sort: 6
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: backblaze_b2.svg

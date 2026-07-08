@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: chargebee
+name: Chargebee
+description: Manage subscriptions, billing, invoices, and revenue operations.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Chargebee
+sort: 6
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: chargebee.svg

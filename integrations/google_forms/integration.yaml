@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: google_forms
+name: Google Forms
+description: Create forms, collect responses, and analyze survey results.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Google
+sort: 15
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: google_forms.svg

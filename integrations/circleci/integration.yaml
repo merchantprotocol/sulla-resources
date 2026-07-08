@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: circleci
+name: CircleCI
+description: Trigger pipelines, manage builds, and monitor CI/CD workflows.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: CircleCI
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: circleci.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: huggingface
+name: Hugging Face
+description: Access models, datasets, and inference endpoints on the Hugging Face Hub.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Hugging Face
+sort: 1
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: huggingface.svg

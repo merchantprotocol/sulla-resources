@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: discord
+name: Discord
+description: Send messages, manage channels, and interact with community members on Discord servers.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Discord
+sort: 3
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: discord.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: clockify
+name: Clockify
+description: Track time, manage projects, and generate timesheets and reports.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Clockify
+sort: 11
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: clockify.svg

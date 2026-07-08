@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: tiktok_ads
+name: TikTok Ads
+description: Manage TikTok ad campaigns, ad groups, creatives, and audience targeting.
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: ByteDance
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: tiktok_ads.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: google_calendar
+name: Google Calendar
+description: Create, read, and manage calendar events. Schedule meetings and automate reminders.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Google
+sort: 5
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: google_calendar.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: miro
+name: Miro
+description: Create and manage whiteboards, sticky notes, and collaborative visual workspaces.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Miro
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: miro.svg

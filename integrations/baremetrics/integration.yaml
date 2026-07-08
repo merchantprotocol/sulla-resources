@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: baremetrics
+name: Baremetrics
+description: Track SaaS metrics, revenue, and subscription analytics from payment providers.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Baremetrics
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: baremetrics.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: todoist
+name: Todoist
+description: Create, update, and manage tasks and projects. Automate task assignment and due date tracking.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Doist
+sort: 4
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: todoist.svg

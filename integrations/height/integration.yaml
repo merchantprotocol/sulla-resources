@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: height
+name: Height
+description: Manage tasks, lists, and workflows with autonomous project management.
+category: Project Management
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Height
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: height.svg

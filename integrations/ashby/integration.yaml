@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: ashby
+name: Ashby
+description: Manage recruiting pipelines, scheduling, and hiring analytics.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Ashby
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: ashby.svg

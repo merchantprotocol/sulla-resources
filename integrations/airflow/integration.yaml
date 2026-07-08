@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: airflow
+name: Apache Airflow
+description: Manage DAGs, trigger runs, and monitor data pipeline executions.
+category: Automation
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Apache
+sort: 13
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: airflow.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: remote
+name: Remote
+description: Manage global employment, payroll, and compliance for distributed teams.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Remote
+sort: 13
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: remote.svg

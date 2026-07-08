@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: maze
+name: Maze
+description: Run usability tests, prototype testing, and design validation workflows.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Maze
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: maze.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: breezy_hr
+name: Breezy HR
+description: Manage job postings, candidate pipelines, and interview scheduling.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Breezy HR
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: breezy_hr.svg

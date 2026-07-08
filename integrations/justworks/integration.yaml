@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: justworks
+name: Justworks
+description: Manage payroll, benefits, compliance, and HR for small businesses.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Justworks
+sort: 16
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: justworks.svg

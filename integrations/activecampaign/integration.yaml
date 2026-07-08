@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: activecampaign
+name: ActiveCampaign
+description: Automate email marketing, manage contacts, and build sales automation workflows.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: ActiveCampaign
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: activecampaign.svg

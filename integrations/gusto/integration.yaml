@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: gusto
+name: Gusto
+description: Manage payroll, benefits, and HR administration for small businesses.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Gusto
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: gusto.svg

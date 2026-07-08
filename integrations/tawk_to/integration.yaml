@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: tawk_to
+name: Tawk.to
+description: Manage live chat conversations, visitor monitoring, and canned responses.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Tawk.to
+sort: 7
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: tawk_to.svg

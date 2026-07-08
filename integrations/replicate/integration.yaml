@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: replicate
+name: Replicate
+description: Run open-source ML models in the cloud. Manage predictions and deployments.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Replicate
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: replicate.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: wrike
+name: Wrike
+description: Manage projects, tasks, folders, and Gantt charts for enterprise teams.
+category: Project Management
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Wrike
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: wrike.svg

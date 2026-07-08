@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: customer_io
+name: Customer.io
+description: Build automated messaging workflows with email, push, SMS, and in-app messages.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Customer.io
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: customer_io.svg

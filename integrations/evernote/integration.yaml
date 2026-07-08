@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: evernote
+name: Evernote
+description: Create, search, and manage notes, notebooks, and tags.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Evernote
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: evernote.svg

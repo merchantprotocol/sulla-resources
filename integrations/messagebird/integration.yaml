@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: messagebird
+name: MessageBird
+description: Send SMS, WhatsApp, and voice messages via the MessageBird omnichannel API.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: MessageBird
+sort: 17
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: messagebird.svg

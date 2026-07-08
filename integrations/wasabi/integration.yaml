@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: wasabi
+name: Wasabi
+description: Manage S3-compatible hot cloud storage with no egress or API fees.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Wasabi
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: wasabi.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: servicenow
+name: ServiceNow
+description: Manage incidents, requests, and IT service management workflows.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: ServiceNow
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: servicenow.svg

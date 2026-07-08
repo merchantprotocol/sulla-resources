@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: supabase
+name: Supabase
+description: Query Postgres databases, manage auth users, and interact with Supabase storage and edge functions.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Supabase
+sort: 1
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: supabase.svg

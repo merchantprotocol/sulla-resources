@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: azure_blob
+name: Azure Blob Storage
+description: Manage containers and blobs in Microsoft Azure Blob Storage.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Microsoft
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: azure_blob.svg

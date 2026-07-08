@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: crisp
+name: Crisp
+description: Manage live chat conversations, contacts, and helpdesk articles.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Crisp
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: crisp.svg

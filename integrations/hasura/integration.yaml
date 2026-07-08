@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: hasura
+name: Hasura
+description: Manage instant GraphQL and REST APIs over your databases.
+category: Database
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Hasura
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: hasura.svg

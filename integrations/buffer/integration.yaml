@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: buffer
+name: Buffer
+description: Schedule posts, manage publishing queues, and track social media performance across platforms.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Buffer
+sort: 6
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: buffer.svg

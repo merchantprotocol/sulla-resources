@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: twitter
+name: X (Twitter)
+description: Post tweets, read timelines, manage followers, and automate social engagement.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: X Corp
+sort: 1
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: twitter.svg

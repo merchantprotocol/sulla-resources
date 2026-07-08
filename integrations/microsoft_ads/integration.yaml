@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: microsoft_ads
+name: Microsoft Ads
+description: Manage Bing search ads, shopping campaigns, and audience network placements.
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Microsoft
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: microsoft_ads.svg

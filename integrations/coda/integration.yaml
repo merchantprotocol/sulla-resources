@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: coda
+name: Coda
+description: Manage docs, tables, and automations in the all-in-one Coda platform.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Coda
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: coda.svg

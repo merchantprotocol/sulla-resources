@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: paylocity
+name: Paylocity
+description: Manage payroll, benefits, time tracking, and HR workflows.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Paylocity
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: paylocity.svg

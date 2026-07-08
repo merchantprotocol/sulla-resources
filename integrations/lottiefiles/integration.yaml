@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: lottiefiles
+name: LottieFiles
+description: Manage, preview, and serve Lottie animations for apps and websites.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: LottieFiles
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: lottiefiles.svg

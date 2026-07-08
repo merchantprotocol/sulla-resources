@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: paypal
+name: PayPal
+description: Process payments, manage transactions, and handle refunds via the PayPal API.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: PayPal
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: paypal.svg

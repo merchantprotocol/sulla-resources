@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pinterest
+name: Pinterest
+description: Create pins, manage boards, and track engagement on Pinterest.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Pinterest
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pinterest.svg

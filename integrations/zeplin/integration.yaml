@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: zeplin
+name: Zeplin
+description: Access design specs, style guides, and assets for developer handoff.
+category: Design
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Zeplin
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: zeplin.svg

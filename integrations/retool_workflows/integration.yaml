@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: retool_workflows
+name: Retool Workflows
+description: Build internal automation workflows with a visual canvas and code blocks.
+category: Automation
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Retool
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: retool_workflows.svg

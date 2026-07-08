@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: tiktok
+name: TikTok
+description: Manage video content, track analytics, and automate TikTok marketing workflows.
+category: Social Media
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: ByteDance
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: tiktok.svg

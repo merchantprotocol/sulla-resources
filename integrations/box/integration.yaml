@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: box
+name: Box
+description: Upload, download, and manage enterprise content in Box. Automate file collaboration.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Box
+sort: 4
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: box.svg

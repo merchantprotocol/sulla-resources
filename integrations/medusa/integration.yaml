@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: medusa
+name: Medusa
+description: Manage products, orders, and customers in the open-source headless commerce platform.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Medusa
+sort: 14
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: medusa.svg

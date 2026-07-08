@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: intercom
+name: Intercom
+description: Manage conversations, contacts, and articles. Automate customer messaging workflows.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Intercom
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: intercom.svg

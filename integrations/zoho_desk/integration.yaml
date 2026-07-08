@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: zoho_desk
+name: Zoho Desk
+description: Manage support tickets, automations, and customer self-service portals.
+category: Customer Support
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Zoho
+sort: 11
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: zoho_desk.svg

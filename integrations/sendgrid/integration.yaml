@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: sendgrid
+name: SendGrid
+description: Send transactional and marketing emails at scale. Manage contacts and track delivery.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Twilio
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: sendgrid.svg

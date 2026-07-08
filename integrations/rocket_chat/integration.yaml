@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: rocket_chat
+name: Rocket.Chat
+description: Send messages, manage channels, and integrate bots on Rocket.Chat servers.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Rocket.Chat
+sort: 16
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: rocket_chat.svg

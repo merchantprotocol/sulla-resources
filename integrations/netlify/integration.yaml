@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: netlify
+name: Netlify
+description: Deploy sites, manage builds, and configure serverless functions on Netlify.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Netlify
+sort: 8
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: netlify.svg

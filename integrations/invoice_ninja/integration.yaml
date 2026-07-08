@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: invoice_ninja
+name: Invoice Ninja
+description: Create invoices, track payments, and manage clients with open-source billing.
+category: Finance
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Invoice Ninja
+sort: 16
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: invoice_ninja.svg

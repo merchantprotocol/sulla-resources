@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: ebay
+name: eBay
+description: Manage listings, orders, and inventory on the eBay marketplace.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: eBay
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: ebay.svg

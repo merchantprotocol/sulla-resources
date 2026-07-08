@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: google_ads
+name: Google Ads
+description: Manage search, display, and video ad campaigns, keywords, and budgets. Retrieve performance reports.
+category: Paid Ads
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Google
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: google_ads.svg

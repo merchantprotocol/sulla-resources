@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: qdrant
+name: Qdrant
+description: Manage vector collections, upsert points, and perform similarity searches.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Qdrant
+sort: 11
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: qdrant.svg

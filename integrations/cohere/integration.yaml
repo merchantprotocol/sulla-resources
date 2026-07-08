@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: cohere
+name: Cohere
+description: Generate text, embed content, and rerank search results with enterprise LLMs.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Cohere
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: cohere.svg

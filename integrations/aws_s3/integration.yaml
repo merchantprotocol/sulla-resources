@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: aws_s3
+name: AWS S3
+description: Upload, download, and manage objects in Amazon S3 buckets.
+category: File Storage
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Amazon
+sort: 5
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: aws_s3.svg

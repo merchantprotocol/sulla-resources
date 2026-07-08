@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: grafana
+name: Grafana
+description: Manage dashboards, query data sources, and configure alerting rules.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Grafana Labs
+sort: 16
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: grafana.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: beehiiv
+name: Beehiiv
+description: Manage newsletters, subscribers, and monetization for creator-led media.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Beehiiv
+sort: 12
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: beehiiv.svg

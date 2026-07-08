@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: basecamp
+name: Basecamp
+description: Manage projects, message boards, to-dos, and schedules in Basecamp.
+category: Productivity
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: 37signals
+sort: 16
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: basecamp.svg

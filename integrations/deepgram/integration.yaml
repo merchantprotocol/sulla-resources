@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: deepgram
+name: Deepgram
+description: Transcribe audio and video with speech-to-text and voice intelligence.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Deepgram
+sort: 9
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: deepgram.svg

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: together_ai
+name: Together AI
+description: Run open-source LLMs with serverless inference and fine-tuning.
+category: AI & ML
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Together AI
+sort: 14
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: together_ai.svg

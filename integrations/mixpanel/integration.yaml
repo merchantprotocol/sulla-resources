@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: mixpanel
+name: Mixpanel
+description: Track events, analyze funnels, and query product analytics data.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Mixpanel
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: mixpanel.svg

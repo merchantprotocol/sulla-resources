@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: github_actions
+name: GitHub Actions
+description: Trigger workflows, manage runs, and automate CI/CD directly in GitHub.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: GitHub
+sort: 12
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: github_actions.svg

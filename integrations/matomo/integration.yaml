@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: matomo
+name: Matomo
+description: Self-hosted web analytics with privacy compliance and full data ownership.
+category: Analytics
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Matomo
+sort: 11
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: matomo.svg

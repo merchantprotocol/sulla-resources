@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: freshsales
+name: Freshsales
+description: Manage contacts, deals, and accounts with AI-powered lead scoring.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Freshworks
+sort: 7
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: freshsales.svg

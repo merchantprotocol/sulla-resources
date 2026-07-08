@@ -1,0 +1,37 @@
+apiVersion: sulla/v1
+kind: Integration
+id: claude-code
+name: Claude Code
+description: Run Anthropic's Claude Code agent inside the Sulla Desktop VM with full file access, bash, and web tools.
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-04-19
+developer: Anthropic
+sort: 1
+paid: true
+beta: true
+comingSoon: false
+builtin: true
+icon: anthropic.svg
+oauth: true
+oauthProviderId: claude-code
+formGuide: Sign in with Claude (recommended) or paste an Anthropic API key.
+properties:
+  - key: oauth_token
+    title: OAuth Token
+    hint: Populated automatically when you Sign in with Claude. Long-lived sk-ant-oat01-… token.
+    type: password
+    required: false
+    placeholder: sk-ant-oat01-...
+  - key: api_key
+    title: Anthropic API Key
+    hint: Optional — used if no OAuth token is present. Generate this in your Anthropic Console.
+    type: password
+    required: false
+    placeholder: sk-ant-...
+  - key: model
+    title: Model
+    hint: Claude Code chooses its own model; this field is informational.
+    type: text
+    required: false
+    placeholder: claude-code

@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: bamboohr
+name: BambooHR
+description: Manage employee records, time-off requests, and HR workflows.
+category: HR & Recruiting
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: BambooHR
+sort: 1
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: bamboohr.svg

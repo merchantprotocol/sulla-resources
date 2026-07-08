@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: substack
+name: Substack
+description: Manage newsletter posts, subscribers, and publication settings.
+category: Marketing
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Substack
+sort: 13
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: substack.svg

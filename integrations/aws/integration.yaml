@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: aws
+name: AWS
+description: Manage S3 buckets, Lambda functions, EC2 instances, DynamoDB tables, and other AWS services via REST APIs.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-03-07
+developer: Amazon
+sort: 19
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: aws.svg

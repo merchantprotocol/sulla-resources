@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: shopify
+name: Shopify
+description: Manage products, orders, customers, and inventory. Automate e-commerce operations.
+category: E-Commerce
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Shopify
+sort: 1
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: shopify.svg

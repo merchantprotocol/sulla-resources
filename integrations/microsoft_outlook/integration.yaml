@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: microsoft_outlook
+name: Microsoft Outlook
+description: Send and manage emails, calendar events, and contacts via the Microsoft Graph API.
+category: Communication
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Microsoft
+sort: 10
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: microsoft_outlook.svg

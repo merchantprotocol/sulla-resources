@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: pipedrive
+name: Pipedrive
+description: Manage deals, contacts, and sales pipelines. Automate sales activity tracking.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: Pipedrive
+sort: 3
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: pipedrive.svg

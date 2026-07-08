@@ -1,0 +1,15 @@
+apiVersion: sulla/v1
+kind: Integration
+id: sugarcrm
+name: SugarCRM
+description: Manage leads, contacts, accounts, and sales pipeline automation.
+category: CRM & Sales
+version: 1.0.0
+lastUpdated: 2026-02-28
+developer: SugarCRM
+sort: 15
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: sugarcrm.svg

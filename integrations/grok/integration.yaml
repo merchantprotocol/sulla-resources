@@ -1,0 +1,34 @@
+apiVersion: sulla/v1
+kind: Integration
+id: grok
+name: Grok
+description: "Connect xAI Grok models for agent prompts and completions — sign in with your SuperGrok/X Premium+ subscription or paste an xAI API key."
+category: AI Infrastructure
+version: 1.0.0
+lastUpdated: 2026-07-08
+developer: xAI
+sort: 2
+paid: true
+beta: false
+comingSoon: false
+builtin: true
+icon: grok.svg
+oauth: true
+oauthProviderId: grok
+formGuide: "Sign in with Grok (recommended) to run on your SuperGrok or X Premium+ subscription, or paste an xAI API key for metered access. Note: xAI allowlists OAuth API access server-side — if requests return 403 after sign-in, your subscription tier is not yet eligible."
+properties:
+  - key: api_key
+    title: xAI API Key
+    hint: "Only needed if you are not signing in with Grok. Generate this in your xAI developer console."
+    type: password
+    required: true
+    placeholder: xai-...
+  - key: model
+    title: Model
+    hint: Select a Grok model to use for completions.
+    type: select
+    required: true
+    placeholder: Select a model...
+    selectBoxId: grok_models
+    selectDependsOn:
+      - api_key
