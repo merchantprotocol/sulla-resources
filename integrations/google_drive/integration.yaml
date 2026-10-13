@@ -2,10 +2,10 @@ apiVersion: sulla/v1
 kind: Integration
 id: google_drive
 name: Google Drive
-description: Upload, download, and manage files and folders in Google Drive.
+description: Let Sulla read your Google Drive — folders, Docs, Sheets, Slides, PDFs, images and videos. Read-only.
 category: File Storage
-version: 1.0.0
-lastUpdated: 2026-02-28
+version: 1.1.0
+lastUpdated: 2026-10-13
 developer: Google
 sort: 1
 paid: false
@@ -13,3 +13,21 @@ beta: false
 comingSoon: false
 builtin: true
 icon: google_drive.svg
+authType: oauth
+oauthProviderId: google
+oauthScopes:
+  - https://www.googleapis.com/auth/drive.readonly
+formGuide: In Google Cloud Console, enable the Google Drive API and create an OAuth client ID of type "Desktop app". Paste its Client ID and Secret below, then click "Connect with Google". Sulla only asks for read-only access.
+properties:
+  - key: client_id
+    title: OAuth Client ID
+    hint: Google Cloud Console → APIs & Services → Credentials (type Desktop app)
+    type: text
+    required: true
+    placeholder: xxxx.apps.googleusercontent.com
+  - key: client_secret
+    title: OAuth Client Secret
+    hint: Google Cloud Console → APIs & Services → Credentials
+    type: password
+    required: true
+    placeholder: ''
