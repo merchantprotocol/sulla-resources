@@ -1,0 +1,59 @@
+apiVersion: sulla/v1
+kind: Integration
+id: forgejo
+name: Forgejo
+description: Manage repositories, issues, pull requests, releases, and organizations on Forgejo, including Codeberg.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-10-14
+developer: Forgejo
+sort: 5
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: forgejo.svg
+authType: credentials
+formGuide: Enter a Forgejo or Codeberg URL and a personal access token.
+installationGuide:
+  title: Connect Forgejo or Codeberg
+  description: Create a token and configure the Forgejo-compatible API endpoint.
+  steps:
+    - title: Create a token
+      content: In Forgejo, open Settings → Applications → Manage Access Tokens and create a token. For Codeberg, use Settings → Applications.
+    - title: Choose permissions
+      content: Grant repository read/write, issue, organization, and package permissions only as needed by your automation.
+    - title: Enter the server URL
+      content: The default API base URL is https://codeberg.org/api/v1. For another Forgejo server, enter its API URL ending in /api/v1.
+    - title: Save and test
+      content: Save the token and test with GET /user through the integration proxy.
+  importantNotes:
+    - Forgejo's REST API is Gitea-compatible for the endpoints used by this proxy.
+    - Codeberg is the default Forgejo host; self-hosted API URLs override it per account.
+features:
+  - title: Repository Management
+    description: Manage repositories, branches, commits, and releases.
+  - title: Issues and Pull Requests
+    description: Operate issue and code-review workflows through the Forgejo API.
+  - title: Organizations
+    description: Inspect teams, members, and organization repositories.
+guideLinks:
+  - title: Forgejo API Documentation
+    description: Forgejo REST API reference
+    url: https://forgejo.org/docs/latest/user/api-usage/
+  - title: Codeberg API
+    description: Codeberg API documentation
+    url: https://docs.codeberg.org/api/
+properties:
+  - key: bearer_token
+    title: Forgejo Personal Access Token
+    hint: Token created in Settings → Applications
+    type: password
+    required: true
+    placeholder: Paste token
+  - key: base_url
+    title: Forgejo Server URL
+    hint: Codeberg or self-hosted API URL ending in /api/v1
+    type: url
+    required: false
+    placeholder: https://codeberg.org/api/v1

@@ -1,0 +1,11 @@
+api:
+  name: bitbucket-cloud-rest-v2
+  version: '2.0'
+  provider: bitbucket
+  base_url: https://api.bitbucket.org/2.0
+
+auth:
+  type: bearer
+  client_secret: "${BITBUCKET_TOKEN}"
+  token_storage: local
+  refresh_automatically: false

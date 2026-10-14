@@ -2,7 +2,7 @@ apiVersion: sulla/v1
 kind: Integration
 id: gitlab
 name: GitLab
-description: Manage repositories, CI/CD pipelines, merge requests, and issues on GitLab.
+description: Manage repositories, CI/CD pipelines, merge requests, issues, and releases on GitLab Cloud or a self-hosted instance.
 category: Developer Tools
 version: 1.0.0
 lastUpdated: 2026-02-28
@@ -13,3 +13,47 @@ beta: false
 comingSoon: false
 builtin: true
 icon: gitlab.svg
+authType: credentials
+formGuide: Create a personal access token in GitLab and enter the GitLab URL when connecting a self-hosted instance.
+installationGuide:
+  title: Connect GitLab
+  description: Create a scoped GitLab personal access token for API access.
+  steps:
+    - title: Create a token
+      content: Go to User settings → Access tokens, name the token, set an expiration date, and create it.
+    - title: Choose scopes
+      content: Use api for full repository and merge request automation, or read_api for read-only workflows. Add read_repository or write_repository when your policy requires narrower repository scopes.
+    - title: Configure the instance
+      content: Use https://gitlab.com/api/v4 for GitLab Cloud. For self-hosted GitLab, enter its API base URL, for example https://gitlab.example.com/api/v4.
+    - title: Save and test
+      content: Save the token and test with GET /user through the integration proxy.
+  importantNotes:
+    - Tokens are secrets; use the smallest scope and shortest lifetime that fits the job.
+    - Self-hosted API URLs are stored per account and override the shipped GitLab Cloud default.
+features:
+  - title: Repository Management
+    description: List projects, inspect repositories, and manage branches and tags.
+  - title: Merge Requests
+    description: Review, comment on, and automate merge request workflows.
+  - title: CI/CD and Releases
+    description: Inspect pipelines, jobs, deployments, and project releases.
+guideLinks:
+  - title: GitLab REST API
+    description: GitLab API v4 reference
+    url: https://docs.gitlab.com/api/
+  - title: Personal Access Tokens
+    description: GitLab token creation and scopes
+    url: https://docs.gitlab.com/user/profile/personal_access_tokens/
+properties:
+  - key: bearer_token
+    title: GitLab Personal Access Token
+    hint: GitLab token with api or read_api scope
+    type: password
+    required: true
+    placeholder: glpat-...
+  - key: base_url
+    title: GitLab Base URL
+    hint: GitLab Cloud or self-hosted API URL ending in /api/v4
+    type: url
+    required: false
+    placeholder: https://gitlab.com/api/v4
