@@ -1,0 +1,65 @@
+apiVersion: sulla/v1
+kind: Integration
+id: azure_devops
+name: Azure DevOps
+description: Manage Azure Repos, pull requests, work items, builds, and releases for an Azure DevOps organization.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-10-14
+developer: Microsoft
+sort: 6
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: azure_devops.svg
+authType: credentials
+formGuide: Enter your Azure DevOps organization API URL and a personal access token. PATs use HTTP Basic authentication.
+installationGuide:
+  title: Connect Azure DevOps
+  description: Create a scoped Azure DevOps PAT and configure the organization endpoint.
+  steps:
+    - title: Create a PAT
+      content: Open User settings → Personal access tokens, create a token, set an expiration date, and select only the scopes your automation needs.
+    - title: Choose scopes
+      content: Code Read for repository inspection, Code Write for pushes, Code PullRequest Read or Contribute for pull requests, Work Items Read or Read & Write for boards, and Build Read or Execute for pipelines.
+    - title: Configure the organization URL
+      content: Enter https://dev.azure.com/{organization} as the base URL. The proxy uses this stored URL literally.
+    - title: Save and test
+      content: Save the PAT and test with GET /_apis/projects?api-version=7.1-preview.1 through the integration proxy.
+  importantNotes:
+    - Azure DevOps PATs authenticate with HTTP Basic using an empty username and the PAT as the password.
+    - The current transparent proxy injects bearer tokens and API keys, but not Basic credentials. See INTEGRATION.md for the exact app change required for PAT support.
+features:
+  - title: Azure Repos
+    description: Browse repositories, commits, branches, and file content.
+  - title: Pull Requests and Work Items
+    description: Review code and manage work-item workflows.
+  - title: Builds and Releases
+    description: Inspect and automate Azure Pipelines builds and releases.
+guideLinks:
+  - title: Azure DevOps REST API
+    description: Azure DevOps REST API 7.1 reference
+    url: https://learn.microsoft.com/en-us/rest/api/azure/devops/
+  - title: Personal Access Tokens
+    description: Azure DevOps PAT creation and scopes
+    url: https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate
+properties:
+  - key: basic_username
+    title: Basic Auth Username
+    hint: Leave blank for Azure DevOps PAT authentication
+    type: text
+    required: false
+    placeholder: ''
+  - key: basic_password
+    title: Azure DevOps PAT
+    hint: Personal access token; sent as the Basic auth password
+    type: password
+    required: true
+    placeholder: Paste PAT
+  - key: base_url
+    title: Organization API URL
+    hint: https://dev.azure.com/{organization}
+    type: url
+    required: true
+    placeholder: https://dev.azure.com/acme

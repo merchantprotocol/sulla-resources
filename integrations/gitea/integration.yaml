@@ -1,0 +1,59 @@
+apiVersion: sulla/v1
+kind: Integration
+id: gitea
+name: Gitea
+description: Manage repositories, issues, pull requests, releases, and organizations on a self-hosted Gitea server.
+category: Developer Tools
+version: 1.0.0
+lastUpdated: 2026-10-14
+developer: Gitea
+sort: 4
+paid: false
+beta: false
+comingSoon: false
+builtin: true
+icon: gitea.svg
+authType: credentials
+formGuide: Enter the HTTPS URL of your Gitea server and a personal access token.
+installationGuide:
+  title: Connect Gitea
+  description: Create a Gitea personal access token and point Sulla at your server.
+  steps:
+    - title: Create a token
+      content: In Gitea, open Settings → Applications → Manage Access Tokens and create a token.
+    - title: Choose permissions
+      content: Grant repository read/write, issue, organization, and package permissions only when your workflows need them. Read-only automation can use read permissions.
+    - title: Enter the server URL
+      content: Enter the API base URL, such as https://git.example.com/api/v1. The transparent proxy uses this stored URL literally.
+    - title: Save and test
+      content: Save the token and test with GET /user through the integration proxy.
+  importantNotes:
+    - Gitea is self-hosted; the server URL is required for every account.
+    - Use a token with the minimum repository and organization permissions needed.
+features:
+  - title: Repository Management
+    description: Manage repositories, branches, commits, and releases.
+  - title: Issues and Pull Requests
+    description: Operate issue and code-review workflows through the Gitea API.
+  - title: Organizations
+    description: Inspect teams, members, and organization repositories.
+guideLinks:
+  - title: Gitea API Documentation
+    description: Gitea REST API v1 reference
+    url: https://docs.gitea.com/api/1.24/
+  - title: Access Tokens
+    description: Gitea token management
+    url: https://docs.gitea.com/development/api-usage
+properties:
+  - key: bearer_token
+    title: Gitea Personal Access Token
+    hint: Token created in Settings → Applications
+    type: password
+    required: true
+    placeholder: Paste token
+  - key: base_url
+    title: Gitea Server URL
+    hint: HTTPS API URL ending in /api/v1
+    type: url
+    required: true
+    placeholder: https://git.example.com/api/v1

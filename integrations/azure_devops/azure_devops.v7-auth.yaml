@@ -1,0 +1,11 @@
+api:
+  name: azure-devops-rest-v7
+  version: '7.1'
+  provider: azure-devops
+  base_url: https://dev.azure.com/${AZURE_DEVOPS_ORGANIZATION}
+
+auth:
+  type: bearer
+  client_secret: '${AZURE_DEVOPS_PAT}'
+  token_storage: local
+  refresh_automatically: false

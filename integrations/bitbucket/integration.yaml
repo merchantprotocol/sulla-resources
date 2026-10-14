@@ -2,7 +2,7 @@ apiVersion: sulla/v1
 kind: Integration
 id: bitbucket
 name: Bitbucket
-description: Manage Git repositories, pull requests, and CI/CD pipelines on Bitbucket.
+description: Manage repositories, pull requests, issues, and Pipelines on Bitbucket Cloud.
 category: Developer Tools
 version: 1.0.0
 lastUpdated: 2026-02-28
@@ -13,3 +13,41 @@ beta: false
 comingSoon: false
 builtin: true
 icon: bitbucket.svg
+authType: credentials
+formGuide: Create a Bitbucket workspace or repository access token for bearer authentication. Atlassian API tokens require HTTP Basic authentication and are documented as a compatibility option below.
+installationGuide:
+  title: Connect Bitbucket Cloud
+  description: Create a least-privilege access token for the Bitbucket Cloud API.
+  steps:
+    - title: Choose a token type
+      content: In Bitbucket workspace settings, create a repository or workspace access token. Use a repository token for one repository, or a workspace token for shared automation.
+    - title: Choose scopes
+      content: Add repository Read for inspection, repository Write for pushes, pullrequests Read for review, pullrequests Write for comments and merges, and pipelines Read or Write as needed.
+    - title: Configure the connection
+      content: Enter the access token. The Bitbucket Cloud API base URL is https://api.bitbucket.org/2.0.
+    - title: Save and test
+      content: Save the token and test with GET /user or GET /repositories/{workspace} through the proxy.
+  importantNotes:
+    - Repository and workspace access tokens are sent as bearer tokens and work with the current proxy.
+    - Atlassian API tokens use email plus Basic authentication; the current proxy does not inject Basic credentials. Use an access token or see INTEGRATION.md for the required app change.
+features:
+  - title: Repository Management
+    description: Browse repositories, branches, commits, and source files.
+  - title: Pull Requests
+    description: Review, comment on, approve, and merge pull requests.
+  - title: Pipelines
+    description: Inspect and trigger Bitbucket Pipelines runs.
+guideLinks:
+  - title: Bitbucket Cloud REST API
+    description: Bitbucket API 2.0 reference
+    url: https://developer.atlassian.com/cloud/bitbucket/rest/intro/
+  - title: Access Tokens
+    description: Bitbucket token permissions and lifecycle
+    url: https://support.atlassian.com/bitbucket-cloud/docs/access-tokens/
+properties:
+  - key: bearer_token
+    title: Bitbucket Access Token
+    hint: Repository or workspace access token
+    type: password
+    required: true
+    placeholder: Paste access token
